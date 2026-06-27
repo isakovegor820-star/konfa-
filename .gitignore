@@ -1,1 +1,8 @@
 .DS_Store
+
+# dev artifacts — screenshots & intermediate renders (kept locally, not tracked)
+legal-ai-os-serve/shots/
+legal-ai-os-serve/live_shots/
+legal-ai-os-serve/live_pages/
+legal-ai-os-serve/phrases_live/
+legal-ai-os-serve/extracted/
