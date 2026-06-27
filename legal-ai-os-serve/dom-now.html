@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html><head><style>
+    .sc-placeholder{background:rgba(255,255,255,.3);border:1px solid rgba(0,0,0,.5);
+      border-radius:2px;box-sizing:border-box;overflow:hidden}
+    @keyframes sc-shine{0%{background-position:100% 50%}100%{background-position:0% 50%}}
+    html.sc-dc-streaming .sc-placeholder,
+    html.sc-dc-streaming .sc-interp.sc-missing{position:relative;
+      background:color-mix(in srgb,currentColor 5%,transparent);
+      border-color:transparent}
+    html.sc-dc-streaming .sc-placeholder::before,
+    html.sc-dc-streaming .sc-interp.sc-missing::before{content:'';
+      position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(90deg,rgba(217,119,87,0) 25%,rgba(247,225,211,.95) 37%,rgba(217,119,87,0) 63%);
+      background-size:400% 100%;animation:sc-shine 1.4s ease infinite}
+    html.sc-dc-streaming .sc-placeholder:nth-child(n+9 of .sc-placeholder)::before,
+    html.sc-dc-streaming .sc-interp.sc-missing:nth-child(n+9 of .sc-interp.sc-missing)::before{animation:none;
+      background:color-mix(in srgb,currentColor 8%,transparent)}
+    .sc-placeholder-error{padding:4px 8px;font:11px/1.4 ui-monospace,monospace;
+      color:rgba(0,0,0,.7);word-break:break-word}
+    .sc-interp.sc-missing{display:inline-block;width:2em;height:1em;overflow:hidden;
+      vertical-align:text-bottom;background:rgba(255,255,255,.3);border:1px solid rgba(0,0,0,.5);
+      border-radius:2px;box-sizing:border-box;color:transparent;
+      user-select:none}
+    .sc-interp.sc-unresolved{font-family:ui-monospace,monospace;font-size:.85em;
+      color:rgba(0,0,0,.5);background:rgba(0,0,0,.05);border-radius:3px;
+      padding:0 3px}
+    .sc-host.sc-has-error{position:relative}
+    .sc-logic-error{position:absolute;top:8px;left:8px;z-index:2147483647;max-width:60ch;
+      padding:6px 10px;background:#b00020;color:#fff;font:12px/1.4 ui-monospace,monospace;
+      border-radius:4px;white-space:pre-wrap;pointer-events:none}
+    /* Mirrors PRINT_BASELINE_CSS in apps/web deck-stage-export.ts — keep both
+       in sync until dc-runtime regains a build step. */
+    @media print {
+      @page { margin: 0.5cm; }
+      figure, table { break-inside: avoid; }
+      #dc-root, #dc-root > .sc-host { height: auto; }
+      *, *::before, *::after {
+        print-color-adjust: exact; -webkit-print-color-adjust: exact;
+        backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+        animation-delay: -99s !important; animation-duration: .001s !important;
+        animation-iteration-count: 1 !important; animation-fill-mode: both !important;
+        animation-play-state: running !important; transition-duration: 0s !important;
+      }
+    }
+  </style><script>window.__resources = {};</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="blob:http://127.0.0.1:8791/a09f1c2b-fafc-4a57-b593-c271b3310ead"></script>
+
+<style id="pt-ck-style">#pt-ck-banner,#pt-ck-modal,#pt-ck-reopen{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;box-sizing:border-box;}#pt-ck-banner *,#pt-ck-modal *{box-sizing:border-box;}#pt-ck-banner{position:fixed;left:16px;right:16px;bottom:16px;z-index:2147483000;max-width:760px;margin:0 auto;display:none; background:rgba(12,14,20,.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid #262d3d; border-radius:16px;padding:20px 22px;box-shadow:0 12px 40px rgba(0,0,0,.55);color:#EAF0F7;}#pt-ck-banner h3{font-size:16px;margin:0 0 7px;font-weight:700;}#pt-ck-banner p{color:#9AA6B8;font-size:13.5px;line-height:1.55;margin:0 0 16px;}#pt-ck-banner a{color:#00E5FF;text-decoration:underline;}.pt-ck-row{display:flex;gap:10px;flex-wrap:wrap;}.pt-ck-btn{flex:1;min-width:150px;font-size:14px;font-weight:600;padding:12px 18px;border-radius:8px;cursor:pointer; border:1px solid #262d3d;background:transparent;color:#EAF0F7;transition:.16s;min-height:44px;}.pt-ck-btn:hover{border-color:#00E5FF;color:#00E5FF;}.pt-ck-btn.pri{background:#00E5FF;color:#06222a;border-color:#00E5FF;}.pt-ck-btn.pri:hover{box-shadow:0 0 0 4px rgba(0,229,255,.18);color:#06222a;}#pt-ck-modal{position:fixed;inset:0;z-index:2147483001;display:none;align-items:center;justify-content:center;padding:18px;}#pt-ck-modal.open{display:flex;}#pt-ck-scrim{position:absolute;inset:0;background:rgba(0,0,0,.62);}.pt-ck-dlg{position:relative;background:#0C0E14;border:1px solid #262d3d;border-radius:16px;max-width:540px;width:100%; max-height:86vh;overflow:auto;padding:26px;box-shadow:0 12px 40px rgba(0,0,0,.55);color:#EAF0F7;}.pt-ck-dlg h3{font-size:20px;margin:0 0 6px;font-weight:700;}.pt-ck-dlg>p{color:#9AA6B8;font-size:14px;margin:0 0 20px;}.pt-ck-cat{border:1px solid #1C2230;border-radius:10px;padding:15px;margin-bottom:11px;}.pt-ck-cat .t{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px;}.pt-ck-cat .t b{font-size:15px;}.pt-ck-cat p{color:#9AA6B8;font-size:12.5px;line-height:1.5;margin:0;}.pt-ck-lock{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6B7686;}.pt-sw{position:relative;width:44px;height:25px;flex:0 0 auto;display:inline-block;}.pt-sw input{opacity:0;width:0;height:0;position:absolute;}.pt-sw .sl{position:absolute;inset:0;background:#262d3d;border-radius:999px;transition:.2s;cursor:pointer;}.pt-sw .sl::before{content:'';position:absolute;left:3px;top:3px;width:19px;height:19px;background:#fff;border-radius:50%;transition:.2s;}.pt-sw input:checked+.sl{background:#00E5FF;}.pt-sw input:checked+.sl::before{transform:translateX(19px);}.pt-ck-dlg .acts{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}.pt-ck-dlg .acts .pt-ck-btn{flex:1;min-width:140px;}#pt-ck-reopen{position:fixed;left:16px;bottom:16px;z-index:2147482999;background:rgba(12,14,20,.9);border:1px solid #262d3d; color:#9AA6B8;font-size:13px;border-radius:999px;padding:9px 14px;cursor:pointer;display:none;box-shadow:0 6px 20px rgba(0,0,0,.4);}#pt-ck-reopen:hover{color:#00E5FF;border-color:#00E5FF;}@media(max-width:560px){.pt-ck-btn{flex:1 1 100%;}}</style><style id="pt-tracks-style">
+.pt-bento{display:grid!important;grid-template-columns:repeat(4,1fr);grid-auto-rows:165px;gap:14px;
+ grid-template-areas:"a a b b" "a a c d" "e e f f";opacity:1!important;transform:none!important;margin-top:18px;}
+@media(max-width:900px){.pt-bento{grid-template-columns:repeat(2,1fr);
+ grid-template-areas:"a a" "a a" "b b" "c d" "e e" "f f";}}
+@media(max-width:560px){.pt-bento{grid-template-columns:1fr;grid-auto-rows:auto;
+ grid-template-areas:"a""b""c""d""e""f";}}
+.pt-trk{position:relative;overflow:hidden;border-radius:16px;padding:20px;display:flex;flex-direction:column;
+ font-family:'Space Grotesk','Inter',system-ui,sans-serif;
+ background:
+  radial-gradient(120% 120% at 0% 0%, color-mix(in srgb,var(--c1) 26%, transparent), transparent 55%),
+  linear-gradient(150deg, color-mix(in srgb,var(--c1) 14%, #0b0e15), color-mix(in srgb,var(--c2) 9%, #090b11));
+ border:1px solid color-mix(in srgb,var(--c1) 34%, #1C2230);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+ transition:transform .22s cubic-bezier(.2,.7,.2,1),box-shadow .22s,border-color .22s;}
+.pt-trk::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;
+ background:linear-gradient(90deg,var(--c1),var(--c2));opacity:.9;}
+.pt-trk::after{content:"";position:absolute;inset:10px;border-radius:10px;pointer-events:none;opacity:.5;
+ background:
+  linear-gradient(var(--c1),var(--c1)) left top/14px 1.5px no-repeat,
+  linear-gradient(var(--c1),var(--c1)) left top/1.5px 14px no-repeat,
+  linear-gradient(var(--c1),var(--c1)) right bottom/14px 1.5px no-repeat,
+  linear-gradient(var(--c1),var(--c1)) right bottom/1.5px 14px no-repeat;}
+.pt-trk:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--c1) 70%, transparent);
+ box-shadow:0 16px 40px color-mix(in srgb,var(--c1) 22%, transparent),0 0 0 1px color-mix(in srgb,var(--c1) 40%,transparent);}
+.pt-trk.a{grid-area:a;}.pt-trk.b{grid-area:b;}.pt-trk.c{grid-area:c;}.pt-trk.d{grid-area:d;}.pt-trk.e{grid-area:e;}.pt-trk.f{grid-area:f;}
+.pt-trk .top{display:flex;justify-content:space-between;align-items:flex-start;}
+.pt-trk .hud{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:.16em;
+ text-transform:uppercase;color:color-mix(in srgb,var(--c1) 85%,#fff);}
+.pt-trk .num{font-weight:700;font-size:clamp(34px,7vw,64px);line-height:.85;color:transparent;
+ -webkit-text-stroke:1.4px color-mix(in srgb,var(--c1) 70%, #888);opacity:.55;}
+.pt-trk .ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+ background:color-mix(in srgb,var(--c1) 20%, #0c0f16);border:1px solid color-mix(in srgb,var(--c1) 45%, transparent);}
+.pt-trk .ico svg{width:19px;height:19px;stroke:color-mix(in srgb,var(--c1) 90%,#fff);fill:none;stroke-width:1.8;}
+.pt-trk .body{margin-top:auto;}
+.pt-trk h3{font-weight:700;letter-spacing:-.01em;font-size:18px;margin:14px 0 6px;color:#EAF0F7;}
+.pt-trk.a h3{font-size:26px;}
+.pt-trk p{color:#AEB8C7;font-size:13.5px;line-height:1.45;margin:0;font-family:'Inter',system-ui,sans-serif;}
+.pt-trk.a p{font-size:15px;max-width:42ch;}
+.pt-trk .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;}
+.pt-trk .tags span{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:color-mix(in srgb,var(--c1) 85%,#fff);
+ border:1px solid color-mix(in srgb,var(--c1) 35%,transparent);border-radius:999px;padding:3px 9px;
+ background:color-mix(in srgb,var(--c1) 8%,transparent);}
+.pt-trk .foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;
+ font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#AEB8C7;}
+.pt-trk .arr{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+ border:1px solid color-mix(in srgb,var(--c1) 45%,transparent);color:color-mix(in srgb,var(--c1) 90%,#fff);transition:.2s;}
+.pt-trk:hover .arr{background:var(--c1);color:#06222a;border-color:var(--c1);transform:translateX(2px);}
+.pt-trk .glow{position:absolute;width:180px;height:180px;border-radius:50%;right:-50px;bottom:-60px;pointer-events:none;
+ background:radial-gradient(circle,color-mix(in srgb,var(--c1) 30%,transparent),transparent 70%);filter:blur(8px);}</style><style>x-dc{display:none!important}</style><script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script><script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script><style></style><style>html,body{height:100%;margin:0}#dc-root,#dc-root>.sc-host{height:100%}</style><link rel="preconnect" href="https://fonts.googleapis.com" data-dc-tpl="1"><link rel="preconnect" href="https://fonts.gstatic.com" data-dc-tpl="2"><style data-dc-tpl="3">/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/b1e09fc2-3438-4aa0-bda8-0a17a394309a") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/6883c821-34b1-4515-897b-028c77a1467e") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/b932460e-dbf3-4b17-b2a8-c42b3cd18048") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/56f67a8e-0815-490a-8a1c-1bf855b7420a") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/5604f6c4-b3e0-4a15-887b-47a73ee83498") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/3b89f1c0-c76a-43ff-a7d5-9d27c6ddf1b6") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/b1e09fc2-3438-4aa0-bda8-0a17a394309a") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/6883c821-34b1-4515-897b-028c77a1467e") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/b932460e-dbf3-4b17-b2a8-c42b3cd18048") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/56f67a8e-0815-490a-8a1c-1bf855b7420a") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/5604f6c4-b3e0-4a15-887b-47a73ee83498") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/3b89f1c0-c76a-43ff-a7d5-9d27c6ddf1b6") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/b1e09fc2-3438-4aa0-bda8-0a17a394309a") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/6883c821-34b1-4515-897b-028c77a1467e") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/b932460e-dbf3-4b17-b2a8-c42b3cd18048") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/56f67a8e-0815-490a-8a1c-1bf855b7420a") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/5604f6c4-b3e0-4a15-887b-47a73ee83498") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/3b89f1c0-c76a-43ff-a7d5-9d27c6ddf1b6") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/b1e09fc2-3438-4aa0-bda8-0a17a394309a") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/6883c821-34b1-4515-897b-028c77a1467e") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/b932460e-dbf3-4b17-b2a8-c42b3cd18048") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/56f67a8e-0815-490a-8a1c-1bf855b7420a") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/5604f6c4-b3e0-4a15-887b-47a73ee83498") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/3b89f1c0-c76a-43ff-a7d5-9d27c6ddf1b6") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/b1e09fc2-3438-4aa0-bda8-0a17a394309a") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/6883c821-34b1-4515-897b-028c77a1467e") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/b932460e-dbf3-4b17-b2a8-c42b3cd18048") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/56f67a8e-0815-490a-8a1c-1bf855b7420a") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/5604f6c4-b3e0-4a15-887b-47a73ee83498") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/3b89f1c0-c76a-43ff-a7d5-9d27c6ddf1b6") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/9e5ddaeb-992f-478a-bbd2-87ee7224c41b") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/8f25a35e-62f8-4661-8d38-dd4af95290b0") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/9cb01f46-7c64-4376-ac96-8849b500ecaa") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/9e5ddaeb-992f-478a-bbd2-87ee7224c41b") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/8f25a35e-62f8-4661-8d38-dd4af95290b0") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/9cb01f46-7c64-4376-ac96-8849b500ecaa") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/9e5ddaeb-992f-478a-bbd2-87ee7224c41b") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/8f25a35e-62f8-4661-8d38-dd4af95290b0") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/9cb01f46-7c64-4376-ac96-8849b500ecaa") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/9e5ddaeb-992f-478a-bbd2-87ee7224c41b") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/8f25a35e-62f8-4661-8d38-dd4af95290b0") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/9cb01f46-7c64-4376-ac96-8849b500ecaa") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/9e5ddaeb-992f-478a-bbd2-87ee7224c41b") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/8f25a35e-62f8-4661-8d38-dd4af95290b0") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("blob:http://127.0.0.1:8791/9cb01f46-7c64-4376-ac96-8849b500ecaa") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style><script src="blob:http://127.0.0.1:8791/f6568e98-a4e1-4745-b775-792b37fcbb46" data-dc-tpl="4"></script><style data-dc-tpl="5">
+    html, body { margin: 0; padding: 0; background: #07080B; color: #E8ECF2; font-family: 'Space Grotesk', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    body { background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,229,255,0.06), transparent 50%), radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255,46,154,0.05), transparent 50%); background-attachment: fixed; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: #07080B; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.18); border-radius: 8px; border: 2px solid #07080B; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,229,255,0.35); }
+    ::selection { background: rgba(0,229,255,0.35); color: #fff; }
+
+    @keyframes pulse-soft { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.9; } }
+    @keyframes pulse-dot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.5; } }
+    @keyframes pulse-ring { 0% { transform: scale(0.8); opacity: 0.9; } 100% { transform: scale(2.4); opacity: 0; } }
+    @keyframes scan-vertical { 0% { transform: translateY(-110%); } 100% { transform: translateY(110vh); } }
+    @keyframes scan-sweep { 0% { transform: translateX(-110%); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(110%); opacity: 0; } }
+    @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
+    @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+    @keyframes grid-drift { 0% { background-position: 0 0; } 100% { background-position: 60px 60px; } }
+    @keyframes fade-up { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spin-rev { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+    @keyframes glow-pulse { 0%, 100% { box-shadow: 0 0 0 1px rgba(0,229,255,0.4), 0 0 24px rgba(0,229,255,0.25); } 50% { box-shadow: 0 0 0 1px rgba(0,229,255,0.6), 0 0 40px rgba(0,229,255,0.45); } }
+    @keyframes draw { from { stroke-dashoffset: var(--dash-len, 1000); } to { stroke-dashoffset: 0; } }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    @keyframes glitch-x { 0%, 100% { transform: translate(0); } 20% { transform: translate(-1px, 1px); } 40% { transform: translate(1px, -1px); } 60% { transform: translate(-1px, 0); } 80% { transform: translate(1px, 0); } }
+    @keyframes float-y { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes scramble { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    @keyframes tab-enter { from { opacity: 0; transform: translateY(20px); filter: blur(8px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+    @keyframes count-tick { from { transform: translateY(20%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 800ms cubic-bezier(0.16,1,0.3,1); transition-delay: var(--reveal-delay, 0ms); }
+    [data-reveal][data-revealed="true"] { opacity: 1; transform: none; }
+    [data-reveal-left] { opacity: 0; transform: translateX(-28px); transition: opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 800ms cubic-bezier(0.16,1,0.3,1); transition-delay: var(--reveal-delay, 0ms); }
+    [data-reveal-left][data-revealed="true"] { opacity: 1; transform: none; }
+    [data-reveal-scale] { opacity: 0; transform: scale(0.94); transition: opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 800ms cubic-bezier(0.16,1,0.3,1); transition-delay: var(--reveal-delay, 0ms); }
+    [data-reveal-scale][data-revealed="true"] { opacity: 1; transform: none; }
+
+    .tab-bar-scroll { overflow-x: auto; scrollbar-width: none; }
+    .tab-bar-scroll::-webkit-scrollbar { display: none; }
+
+    .glass { background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01) 60%); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); border: 1px solid rgba(255,255,255,0.07); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.4); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+      [data-reveal], [data-reveal-left], [data-reveal-scale] { opacity: 1 !important; transform: none !important; }
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid { grid-template-columns: 1fr !important; }
+      .hero-canvas-wrap { height: 420px !important; }
+      .hero-title { font-size: clamp(2.5rem, 9vw, 4.5rem) !important; }
+    }
+    @media (max-width: 720px) {
+      .hide-mobile { display: none !important; }
+      .stack-mobile { flex-direction: column !important; align-items: stretch !important; }
+      .hero-canvas-wrap { height: 320px !important; }
+      .section-pad { padding: 4rem 1.25rem !important; }
+      .grid-2-mobile { grid-template-columns: 1fr !important; }
+      .grid-3-mobile { grid-template-columns: 1fr !important; }
+      .grid-4-mobile { grid-template-columns: repeat(2, 1fr) !important; }
+      .text-3xl-mobile { font-size: 2rem !important; }
+      .text-5xl-mobile { font-size: 2.5rem !important; }
+    }
+  </style></head>
+<body>
+<div id="dc-root"><div class="sc-host" data-sc-name="Root"><div data-dc-tpl="6" data-screen-label="Legal AI OS" style="position: relative; min-height: 100vh; background: rgb(7, 8, 11); color: rgb(232, 236, 242); font-family: &quot;Space Grotesk&quot;, system-ui, sans-serif;">
+
+  
+  <div data-dc-tpl="7" aria-hidden="true" style="position: fixed; inset: 0px; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(80% 60% at 50% 30%, rgb(0, 0, 0) 30%, transparent 100%); animation: 30s linear 0s infinite normal none running grid-drift;"></div>
+  <div data-dc-tpl="8" aria-hidden="true" style="position: fixed; inset: 0px; pointer-events: none; z-index: 0; background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.01) 0px, rgba(255, 255, 255, 0.01) 1px, transparent 1px, transparent 3px); mix-blend-mode: overlay;"></div>
+  <div data-dc-tpl="9" aria-hidden="true" style="position: fixed; inset: 0px; pointer-events: none; z-index: 0; background: radial-gradient(100% 80% at 50% 100%, rgba(0, 0, 0, 0.5), transparent 70%);"></div>
+
+  
+  <header data-dc-tpl="10" style="position: relative; z-index: 10; padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); background: rgba(7, 8, 11, 0.6);">
+    <div data-dc-tpl="11" style="display: flex; align-items: center; gap: 0.875rem;">
+      <div data-dc-tpl="12" style="position: relative; width: 36px; height: 36px;">
+        <div data-dc-tpl="13" style="position: absolute; inset: 0px; border: 1px solid rgba(0, 229, 255, 0.5); border-radius: 4px; transform: rotate(45deg); animation: 12s linear 0s infinite normal none running spin-slow;"></div>
+        <div data-dc-tpl="14" style="position: absolute; inset: 6px; border: 1px solid rgba(255, 46, 154, 0.4); border-radius: 50%; animation: 8s linear 0s infinite normal none running spin-rev;"></div>
+        <div data-dc-tpl="15" style="position: absolute; inset: 14px; background: rgb(0, 229, 255); border-radius: 50%; box-shadow: rgba(0, 229, 255, 0.8) 0px 0px 12px;"></div>
+      </div>
+      <div data-dc-tpl="16">
+        <div data-dc-tpl="17" style="font-weight: 600; font-size: 0.95rem; letter-spacing: 0.02em;">ТехнологИИ <span data-dc-tpl="18" style="color: rgb(0, 229, 255);">права</span></div>
+        <div data-dc-tpl="19" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;">legal · ai · operating system</div>
+      </div>
+    </div>
+    <div data-dc-tpl="20" class="hide-mobile" style="display: flex; align-items: center; gap: 1.5rem; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgb(139, 146, 160);">
+      <div data-dc-tpl="21" style="display: flex; align-items: center; gap: 0.5rem;"><span data-dc-tpl="22" style="width: 6px; height: 6px; background: rgb(74, 222, 128); border-radius: 50%; box-shadow: rgb(74, 222, 128) 0px 0px 10px; animation: 2s ease-in-out 0s infinite normal none running pulse-soft;"></span><span data-dc-tpl="23">system online</span></div>
+      <div data-dc-tpl="24">v · 2026.09</div>
+      <div data-dc-tpl="25"><span class="sc-interp">utc+3 · 13:57:20</span></div>
+    </div>
+    <div data-dc-tpl="26" class="hide-mobile" style="display: flex; align-items: center; gap: 0.75rem;">
+      <a data-dc-tpl="27" href="https://t.me/kredit_advokat" target="_blank" rel="noopener" class="scp0" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.875rem; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; color: rgb(232, 236, 242); text-decoration: none; font-size: 0.8rem; transition: 0.2s; background: rgba(255, 255, 255, 0.02);">
+        <span data-dc-tpl="28" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.1em;">@kredit_advokat</span>
+      </a>
+    </div>
+  </header>
+
+  
+  <section data-dc-tpl="29" data-screen-label="Hero / Command Center" style="position: relative; z-index: 5; padding: 4rem 2rem 2rem;">
+    <div data-dc-tpl="30" class="hero-grid" style="max-width: 1440px; margin: 0px auto; display: grid; grid-template-columns: 1.05fr 1fr; gap: 3rem; align-items: center;">
+
+      <div data-dc-tpl="31" style="position: relative;">
+        <div data-dc-tpl="32" style="display: inline-flex; align-items: center; gap: 0.625rem; padding: 0.5rem 0.875rem; border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 999px; background: rgba(0, 229, 255, 0.06); margin-bottom: 1.75rem; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgb(0, 229, 255);">
+          <span data-dc-tpl="33" style="position: relative; width: 8px; height: 8px;">
+            <span data-dc-tpl="34" style="position: absolute; inset: 0px; background: rgb(0, 229, 255); border-radius: 50%;"></span>
+            <span data-dc-tpl="35" style="position: absolute; inset: -4px; border: 1px solid rgb(0, 229, 255); border-radius: 50%; animation: 2.2s ease-out 0s infinite normal none running pulse-ring;"></span>
+          </span>
+          <span data-dc-tpl="36">booting / legal · ai · core</span>
+        </div>
+
+        <h1 data-dc-tpl="37" class="hero-title" style="font-size: clamp(3rem, 6vw, 5.25rem); line-height: 0.96; font-weight: 600; letter-spacing: -0.025em; margin: 0px 0px 1.5rem;">
+          Операционная<br data-dc-tpl="38">
+          система для<br data-dc-tpl="39">
+          <span data-dc-tpl="40" style="background: linear-gradient(135deg, rgb(0, 229, 255) 0%, rgb(123, 184, 255) 50%, rgb(255, 46, 154) 100%) text; -webkit-text-fill-color: transparent; color: transparent;">юристов БФЛ</span>
+        </h1>
+
+        <p data-dc-tpl="41" style="font-size: clamp(1rem, 1.2vw, 1.15rem); color: rgb(166, 173, 186); line-height: 1.55; max-width: 540px; margin: 0px 0px 2.25rem;">
+          ИИ, цифровые инструменты и аналитика для практики банкротства физических лиц. Восемь направлений, выстроенных в один связный модуль — от конференции до боевых тренажёров.
+        </p>
+
+        <div data-dc-tpl="42" class="stack-mobile" style="display: flex; gap: 0.875rem; flex-wrap: wrap; margin-bottom: 2.75rem;">
+          <button data-dc-tpl="43" class="scp1" style="position: relative; padding: 0.95rem 1.5rem; background: rgb(0, 229, 255); color: rgb(7, 8, 11); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; font-family: &quot;Space Grotesk&quot;, sans-serif; font-weight: 600; font-size: 0.95rem; letter-spacing: 0.01em; cursor: pointer; overflow: hidden; transition: 0.2s; box-shadow: rgba(0, 229, 255, 0.4) 0px 0px 0px 1px, rgba(0, 229, 255, 0.25) 0px 8px 32px;">
+            Войти в систему →
+          </button>
+          <a data-dc-tpl="44" href="https://t.me/NeuroPravo_Bot" target="_blank" rel="noopener" class="scp2" style="padding: 0.95rem 1.5rem; background: rgba(255, 255, 255, 0.04); color: rgb(232, 236, 242); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; text-decoration: none; font-family: &quot;Space Grotesk&quot;, sans-serif; font-weight: 500; font-size: 0.95rem; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;">
+            @NeuroPravo_Bot
+            <span data-dc-tpl="45" style="font-family: &quot;JetBrains Mono&quot;, monospace; opacity: 0.5;">↗</span>
+          </a>
+        </div>
+
+        <div data-dc-tpl="46" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.06);">
+          <div data-dc-tpl="47">
+            <div data-dc-tpl="48" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase; margin-bottom: 0.5rem;">modules</div>
+            <div data-dc-tpl="49" style="font-size: 1.5rem; font-weight: 500; letter-spacing: -0.01em;">08</div>
+          </div>
+          <div data-dc-tpl="50">
+            <div data-dc-tpl="51" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase; margin-bottom: 0.5rem;">speakers</div>
+            <div data-dc-tpl="52" style="font-size: 1.5rem; font-weight: 500; letter-spacing: -0.01em;">80<span data-dc-tpl="53" style="color: rgb(0, 229, 255);">+</span></div>
+          </div>
+          <div data-dc-tpl="54">
+            <div data-dc-tpl="55" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase; margin-bottom: 0.5rem;">audience</div>
+            <div data-dc-tpl="56" style="font-size: 1.5rem; font-weight: 500; letter-spacing: -0.01em;">1500<span data-dc-tpl="57" style="color: rgb(0, 229, 255);">+</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-dc-tpl="58" class="hero-canvas-wrap" style="position: relative; height: 560px; border-radius: 14px; overflow: hidden; background: radial-gradient(rgba(0, 229, 255, 0.06), transparent 70%);">
+        <canvas data-dc-tpl="59" data-engine="three.js r160" style="position: absolute; inset: 0px; width: 100%; height: 100%; cursor: grab; touch-action: none;"></canvas>
+
+        
+        
+          <div data-dc-tpl="61" style="position: absolute; inset: 0px; display: flex; align-items: center; justify-content: center;">
+            <div data-dc-tpl="62" style="position: relative; width: 360px; height: 360px;">
+              <div data-dc-tpl="63" style="position: absolute; inset: 0px; border: 1px solid rgba(0, 229, 255, 0.18); border-radius: 50%; animation: 30s linear 0s infinite normal none running spin-slow;"></div>
+              <div data-dc-tpl="64" style="position: absolute; inset: 40px; border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 50%; animation: 22s linear 0s infinite normal none running spin-rev;"></div>
+              <div data-dc-tpl="65" style="position: absolute; inset: 90px; border: 1px solid rgba(0, 229, 255, 0.35); border-radius: 50%; animation: 16s linear 0s infinite normal none running spin-slow;"></div>
+              <div data-dc-tpl="66" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; background: radial-gradient(circle, rgb(0, 229, 255), transparent 70%); border-radius: 50%; animation: 2s ease-in-out 0s infinite normal none running pulse-soft;"></div>
+            </div>
+          </div>
+        
+
+        
+        <div data-dc-tpl="67" aria-hidden="true" style="position: absolute; inset: 0px; pointer-events: none;">
+          <div data-dc-tpl="68" style="position: absolute; top: 16px; left: 16px; width: 28px; height: 28px; border-left: 1px solid rgba(0, 229, 255, 0.5); border-top: 1px solid rgba(0, 229, 255, 0.5);"></div>
+          <div data-dc-tpl="69" style="position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; border-right: 1px solid rgba(0, 229, 255, 0.5); border-top: 1px solid rgba(0, 229, 255, 0.5);"></div>
+          <div data-dc-tpl="70" style="position: absolute; bottom: 16px; left: 16px; width: 28px; height: 28px; border-left: 1px solid rgba(0, 229, 255, 0.5); border-bottom: 1px solid rgba(0, 229, 255, 0.5);"></div>
+          <div data-dc-tpl="71" style="position: absolute; bottom: 16px; right: 16px; width: 28px; height: 28px; border-right: 1px solid rgba(0, 229, 255, 0.5); border-bottom: 1px solid rgba(0, 229, 255, 0.5);"></div>
+        </div>
+
+        
+        <div data-dc-tpl="72" style="position: absolute; top: 20px; left: 24px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.62rem; letter-spacing: 0.25em; color: rgba(0, 229, 255, 0.7); text-transform: uppercase;">
+          legal.core.v26 · <span class="sc-interp">static · degraded</span>
+        </div>
+        <div data-dc-tpl="73" style="position: absolute; top: 20px; right: 24px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.62rem; letter-spacing: 0.25em; color: rgba(0, 229, 255, 0.7); text-transform: uppercase;">
+          08·modules · orbital
+        </div>
+        <div data-dc-tpl="74" style="position: absolute; bottom: 20px; left: 24px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.62rem; letter-spacing: 0.25em; color: rgba(0, 229, 255, 0.7); text-transform: uppercase;">
+          drag · rotate / click · activate
+        </div>
+        <div data-dc-tpl="75" style="position: absolute; bottom: 20px; right: 24px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.62rem; letter-spacing: 0.25em; color: rgba(255, 46, 154, 0.7); text-transform: uppercase;">
+          → <span class="sc-interp">Конференция</span>
+        </div>
+
+        
+        
+      </div>
+    </div>
+  </section>
+
+  
+  <nav data-dc-tpl="80" data-screen-label="Tab Bar" id="tab-nav" style="position: sticky; top: 0px; z-index: 30; padding: 1rem 2rem; background: rgba(7, 8, 11, 0.78); backdrop-filter: blur(28px) saturate(180%); border-top: 1px solid rgba(255, 255, 255, 0.06); border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-top: 3rem;">
+    <div data-dc-tpl="81" class="tab-bar-scroll" style="max-width: 1440px; margin: 0px auto;">
+      <div data-dc-tpl="82" role="tablist" style="display: flex; gap: 0.25rem; min-width: max-content; align-items: stretch; padding: 0.25rem; background: rgba(255, 255, 255, 0.024); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px;">
+        
+          <button data-dc-tpl="84" role="tab" aria-selected="true" class="scp3" style="position: relative; flex: 1 1 0%; min-width: 130px; padding: 0.875rem 1rem; background: transparent; color: rgb(255, 255, 255); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-family: &quot;Space Grotesk&quot;, sans-serif; font-weight: 500; font-size: 0.9rem; letter-spacing: -0.005em; text-align: left; transition: 280ms cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden;">
+            <div data-dc-tpl="85" style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.625rem;">
+              <span data-dc-tpl="86" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: rgb(0, 229, 255); opacity: 1;"><span class="sc-interp">01</span></span>
+              <span data-dc-tpl="87"><span class="sc-interp">Конференция</span></span>
+            </div>
+            
+              <div data-dc-tpl="89" aria-hidden="true" style="position: absolute; inset: 0px; background: linear-gradient(135deg, rgba(0, 229, 255, 0.18), rgba(0, 229, 255, 0.04) 80%); border-radius: 8px; box-shadow: rgba(0, 229, 255, 0.4) 0px 0px 0px 1px inset, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;"></div>
+              <div data-dc-tpl="90" aria-hidden="true" style="position: absolute; left: 12px; right: 12px; bottom: 6px; height: 2px; background: linear-gradient(90deg, transparent, rgb(0, 229, 255), transparent); border-radius: 2px; box-shadow: rgba(0, 229, 255, 0.6) 0px 0px 8px;"></div>
+            
+          </button>
+        
+          <button data-dc-tpl="84" role="tab" aria-selected="false" class="scp3" style="position: relative; flex: 1 1 0%; min-width: 130px; padding: 0.875rem 1rem; background: transparent; color: rgb(139, 146, 160); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-family: &quot;Space Grotesk&quot;, sans-serif; font-weight: 500; font-size: 0.9rem; letter-spacing: -0.005em; text-align: left; transition: 280ms cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden;">
+            <div data-dc-tpl="85" style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.625rem;">
+              <span data-dc-tpl="86" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: rgb(107, 114, 128); opacity: 0.6;"><span class="sc-interp">02</span></span>
+              <span data-dc-tpl="87"><span class="sc-interp">Академия</span></span>
+            </div>
+            
+          </button>
+        
+          <button data-dc-tpl="84" role="tab" aria-selected="false" class="scp3" style="position: relative; flex: 1 1 0%; min-width: 130px; padding: 0.875rem 1rem; background: transparent; color: rgb(139, 146, 160); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-family: &quot;Space Grotesk&quot;, sans-serif; font-weight: 500; font-size: 0.9rem; letter-spacing: -0.005em; text-align: left; transition: 280ms cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden;">
+            <div data-dc-tpl="85" style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.625rem;">
+              <span data-dc-tpl="86" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: rgb(107, 114, 128); opacity: 0.6;"><span class="sc-interp">03</span></span>
+              <span data-dc-tpl="87"><span class="sc-interp">Книга</span></span>
+            </div>
+            
+          </button>
+        
+          <button data-dc-tpl="84" role="tab" aria-selected="false" class="scp3" style="position: relative; flex: 1 1 0%; min-width: 130px; padding: 0.875rem 1rem; background: transparent; color: rgb(139, 146, 160); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-family: &quot;Space Grotesk&quot;, sans-serif; font-weight: 500; font-size: 0.9rem; letter-spacing: -0.005em; text-align: left; transition: 280ms cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden;">
+            <div data-dc-tpl="85" style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.625rem;">
+              <span data-dc-tpl="86" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: rgb(107, 114, 128); opacity: 0.6;"><span class="sc-interp">04</span></span>
+              <span data-dc-tpl="87"><span class="sc-interp">Обучение</span></span>
+            </div>
+            
+          </button>
+        
+          <button data-dc-tpl="84" role="tab" aria-selected="false" class="scp3" style="position: relative; flex: 1 1 0%; min-width: 130px; padding: 0.875rem 1rem; background: transparent; color: rgb(139, 146, 160); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-family: &quot;Space Grotesk&quot;, sans-serif; font-weight: 500; font-size: 0.9rem; letter-spacing: -0.005em; text-align: left; transition: 280ms cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden;">
+            <div data-dc-tpl="85" style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.625rem;">
+              <span data-dc-tpl="86" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: rgb(107, 114, 128); opacity: 0.6;"><span class="sc-interp">05</span></span>
+              <span data-dc-tpl="87"><span class="sc-interp">Исследования</span></span>
+            </div>
+            
+          </button>
+        
+          <button data-dc-tpl="84" role="tab" aria-selected="false" class="scp3" style="position: relative; flex: 1 1 0%; min-width: 130px; padding: 0.875rem 1rem; background: transparent; color: rgb(139, 146, 160); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-family: &quot;Space Grotesk&quot;, sans-serif; font-weight: 500; font-size: 0.9rem; letter-spacing: -0.005em; text-align: left; transition: 280ms cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden;">
+            <div data-dc-tpl="85" style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.625rem;">
+              <span data-dc-tpl="86" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: rgb(107, 114, 128); opacity: 0.6;"><span class="sc-interp">06</span></span>
+              <span data-dc-tpl="87"><span class="sc-interp">Чек-листы</span></span>
+            </div>
+            
+          </button>
+        
+          <button data-dc-tpl="84" role="tab" aria-selected="false" class="scp3" style="position: relative; flex: 1 1 0%; min-width: 130px; padding: 0.875rem 1rem; background: transparent; color: rgb(139, 146, 160); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-family: &quot;Space Grotesk&quot;, sans-serif; font-weight: 500; font-size: 0.9rem; letter-spacing: -0.005em; text-align: left; transition: 280ms cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden;">
+            <div data-dc-tpl="85" style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.625rem;">
+              <span data-dc-tpl="86" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: rgb(107, 114, 128); opacity: 0.6;"><span class="sc-interp">07</span></span>
+              <span data-dc-tpl="87"><span class="sc-interp">Статьи</span></span>
+            </div>
+            
+          </button>
+        
+          <button data-dc-tpl="84" role="tab" aria-selected="false" class="scp3" style="position: relative; flex: 1 1 0%; min-width: 130px; padding: 0.875rem 1rem; background: transparent; color: rgb(139, 146, 160); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-family: &quot;Space Grotesk&quot;, sans-serif; font-weight: 500; font-size: 0.9rem; letter-spacing: -0.005em; text-align: left; transition: 280ms cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden;">
+            <div data-dc-tpl="85" style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.625rem;">
+              <span data-dc-tpl="86" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: rgb(107, 114, 128); opacity: 0.6;"><span class="sc-interp">08</span></span>
+              <span data-dc-tpl="87"><span class="sc-interp">Продукты</span></span>
+            </div>
+            
+          </button>
+        
+      </div>
+    </div>
+  </nav>
+
+  
+  <main data-dc-tpl="91" id="tab-content" data-screen-label="Tab Content" style="position: relative; z-index: 4; min-height: 80vh; overflow: hidden;">
+
+    
+    
+
+    <div data-dc-tpl="96" style="position: relative; z-index: 1;">
+
+      
+      
+      
+      
+        <div data-dc-tpl="98">
+
+          
+          <section data-dc-tpl="99" class="section-pad" style="padding: 6rem 2rem 3rem; position: relative;">
+            <div data-dc-tpl="100" style="max-width: 1440px; margin: 0px auto;">
+              <div data-dc-tpl="101" data-reveal="" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem;">
+                <span data-dc-tpl="102" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: rgb(0, 229, 255); text-transform: uppercase;">// module · 01</span>
+                <div data-dc-tpl="103" style="flex: 1 1 0%; height: 1px; background: linear-gradient(90deg, rgba(0, 229, 255, 0.4), transparent);"></div>
+                <span data-dc-tpl="104" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: rgb(107, 114, 128); text-transform: uppercase;">event command center</span>
+              </div>
+
+              <div data-dc-tpl="105" class="grid-2-mobile" style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 4rem; align-items: end;">
+                <div data-dc-tpl="106">
+                  <h2 data-dc-tpl="107" data-reveal="" class="text-5xl-mobile" style="font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 0.98; font-weight: 600; letter-spacing: -0.025em; margin: 0px 0px 1.5rem;">
+                    Конференция<br data-dc-tpl="108">
+                    <span data-dc-tpl="109" style="color: rgb(0, 229, 255);">«ТехнологИИ права»</span><br data-dc-tpl="110">
+                    <span data-dc-tpl="111" style="color: rgb(107, 114, 128);">25–26 сентября 2026</span>
+                  </h2>
+                  <p data-dc-tpl="112" data-reveal="" style="--reveal-delay: 120ms; font-size: 1.1rem; color: rgb(166, 173, 186); line-height: 1.55; max-width: 560px; margin: 0px 0px 2rem;">
+                    Два дня, шесть параллельных потоков, более 80 спикеров и 1500 практикующих участников. Москва, БЦ «Красные Ворота».
+                  </p>
+                  <div data-dc-tpl="113" data-reveal="" style="--reveal-delay: 240ms; display: flex; gap: 0.875rem; flex-wrap: wrap;">
+                    <button data-dc-tpl="114" style="padding: 0.95rem 1.5rem; background: rgb(0, 229, 255); color: rgb(7, 8, 11); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; box-shadow: rgba(0, 229, 255, 0.4) 0px 0px 0px 1px, rgba(0, 229, 255, 0.2) 0px 8px 32px;">Программа →</button>
+                    <button data-dc-tpl="115" style="padding: 0.95rem 1.5rem; background: rgba(255, 255, 255, 0.04); color: rgb(232, 236, 242); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; font-weight: 500; font-size: 0.95rem; cursor: pointer;">Билеты</button>
+                  </div>
+                </div>
+
+                
+                <div data-dc-tpl="116" data-reveal="" class="glass" style="--reveal-delay: 360ms;">
+                  <div data-dc-tpl="117" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                    <span data-dc-tpl="118" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.28em; color: rgb(0, 229, 255); text-transform: uppercase;">t-minus / sept 25</span>
+                    <span data-dc-tpl="119" style="width: 8px; height: 8px; background: rgb(255, 46, 154); border-radius: 50%; box-shadow: rgb(255, 46, 154) 0px 0px 10px; animation: 1.4s steps(2) 0s infinite normal none running blink;"></span>
+                  </div>
+                  <div data-dc-tpl="120" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.625rem;">
+                    
+                      <div data-dc-tpl="122" style="padding: 0.875rem 0.625rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; text-align: center;">
+                        <div data-dc-tpl="123" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 1.65rem; font-weight: 600; letter-spacing: -0.02em; color: rgb(255, 255, 255); line-height: 1;"><span class="sc-interp">90</span></div>
+                        <div data-dc-tpl="124" style="margin-top: 0.5rem; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.55rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase;"><span class="sc-interp">дней</span></div>
+                      </div>
+                    
+                      <div data-dc-tpl="122" style="padding: 0.875rem 0.625rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; text-align: center;">
+                        <div data-dc-tpl="123" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 1.65rem; font-weight: 600; letter-spacing: -0.02em; color: rgb(255, 255, 255); line-height: 1;"><span class="sc-interp">19</span></div>
+                        <div data-dc-tpl="124" style="margin-top: 0.5rem; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.55rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase;"><span class="sc-interp">часов</span></div>
+                      </div>
+                    
+                      <div data-dc-tpl="122" style="padding: 0.875rem 0.625rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; text-align: center;">
+                        <div data-dc-tpl="123" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 1.65rem; font-weight: 600; letter-spacing: -0.02em; color: rgb(255, 255, 255); line-height: 1;"><span class="sc-interp">02</span></div>
+                        <div data-dc-tpl="124" style="margin-top: 0.5rem; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.55rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase;"><span class="sc-interp">минут</span></div>
+                      </div>
+                    
+                      <div data-dc-tpl="122" style="padding: 0.875rem 0.625rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; text-align: center;">
+                        <div data-dc-tpl="123" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 1.65rem; font-weight: 600; letter-spacing: -0.02em; color: rgb(255, 255, 255); line-height: 1;"><span class="sc-interp">39</span></div>
+                        <div data-dc-tpl="124" style="margin-top: 0.5rem; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.55rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase;"><span class="sc-interp">секунд</span></div>
+                      </div>
+                    
+                  </div>
+                  <div data-dc-tpl="125" aria-hidden="true" style="position: absolute; inset: 0px; background-image: linear-gradient(transparent 50%, rgba(0, 229, 255, 0.02) 50%); background-size: 100% 4px; pointer-events: none;"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          
+          <section data-dc-tpl="126" class="section-pad" style="padding: 3rem 2rem;">
+            <div data-dc-tpl="127" class="grid-2-mobile" style="max-width: 1440px; margin: 0px auto; display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.25rem;">
+
+              <div data-dc-tpl="128" data-reveal-left="" class="glass" style="border-radius: 14px; padding: 2rem; position: relative; overflow: hidden;">
+                <div data-dc-tpl="129" style="display: flex; align-items: start; justify-content: space-between; margin-bottom: 1.75rem;">
+                  <div data-dc-tpl="130">
+                    <div data-dc-tpl="131" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: rgb(0, 229, 255); text-transform: uppercase; margin-bottom: 0.625rem;">// venue</div>
+                    <h3 data-dc-tpl="132" style="font-size: 1.5rem; font-weight: 500; letter-spacing: -0.01em; margin: 0px;">БЦ «Красные Ворота»</h3>
+                    <p data-dc-tpl="133" style="font-size: 0.95rem; color: rgb(166, 173, 186); margin: 0.5rem 0px 0px;">Москва · Садовая-Спасская, 21/1</p>
+                  </div>
+                  <div data-dc-tpl="134" style="display: flex; align-items: center; gap: 0.5rem; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.18em; color: rgba(0, 229, 255, 0.7); text-transform: uppercase;">
+                    <span data-dc-tpl="135" style="width: 6px; height: 6px; background: rgb(0, 229, 255); border-radius: 50%; animation: 2s ease-in-out 0s infinite normal none running pulse-dot;"></span>
+                    geo · 55.7720n / 37.6493e
+                  </div>
+                </div>
+
+                
+                <div data-dc-tpl="136" style="position: relative; height: 280px; border-radius: 10px; overflow: hidden; background: radial-gradient(circle at 50% 60%, rgba(0, 229, 255, 0.08), transparent 70%); border: 1px solid rgba(0, 229, 255, 0.15);">
+                  <svg data-dc-tpl="137" viewBox="0 0 600 280" style="position: absolute; inset: 0px; width: 100%; height: 100%;">
+                    <defs data-dc-tpl="138">
+                      <pattern data-dc-tpl="139" id="mapgrid" width="30" height="30" patternUnits="userSpaceOnUse"><path data-dc-tpl="140" d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(0,229,255,0.12)" stroke-width="0.5"></path></pattern>
+                      <linearGradient data-dc-tpl="141" id="sweep" x1="0" x2="1"><stop data-dc-tpl="142" offset="0%" stop-color="transparent"></stop><stop data-dc-tpl="143" offset="100%" stop-color="rgba(0,229,255,0.5)"></stop></linearGradient>
+                    </defs>
+                    <rect data-dc-tpl="144" width="600" height="280" fill="url(#mapgrid)"></rect>
+                    <circle data-dc-tpl="145" cx="300" cy="160" r="60" fill="none" stroke="rgba(0,229,255,0.3)" stroke-dasharray="2 4"></circle>
+                    <circle data-dc-tpl="146" cx="300" cy="160" r="110" fill="none" stroke="rgba(0,229,255,0.2)" stroke-dasharray="2 4"></circle>
+                    <circle data-dc-tpl="147" cx="300" cy="160" r="170" fill="none" stroke="rgba(0,229,255,0.12)" stroke-dasharray="2 4"></circle>
+                    <line data-dc-tpl="148" x1="300" y1="160" x2="500" y2="160" stroke="url(#sweep)" stroke-width="40" style="transform-origin: 300px 160px; animation: 6s linear 0s infinite normal none running spin-slow;"></line>
+                    <g data-dc-tpl="149">
+                      <circle data-dc-tpl="150" cx="300" cy="160" r="6" fill="#FF2E9A"></circle>
+                      <circle data-dc-tpl="151" cx="300" cy="160" r="14" fill="none" stroke="#FF2E9A" stroke-width="1.5" style="animation: 2s ease-out 0s infinite normal none running pulse-ring; transform-origin: 300px 160px;"></circle>
+                    </g>
+                    <text data-dc-tpl="152" x="316" y="148" fill="#FF2E9A" font-family="'JetBrains Mono', monospace" font-size="10" letter-spacing="2">VENUE</text>
+                    <text data-dc-tpl="153" x="316" y="178" fill="#A6ADBA" font-family="'JetBrains Mono', monospace" font-size="9">Красные Ворота</text>
+                    <circle data-dc-tpl="154" cx="180" cy="80" r="3" fill="rgba(0,229,255,0.6)"></circle>
+                    <text data-dc-tpl="155" x="190" y="84" fill="#6B7280" font-family="'JetBrains Mono', monospace" font-size="8">m. Сухаревская</text>
+                    <circle data-dc-tpl="156" cx="440" cy="200" r="3" fill="rgba(0,229,255,0.6)"></circle>
+                    <text data-dc-tpl="157" x="450" y="204" fill="#6B7280" font-family="'JetBrains Mono', monospace" font-size="8">m. Тургеневская</text>
+                    <circle data-dc-tpl="158" cx="120" cy="220" r="3" fill="rgba(0,229,255,0.6)"></circle>
+                    <text data-dc-tpl="159" x="130" y="224" fill="#6B7280" font-family="'JetBrains Mono', monospace" font-size="8">m. Красные Ворота</text>
+                  </svg>
+                </div>
+
+                <div data-dc-tpl="160" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem;">
+                  <div data-dc-tpl="161" style="padding-top: 0.875rem; border-top: 1px solid rgba(255, 255, 255, 0.06);">
+                    <div data-dc-tpl="162" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase; margin-bottom: 0.375rem;">метро</div>
+                    <div data-dc-tpl="163" style="font-size: 0.9rem;">Красные Ворота</div>
+                  </div>
+                  <div data-dc-tpl="164" style="padding-top: 0.875rem; border-top: 1px solid rgba(255, 255, 255, 0.06);">
+                    <div data-dc-tpl="165" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase; margin-bottom: 0.375rem;">формат</div>
+                    <div data-dc-tpl="166" style="font-size: 0.9rem;">Offline + Online</div>
+                  </div>
+                  <div data-dc-tpl="167" style="padding-top: 0.875rem; border-top: 1px solid rgba(255, 255, 255, 0.06);">
+                    <div data-dc-tpl="168" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase; margin-bottom: 0.375rem;">язык</div>
+                    <div data-dc-tpl="169" style="font-size: 0.9rem;">RU</div>
+                  </div>
+                </div>
+              </div>
+
+              <div data-dc-tpl="170" data-reveal="" style="--reveal-delay: 120ms; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem;">
+                
+                  <div data-dc-tpl="172" class="glass" style="border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; min-height: 145px; position: relative; overflow: hidden;">
+                    <div data-dc-tpl="173" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.25em; color: rgb(107, 114, 128); text-transform: uppercase;"><span class="sc-interp">// потоки</span></div>
+                    <div data-dc-tpl="174" style="font-size: 3rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1; color: rgb(0, 229, 255);"><span class="sc-interp">06</span></div>
+                    <div data-dc-tpl="175" style="font-size: 0.8rem; color: rgb(139, 146, 160);"><span class="sc-interp">параллельных программ</span></div>
+                    <div data-dc-tpl="176" aria-hidden="true" style="position: absolute; top: -1px; right: -1px; width: 36px; height: 36px; border-top: 1px solid rgba(0, 229, 255, 0.35); border-right: 1px solid rgba(0, 229, 255, 0.35); border-top-right-radius: 14px;"></div>
+                  </div>
+                
+                  <div data-dc-tpl="172" class="glass" style="border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; min-height: 145px; position: relative; overflow: hidden;">
+                    <div data-dc-tpl="173" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.25em; color: rgb(107, 114, 128); text-transform: uppercase;"><span class="sc-interp">// спикеры</span></div>
+                    <div data-dc-tpl="174" style="font-size: 3rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1; color: rgb(255, 255, 255);"><span class="sc-interp">80+</span></div>
+                    <div data-dc-tpl="175" style="font-size: 0.8rem; color: rgb(139, 146, 160);"><span class="sc-interp">практикующих экспертов</span></div>
+                    <div data-dc-tpl="176" aria-hidden="true" style="position: absolute; top: -1px; right: -1px; width: 36px; height: 36px; border-top: 1px solid rgba(0, 229, 255, 0.35); border-right: 1px solid rgba(0, 229, 255, 0.35); border-top-right-radius: 14px;"></div>
+                  </div>
+                
+                  <div data-dc-tpl="172" class="glass" style="border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; min-height: 145px; position: relative; overflow: hidden;">
+                    <div data-dc-tpl="173" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.25em; color: rgb(107, 114, 128); text-transform: uppercase;"><span class="sc-interp">// участники</span></div>
+                    <div data-dc-tpl="174" style="font-size: 3rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1; color: rgb(255, 46, 154);"><span class="sc-interp">1500+</span></div>
+                    <div data-dc-tpl="175" style="font-size: 0.8rem; color: rgb(139, 146, 160);"><span class="sc-interp">юристов и АУ</span></div>
+                    <div data-dc-tpl="176" aria-hidden="true" style="position: absolute; top: -1px; right: -1px; width: 36px; height: 36px; border-top: 1px solid rgba(0, 229, 255, 0.35); border-right: 1px solid rgba(0, 229, 255, 0.35); border-top-right-radius: 14px;"></div>
+                  </div>
+                
+                  <div data-dc-tpl="172" class="glass" style="border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; min-height: 145px; position: relative; overflow: hidden;">
+                    <div data-dc-tpl="173" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.25em; color: rgb(107, 114, 128); text-transform: uppercase;"><span class="sc-interp">// дни</span></div>
+                    <div data-dc-tpl="174" style="font-size: 3rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1; color: rgb(255, 255, 255);"><span class="sc-interp">02</span></div>
+                    <div data-dc-tpl="175" style="font-size: 0.8rem; color: rgb(139, 146, 160);"><span class="sc-interp">25 и 26 сентября</span></div>
+                    <div data-dc-tpl="176" aria-hidden="true" style="position: absolute; top: -1px; right: -1px; width: 36px; height: 36px; border-top: 1px solid rgba(0, 229, 255, 0.35); border-right: 1px solid rgba(0, 229, 255, 0.35); border-top-right-radius: 14px;"></div>
+                  </div>
+                
+              </div>
+            </div>
+          </section>
+
+          
+          <section data-dc-tpl="177" class="section-pad" id="conf-program" style="padding: 5rem 2rem;">
+            <div data-dc-tpl="178" style="max-width: 1440px; margin: 0px auto;">
+              <div data-dc-tpl="179" data-reveal="" style="display: flex; align-items: end; justify-content: space-between; margin-bottom: 3rem; flex-wrap: wrap; gap: 1.5rem;">
+                <div data-dc-tpl="180">
+                  <div data-dc-tpl="181" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: rgb(0, 229, 255); text-transform: uppercase; margin-bottom: 0.75rem;">// program tracks</div>
+                  <h3 data-dc-tpl="182" class="text-3xl-mobile" style="font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 600; letter-spacing: -0.02em; margin: 0px;">Шесть параллельных<br data-dc-tpl="183">потоков</h3>
+                </div>
+                <div data-dc-tpl="184" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.75rem; color: rgb(139, 146, 160); max-width: 380px; line-height: 1.6;">
+                  Каждый поток — собственный продюсер, собственная программа и плотная боевая повестка для практикующих юристов.
+                </div>
+              </div>
+
+              <div data-dc-tpl="185" class="pt-bento" style="opacity: 1; transform: none;"><article data-dc-tpl="186" class="pt-trk a" style="--c1: #00E5FF; --c2: #3B82F6;">
+  <div data-dc-tpl="187" class="top"><span data-dc-tpl="188" class="hud">// track · 01 · flagship</span>
+   <span data-dc-tpl="189" class="ico"><svg data-dc-tpl="190" viewBox="0 0 24 24"><rect data-dc-tpl="191" x="5" y="5" width="14" height="14" rx="2"></rect><path data-dc-tpl="192" d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"></path></svg></span></div>
+  <div data-dc-tpl="193" class="num">01</div>
+  <div data-dc-tpl="194" class="body"><h3 data-dc-tpl="195">AI в банкротстве</h3>
+   <p data-dc-tpl="196">Нейросети для юристов БФЛ: автоматизация анализа сделок, генерация документов, AI-ассистенты в практике.</p>
+   <div data-dc-tpl="197" class="tags"><span data-dc-tpl="198">LLM</span><span data-dc-tpl="199">автоматизация</span><span data-dc-tpl="200">предиктив</span></div>
+   <div data-dc-tpl="201" class="foot"><span data-dc-tpl="202">14 сессий</span><span data-dc-tpl="203" class="arr">→</span></div></div>
+  <div data-dc-tpl="204" class="glow"></div></article><article data-dc-tpl="205" class="pt-trk b" style="--c1: #FF2E9A; --c2: #A855F7;">
+  <div data-dc-tpl="206" class="top"><span data-dc-tpl="207" class="hud">// track · 02</span>
+   <span data-dc-tpl="208" class="ico"><svg data-dc-tpl="209" viewBox="0 0 24 24"><path data-dc-tpl="210" d="M3 17l6-6 4 4 7-7"></path><path data-dc-tpl="211" d="M21 8v5h-5"></path></svg></span></div>
+  <div data-dc-tpl="212" class="body"><h3 data-dc-tpl="213">Масштабирование практики</h3>
+   <p data-dc-tpl="214">Как вырастить юрбизнес в БФЛ: воронки клиентов, найм, юнит-экономика, упаковка услуг.</p>
+   <div data-dc-tpl="215" class="foot"><span data-dc-tpl="216">12 сессий</span><span data-dc-tpl="217" class="arr">→</span></div></div>
+  <div data-dc-tpl="218" class="glow"></div></article><article data-dc-tpl="219" class="pt-trk c" style="--c1: #7BB8FF; --c2: #6366F1;">
+  <div data-dc-tpl="220" class="top"><span data-dc-tpl="221" class="hud">// 03</span>
+   <span data-dc-tpl="222" class="ico"><svg data-dc-tpl="223" viewBox="0 0 24 24"><path data-dc-tpl="224" d="M12 3v18M5 7l7-4 7 4M5 7l3 7H2zM19 7l3 7h-6z"></path></svg></span></div>
+  <div data-dc-tpl="225" class="body"><h3 data-dc-tpl="226">Право и судебная практика</h3>
+   <p data-dc-tpl="227">Разборы дел, изменения закона 2025–2026, прецеденты.</p>
+   <div data-dc-tpl="228" class="foot"><span data-dc-tpl="229">16 сессий</span><span data-dc-tpl="230" class="arr">→</span></div></div>
+  <div data-dc-tpl="231" class="glow"></div></article><article data-dc-tpl="232" class="pt-trk d" style="--c1: #E8B84B; --c2: #F97316;">
+  <div data-dc-tpl="233" class="top"><span data-dc-tpl="234" class="hud">// 04</span>
+   <span data-dc-tpl="235" class="ico"><svg data-dc-tpl="236" viewBox="0 0 24 24"><path data-dc-tpl="237" d="M3 11l15-6v14L3 13zM3 11v2M8 12.5V19l3 1v-6"></path></svg></span></div>
+  <div data-dc-tpl="238" class="body"><h3 data-dc-tpl="239">Продажи и маркетинг</h3>
+   <p data-dc-tpl="240">Скрипты, чек-листы, контент и performance.</p>
+   <div data-dc-tpl="241" class="foot"><span data-dc-tpl="242">11 сессий</span><span data-dc-tpl="243" class="arr">→</span></div></div>
+  <div data-dc-tpl="244" class="glow"></div></article><article data-dc-tpl="245" class="pt-trk e" style="--c1: #4ADE80; --c2: #14B8A6;">
+  <div data-dc-tpl="246" class="top"><span data-dc-tpl="247" class="hud">// track · 05</span>
+   <span data-dc-tpl="248" class="ico"><svg data-dc-tpl="249" viewBox="0 0 24 24"><circle data-dc-tpl="250" cx="9" cy="8" r="3"></circle><path data-dc-tpl="251" d="M3 20c0-3 3-5 6-5s6 2 6 5"></path><circle data-dc-tpl="252" cx="17" cy="8" r="2.3"></circle><path data-dc-tpl="253" d="M16 15c3 0 5 2 5 5"></path></svg></span></div>
+  <div data-dc-tpl="254" class="body"><h3 data-dc-tpl="255">Команда и управление</h3>
+   <p data-dc-tpl="256">Найм, мотивация, культура. Регулярный менеджмент юриста, KPI и метрики практики.</p>
+   <div data-dc-tpl="257" class="foot"><span data-dc-tpl="258">10 сессий</span><span data-dc-tpl="259" class="arr">→</span></div></div>
+  <div data-dc-tpl="260" class="glow"></div></article><article data-dc-tpl="261" class="pt-trk f" style="--c1: #A78BFA; --c2: #7C3AED;">
+  <div data-dc-tpl="262" class="top"><span data-dc-tpl="263" class="hud">// track · 06</span>
+   <span data-dc-tpl="264" class="ico"><svg data-dc-tpl="265" viewBox="0 0 24 24"><path data-dc-tpl="266" d="M3 21h10M6 13l4-4M5 9l5 5M9 5l5 5M13 3l8 8-3 3-8-8z"></path></svg></span></div>
+  <div data-dc-tpl="267" class="body"><h3 data-dc-tpl="268">Арбитражное управление</h3>
+   <p data-dc-tpl="269">Практика АУ: судебные баталии, работа с реестром, инвентаризация, торги и оспаривание.</p>
+   <div data-dc-tpl="270" class="foot"><span data-dc-tpl="271">13 сессий</span><span data-dc-tpl="272" class="arr">→</span></div></div>
+  <div data-dc-tpl="273" class="glow"></div></article></div>
+            </div>
+          </section>
+
+          
+          <section data-dc-tpl="274" class="section-pad" style="padding: 5rem 2rem; background: rgba(0, 229, 255, 0.016);">
+            <div data-dc-tpl="275" style="max-width: 1440px; margin: 0px auto;">
+              <div data-dc-tpl="276" data-reveal="" style="display: flex; align-items: end; justify-content: space-between; margin-bottom: 3rem; flex-wrap: wrap; gap: 1.5rem;">
+                <div data-dc-tpl="277">
+                  <div data-dc-tpl="278" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: rgb(0, 229, 255); text-transform: uppercase; margin-bottom: 0.75rem;">// speakers · 80+</div>
+                  <h3 data-dc-tpl="279" class="text-3xl-mobile" style="font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 600; letter-spacing: -0.02em; margin: 0px;">Спикеры и эксперты<br data-dc-tpl="280">отрасли БФЛ</h3>
+                </div>
+                <div data-dc-tpl="281" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; color: rgb(139, 146, 160); letter-spacing: 0.15em; text-transform: uppercase;">+ 72 еще / полный список ↗</div>
+              </div>
+
+              <div data-dc-tpl="282" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.875rem;">
+                
+                  <div data-dc-tpl="284" data-reveal-scale="" class="glass scp4" style="--reveal-delay: var(--sp-delay);">
+                    <div data-dc-tpl="285" style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1rem;">
+                      <div data-dc-tpl="286" style="position: relative; width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(7, 8, 11, 0.6)); border: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; font-family: &quot;JetBrains Mono&quot;, monospace; font-weight: 500; font-size: 0.95rem; color: rgb(232, 236, 242); overflow: hidden;">
+                        <span data-dc-tpl="287"><span class="sc-interp">АК</span></span>
+                        <div data-dc-tpl="288" style="position: absolute; inset: 0px; background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.15), transparent) 0% 0% / 200% 100%; animation: 4s linear 0s infinite normal none running shimmer;"></div>
+                      </div>
+                      <div data-dc-tpl="289" style="flex: 1 1 0%; min-width: 0px;">
+                        <div data-dc-tpl="290" style="font-size: 0.95rem; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="sc-interp">А. Кредитов</span></div>
+                        <div data-dc-tpl="291" style="font-size: 0.75rem; color: rgb(139, 146, 160); margin-top: 0.125rem;"><span class="sc-interp">Управляющий партнёр</span></div>
+                      </div>
+                    </div>
+                    <div data-dc-tpl="292" style="display: flex; gap: 0.375rem; flex-wrap: wrap;">
+                      <span data-dc-tpl="293" style="padding: 0.25rem 0.5rem; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 4px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">AI · БФЛ</span></span>
+                    </div>
+                  </div>
+                
+                  <div data-dc-tpl="284" data-reveal-scale="" class="glass scp4" style="--reveal-delay: var(--sp-delay);">
+                    <div data-dc-tpl="285" style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1rem;">
+                      <div data-dc-tpl="286" style="position: relative; width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, rgba(255, 46, 154, 0.12), rgba(7, 8, 11, 0.6)); border: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; font-family: &quot;JetBrains Mono&quot;, monospace; font-weight: 500; font-size: 0.95rem; color: rgb(232, 236, 242); overflow: hidden;">
+                        <span data-dc-tpl="287"><span class="sc-interp">ИД</span></span>
+                        <div data-dc-tpl="288" style="position: absolute; inset: 0px; background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.15), transparent) 0% 0% / 200% 100%; animation: 4s linear 0s infinite normal none running shimmer;"></div>
+                      </div>
+                      <div data-dc-tpl="289" style="flex: 1 1 0%; min-width: 0px;">
+                        <div data-dc-tpl="290" style="font-size: 0.95rem; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="sc-interp">И. Должникова</span></div>
+                        <div data-dc-tpl="291" style="font-size: 0.75rem; color: rgb(139, 146, 160); margin-top: 0.125rem;"><span class="sc-interp">Арбитражный управляющий</span></div>
+                      </div>
+                    </div>
+                    <div data-dc-tpl="292" style="display: flex; gap: 0.375rem; flex-wrap: wrap;">
+                      <span data-dc-tpl="293" style="padding: 0.25rem 0.5rem; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 4px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">АУ</span></span>
+                    </div>
+                  </div>
+                
+                  <div data-dc-tpl="284" data-reveal-scale="" class="glass scp4" style="--reveal-delay: var(--sp-delay);">
+                    <div data-dc-tpl="285" style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1rem;">
+                      <div data-dc-tpl="286" style="position: relative; width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(7, 8, 11, 0.6)); border: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; font-family: &quot;JetBrains Mono&quot;, monospace; font-weight: 500; font-size: 0.95rem; color: rgb(232, 236, 242); overflow: hidden;">
+                        <span data-dc-tpl="287"><span class="sc-interp">МУ</span></span>
+                        <div data-dc-tpl="288" style="position: absolute; inset: 0px; background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.15), transparent) 0% 0% / 200% 100%; animation: 4s linear 0s infinite normal none running shimmer;"></div>
+                      </div>
+                      <div data-dc-tpl="289" style="flex: 1 1 0%; min-width: 0px;">
+                        <div data-dc-tpl="290" style="font-size: 0.95rem; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="sc-interp">М. Управленцева</span></div>
+                        <div data-dc-tpl="291" style="font-size: 0.75rem; color: rgb(139, 146, 160); margin-top: 0.125rem;"><span class="sc-interp">CEO юр. бюро</span></div>
+                      </div>
+                    </div>
+                    <div data-dc-tpl="292" style="display: flex; gap: 0.375rem; flex-wrap: wrap;">
+                      <span data-dc-tpl="293" style="padding: 0.25rem 0.5rem; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 4px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">Масштаб</span></span>
+                    </div>
+                  </div>
+                
+                  <div data-dc-tpl="284" data-reveal-scale="" class="glass scp4" style="--reveal-delay: var(--sp-delay);">
+                    <div data-dc-tpl="285" style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1rem;">
+                      <div data-dc-tpl="286" style="position: relative; width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, rgba(255, 46, 154, 0.12), rgba(7, 8, 11, 0.6)); border: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; font-family: &quot;JetBrains Mono&quot;, monospace; font-weight: 500; font-size: 0.95rem; color: rgb(232, 236, 242); overflow: hidden;">
+                        <span data-dc-tpl="287"><span class="sc-interp">ДЮ</span></span>
+                        <div data-dc-tpl="288" style="position: absolute; inset: 0px; background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.15), transparent) 0% 0% / 200% 100%; animation: 4s linear 0s infinite normal none running shimmer;"></div>
+                      </div>
+                      <div data-dc-tpl="289" style="flex: 1 1 0%; min-width: 0px;">
+                        <div data-dc-tpl="290" style="font-size: 0.95rem; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="sc-interp">Д. Юристов</span></div>
+                        <div data-dc-tpl="291" style="font-size: 0.75rem; color: rgb(139, 146, 160); margin-top: 0.125rem;"><span class="sc-interp">Партнёр практики</span></div>
+                      </div>
+                    </div>
+                    <div data-dc-tpl="292" style="display: flex; gap: 0.375rem; flex-wrap: wrap;">
+                      <span data-dc-tpl="293" style="padding: 0.25rem 0.5rem; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 4px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">Право</span></span>
+                    </div>
+                  </div>
+                
+                  <div data-dc-tpl="284" data-reveal-scale="" class="glass scp4" style="--reveal-delay: var(--sp-delay);">
+                    <div data-dc-tpl="285" style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1rem;">
+                      <div data-dc-tpl="286" style="position: relative; width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(7, 8, 11, 0.6)); border: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; font-family: &quot;JetBrains Mono&quot;, monospace; font-weight: 500; font-size: 0.95rem; color: rgb(232, 236, 242); overflow: hidden;">
+                        <span data-dc-tpl="287"><span class="sc-interp">КБ</span></span>
+                        <div data-dc-tpl="288" style="position: absolute; inset: 0px; background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.15), transparent) 0% 0% / 200% 100%; animation: 4s linear 0s infinite normal none running shimmer;"></div>
+                      </div>
+                      <div data-dc-tpl="289" style="flex: 1 1 0%; min-width: 0px;">
+                        <div data-dc-tpl="290" style="font-size: 0.95rem; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="sc-interp">К. Банкротова</span></div>
+                        <div data-dc-tpl="291" style="font-size: 0.75rem; color: rgb(139, 146, 160); margin-top: 0.125rem;"><span class="sc-interp">Управляющий юрист</span></div>
+                      </div>
+                    </div>
+                    <div data-dc-tpl="292" style="display: flex; gap: 0.375rem; flex-wrap: wrap;">
+                      <span data-dc-tpl="293" style="padding: 0.25rem 0.5rem; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 4px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">Продажи</span></span>
+                    </div>
+                  </div>
+                
+                  <div data-dc-tpl="284" data-reveal-scale="" class="glass scp4" style="--reveal-delay: var(--sp-delay);">
+                    <div data-dc-tpl="285" style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1rem;">
+                      <div data-dc-tpl="286" style="position: relative; width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, rgba(255, 46, 154, 0.12), rgba(7, 8, 11, 0.6)); border: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; font-family: &quot;JetBrains Mono&quot;, monospace; font-weight: 500; font-size: 0.95rem; color: rgb(232, 236, 242); overflow: hidden;">
+                        <span data-dc-tpl="287"><span class="sc-interp">ЕП</span></span>
+                        <div data-dc-tpl="288" style="position: absolute; inset: 0px; background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.15), transparent) 0% 0% / 200% 100%; animation: 4s linear 0s infinite normal none running shimmer;"></div>
+                      </div>
+                      <div data-dc-tpl="289" style="flex: 1 1 0%; min-width: 0px;">
+                        <div data-dc-tpl="290" style="font-size: 0.95rem; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="sc-interp">Е. Процессова</span></div>
+                        <div data-dc-tpl="291" style="font-size: 0.75rem; color: rgb(139, 146, 160); margin-top: 0.125rem;"><span class="sc-interp">Глава судебного департамента</span></div>
+                      </div>
+                    </div>
+                    <div data-dc-tpl="292" style="display: flex; gap: 0.375rem; flex-wrap: wrap;">
+                      <span data-dc-tpl="293" style="padding: 0.25rem 0.5rem; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 4px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">Суды</span></span>
+                    </div>
+                  </div>
+                
+                  <div data-dc-tpl="284" data-reveal-scale="" class="glass scp4" style="--reveal-delay: var(--sp-delay);">
+                    <div data-dc-tpl="285" style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1rem;">
+                      <div data-dc-tpl="286" style="position: relative; width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(7, 8, 11, 0.6)); border: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; font-family: &quot;JetBrains Mono&quot;, monospace; font-weight: 500; font-size: 0.95rem; color: rgb(232, 236, 242); overflow: hidden;">
+                        <span data-dc-tpl="287"><span class="sc-interp">РК</span></span>
+                        <div data-dc-tpl="288" style="position: absolute; inset: 0px; background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.15), transparent) 0% 0% / 200% 100%; animation: 4s linear 0s infinite normal none running shimmer;"></div>
+                      </div>
+                      <div data-dc-tpl="289" style="flex: 1 1 0%; min-width: 0px;">
+                        <div data-dc-tpl="290" style="font-size: 0.95rem; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="sc-interp">Р. Команднов</span></div>
+                        <div data-dc-tpl="291" style="font-size: 0.75rem; color: rgb(139, 146, 160); margin-top: 0.125rem;"><span class="sc-interp">COO юр. компании</span></div>
+                      </div>
+                    </div>
+                    <div data-dc-tpl="292" style="display: flex; gap: 0.375rem; flex-wrap: wrap;">
+                      <span data-dc-tpl="293" style="padding: 0.25rem 0.5rem; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 4px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">Команда</span></span>
+                    </div>
+                  </div>
+                
+                  <div data-dc-tpl="284" data-reveal-scale="" class="glass scp4" style="--reveal-delay: var(--sp-delay);">
+                    <div data-dc-tpl="285" style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1rem;">
+                      <div data-dc-tpl="286" style="position: relative; width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, rgba(255, 46, 154, 0.12), rgba(7, 8, 11, 0.6)); border: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; font-family: &quot;JetBrains Mono&quot;, monospace; font-weight: 500; font-size: 0.95rem; color: rgb(232, 236, 242); overflow: hidden;">
+                        <span data-dc-tpl="287"><span class="sc-interp">НЦ</span></span>
+                        <div data-dc-tpl="288" style="position: absolute; inset: 0px; background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.15), transparent) 0% 0% / 200% 100%; animation: 4s linear 0s infinite normal none running shimmer;"></div>
+                      </div>
+                      <div data-dc-tpl="289" style="flex: 1 1 0%; min-width: 0px;">
+                        <div data-dc-tpl="290" style="font-size: 0.95rem; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="sc-interp">Н. Цифрова</span></div>
+                        <div data-dc-tpl="291" style="font-size: 0.75rem; color: rgb(139, 146, 160); margin-top: 0.125rem;"><span class="sc-interp">Head of LegalTech</span></div>
+                      </div>
+                    </div>
+                    <div data-dc-tpl="292" style="display: flex; gap: 0.375rem; flex-wrap: wrap;">
+                      <span data-dc-tpl="293" style="padding: 0.25rem 0.5rem; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 4px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">AI</span></span>
+                    </div>
+                  </div>
+                
+              </div>
+            </div>
+          </section>
+
+          
+          <section data-dc-tpl="294" class="section-pad" style="padding: 5rem 2rem;">
+            <div data-dc-tpl="295" style="max-width: 1440px; margin: 0px auto;">
+              <div data-dc-tpl="296" data-reveal="" style="margin-bottom: 3rem;">
+                <div data-dc-tpl="297" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: rgb(0, 229, 255); text-transform: uppercase; margin-bottom: 0.75rem;">// schedule · 25.09 → 26.09</div>
+                <h3 data-dc-tpl="298" class="text-3xl-mobile" style="font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 600; letter-spacing: -0.02em; margin: 0px;">Расписание двух дней</h3>
+              </div>
+
+              <div data-dc-tpl="299" class="grid-2-mobile" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                
+                  <div data-dc-tpl="301" data-reveal="" class="glass" style="border-radius: 14px; padding: 2rem; position: relative;">
+                    <div data-dc-tpl="302" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+                      <div data-dc-tpl="303">
+                        <div data-dc-tpl="304" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">// day 01</span></div>
+                        <div data-dc-tpl="305" style="font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; margin-top: 0.25rem;"><span class="sc-interp">25 сентября</span></div>
+                      </div>
+                      <div data-dc-tpl="306" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.75rem; color: rgb(139, 146, 160); letter-spacing: 0.15em;"><span class="sc-interp">10:00 → 22:00</span></div>
+                    </div>
+                    <div data-dc-tpl="307" style="display: flex; flex-direction: column; gap: 0.875rem;">
+                      
+                        <div data-dc-tpl="309" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; padding: 0.625rem 0px; position: relative;">
+                          <div data-dc-tpl="310" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.8rem; color: rgb(0, 229, 255); letter-spacing: 0.05em;"><span class="sc-interp">10:00</span></div>
+                          <div data-dc-tpl="311" style="font-size: 0.95rem; color: rgb(232, 236, 242);"><span class="sc-interp">Открытие. Манифест Legal AI</span></div>
+                          <div data-dc-tpl="312" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;"><span class="sc-interp">plenary</span></div>
+                        </div>
+                      
+                        <div data-dc-tpl="309" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; padding: 0.625rem 0px; position: relative;">
+                          <div data-dc-tpl="310" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.8rem; color: rgb(0, 229, 255); letter-spacing: 0.05em;"><span class="sc-interp">11:30</span></div>
+                          <div data-dc-tpl="311" style="font-size: 0.95rem; color: rgb(232, 236, 242);"><span class="sc-interp">Тренды БФЛ 2026. Дискуссия</span></div>
+                          <div data-dc-tpl="312" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;"><span class="sc-interp">panel</span></div>
+                        </div>
+                      
+                        <div data-dc-tpl="309" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; padding: 0.625rem 0px; position: relative;">
+                          <div data-dc-tpl="310" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.8rem; color: rgb(0, 229, 255); letter-spacing: 0.05em;"><span class="sc-interp">13:00</span></div>
+                          <div data-dc-tpl="311" style="font-size: 0.95rem; color: rgb(232, 236, 242);"><span class="sc-interp">Параллельные треки</span></div>
+                          <div data-dc-tpl="312" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;"><span class="sc-interp">6 · streams</span></div>
+                        </div>
+                      
+                        <div data-dc-tpl="309" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; padding: 0.625rem 0px; position: relative;">
+                          <div data-dc-tpl="310" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.8rem; color: rgb(0, 229, 255); letter-spacing: 0.05em;"><span class="sc-interp">17:00</span></div>
+                          <div data-dc-tpl="311" style="font-size: 0.95rem; color: rgb(232, 236, 242);"><span class="sc-interp">Воркшоп AI-юриста</span></div>
+                          <div data-dc-tpl="312" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;"><span class="sc-interp">workshop</span></div>
+                        </div>
+                      
+                        <div data-dc-tpl="309" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; padding: 0.625rem 0px; position: relative;">
+                          <div data-dc-tpl="310" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.8rem; color: rgb(0, 229, 255); letter-spacing: 0.05em;"><span class="sc-interp">19:30</span></div>
+                          <div data-dc-tpl="311" style="font-size: 0.95rem; color: rgb(232, 236, 242);"><span class="sc-interp">Networking · welcome</span></div>
+                          <div data-dc-tpl="312" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;"><span class="sc-interp">lounge</span></div>
+                        </div>
+                      
+                    </div>
+                  </div>
+                
+                  <div data-dc-tpl="301" data-reveal="" class="glass" style="border-radius: 14px; padding: 2rem; position: relative;">
+                    <div data-dc-tpl="302" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+                      <div data-dc-tpl="303">
+                        <div data-dc-tpl="304" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">// day 02</span></div>
+                        <div data-dc-tpl="305" style="font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; margin-top: 0.25rem;"><span class="sc-interp">26 сентября</span></div>
+                      </div>
+                      <div data-dc-tpl="306" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.75rem; color: rgb(139, 146, 160); letter-spacing: 0.15em;"><span class="sc-interp">09:00 → 20:00</span></div>
+                    </div>
+                    <div data-dc-tpl="307" style="display: flex; flex-direction: column; gap: 0.875rem;">
+                      
+                        <div data-dc-tpl="309" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; padding: 0.625rem 0px; position: relative;">
+                          <div data-dc-tpl="310" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.8rem; color: rgb(0, 229, 255); letter-spacing: 0.05em;"><span class="sc-interp">09:00</span></div>
+                          <div data-dc-tpl="311" style="font-size: 0.95rem; color: rgb(232, 236, 242);"><span class="sc-interp">Утренние мастермайнды</span></div>
+                          <div data-dc-tpl="312" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;"><span class="sc-interp">mastermind</span></div>
+                        </div>
+                      
+                        <div data-dc-tpl="309" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; padding: 0.625rem 0px; position: relative;">
+                          <div data-dc-tpl="310" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.8rem; color: rgb(0, 229, 255); letter-spacing: 0.05em;"><span class="sc-interp">11:00</span></div>
+                          <div data-dc-tpl="311" style="font-size: 0.95rem; color: rgb(232, 236, 242);"><span class="sc-interp">Параллельные треки</span></div>
+                          <div data-dc-tpl="312" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;"><span class="sc-interp">6 · streams</span></div>
+                        </div>
+                      
+                        <div data-dc-tpl="309" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; padding: 0.625rem 0px; position: relative;">
+                          <div data-dc-tpl="310" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.8rem; color: rgb(0, 229, 255); letter-spacing: 0.05em;"><span class="sc-interp">15:00</span></div>
+                          <div data-dc-tpl="311" style="font-size: 0.95rem; color: rgb(232, 236, 242);"><span class="sc-interp">Кейсы лидеров рынка</span></div>
+                          <div data-dc-tpl="312" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;"><span class="sc-interp">showcase</span></div>
+                        </div>
+                      
+                        <div data-dc-tpl="309" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; padding: 0.625rem 0px; position: relative;">
+                          <div data-dc-tpl="310" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.8rem; color: rgb(0, 229, 255); letter-spacing: 0.05em;"><span class="sc-interp">17:00</span></div>
+                          <div data-dc-tpl="311" style="font-size: 0.95rem; color: rgb(232, 236, 242);"><span class="sc-interp">Закрытие. AI-демо стенд</span></div>
+                          <div data-dc-tpl="312" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;"><span class="sc-interp">demo</span></div>
+                        </div>
+                      
+                        <div data-dc-tpl="309" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; align-items: center; padding: 0.625rem 0px; position: relative;">
+                          <div data-dc-tpl="310" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.8rem; color: rgb(0, 229, 255); letter-spacing: 0.05em;"><span class="sc-interp">19:00</span></div>
+                          <div data-dc-tpl="311" style="font-size: 0.95rem; color: rgb(232, 236, 242);"><span class="sc-interp">Закрытая VIP-сессия</span></div>
+                          <div data-dc-tpl="312" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; color: rgb(107, 114, 128); letter-spacing: 0.2em; text-transform: uppercase;"><span class="sc-interp">vip</span></div>
+                        </div>
+                      
+                    </div>
+                  </div>
+                
+              </div>
+            </div>
+          </section>
+
+          
+          <section data-dc-tpl="313" class="section-pad" style="padding: 6rem 2rem;">
+            <div data-dc-tpl="314" style="max-width: 1440px; margin: 0px auto;">
+              <div data-dc-tpl="315" data-reveal="" class="glass" style="position: relative; border-radius: 18px; padding: 4rem 3rem; overflow: hidden; background: linear-gradient(135deg, rgba(0, 229, 255, 0.07), rgba(255, 46, 154, 0.04));">
+                <div data-dc-tpl="316" aria-hidden="true" style="position: absolute; inset: 0px; background-image: linear-gradient(rgba(0, 229, 255, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.06) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(60% 50% at 80% 50%, rgb(0, 0, 0), transparent 70%); animation: 25s linear 0s infinite normal none running grid-drift;"></div>
+                <div data-dc-tpl="317" class="grid-2-mobile" style="position: relative; display: grid; grid-template-columns: 1.5fr 1fr; gap: 3rem; align-items: center;">
+                  <div data-dc-tpl="318">
+                    <div data-dc-tpl="319" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: rgb(0, 229, 255); text-transform: uppercase; margin-bottom: 1rem;">// registration · open</div>
+                    <h3 data-dc-tpl="320" class="text-3xl-mobile" style="font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 600; letter-spacing: -0.02em; margin: 0px 0px 1rem;">Забронируйте<br data-dc-tpl="321">место в зале</h3>
+                    <p data-dc-tpl="322" style="color: rgb(166, 173, 186); font-size: 1.05rem; line-height: 1.55; max-width: 460px; margin: 0px 0px 2rem;">Регистрация открыта. Билеты делятся на три тарифа — Standard, Pro, VIP. После 1 июня цены поднимаются.</p>
+                    <div data-dc-tpl="323" style="display: flex; gap: 0.875rem; flex-wrap: wrap;">
+                      <button data-dc-tpl="324" style="padding: 1rem 1.75rem; background: rgb(0, 229, 255); color: rgb(7, 8, 11); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; box-shadow: rgba(0, 229, 255, 0.4) 0px 0px 0px 1px, rgba(0, 229, 255, 0.25) 0px 12px 40px;">Купить билет →</button>
+                      <button data-dc-tpl="325" style="padding: 1rem 1.75rem; background: transparent; color: rgb(232, 236, 242); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 8px; font-weight: 500; font-size: 1rem; cursor: pointer;">Корпоративная группа</button>
+                    </div>
+                  </div>
+                  <div data-dc-tpl="326" style="display: flex; flex-direction: column; gap: 0.875rem;">
+                    
+                      <div data-dc-tpl="328" style="display: grid; grid-template-columns: auto 1fr auto; gap: 1.25rem; align-items: center; padding: 1.25rem; background: rgba(7, 8, 11, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px;">
+                        <div data-dc-tpl="329" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: rgb(139, 146, 160); text-transform: uppercase;"><span class="sc-interp">Standard</span></div>
+                        <div data-dc-tpl="330" style="font-size: 0.85rem; color: rgb(139, 146, 160);"><span class="sc-interp">2 дня · 6 потоков · networking</span></div>
+                        <div data-dc-tpl="331" style="font-family: &quot;Space Grotesk&quot;; font-weight: 600; font-size: 1.1rem; color: rgb(232, 236, 242);"><span class="sc-interp">24 900 ₽</span></div>
+                      </div>
+                    
+                      <div data-dc-tpl="328" style="display: grid; grid-template-columns: auto 1fr auto; gap: 1.25rem; align-items: center; padding: 1.25rem; background: rgba(7, 8, 11, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px;">
+                        <div data-dc-tpl="329" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: rgb(0, 229, 255); text-transform: uppercase;"><span class="sc-interp">Pro</span></div>
+                        <div data-dc-tpl="330" style="font-size: 0.85rem; color: rgb(139, 146, 160);"><span class="sc-interp">+ воркшопы · VIP-зона · материалы</span></div>
+                        <div data-dc-tpl="331" style="font-family: &quot;Space Grotesk&quot;; font-weight: 600; font-size: 1.1rem; color: rgb(232, 236, 242);"><span class="sc-interp">49 900 ₽</span></div>
+                      </div>
+                    
+                      <div data-dc-tpl="328" style="display: grid; grid-template-columns: auto 1fr auto; gap: 1.25rem; align-items: center; padding: 1.25rem; background: rgba(7, 8, 11, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px;">
+                        <div data-dc-tpl="329" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: rgb(255, 46, 154); text-transform: uppercase;"><span class="sc-interp">VIP</span></div>
+                        <div data-dc-tpl="330" style="font-size: 0.85rem; color: rgb(139, 146, 160);"><span class="sc-interp">+ закрытая сессия · ужин · подарки</span></div>
+                        <div data-dc-tpl="331" style="font-family: &quot;Space Grotesk&quot;; font-weight: 600; font-size: 1.1rem; color: rgb(232, 236, 242);"><span class="sc-interp">89 900 ₽</span></div>
+                      </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      
+
+      
+      
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      
+      
+
+    </div>
+  </main>
+
+  
+  <footer data-dc-tpl="1154" data-screen-label="Footer" style="position: relative; z-index: 5; margin-top: 4rem; padding: 5rem 2rem 3rem; border-top: 1px solid rgba(255, 255, 255, 0.06); background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(20px);">
+    <div data-dc-tpl="1155" style="max-width: 1440px; margin: 0px auto;">
+      <div data-dc-tpl="1156" class="grid-2-mobile" style="display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 3rem; margin-bottom: 4rem;">
+        <div data-dc-tpl="1157">
+          <div data-dc-tpl="1158" style="display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1.25rem;">
+            <div data-dc-tpl="1159" style="position: relative; width: 32px; height: 32px;">
+              <div data-dc-tpl="1160" style="position: absolute; inset: 0px; border: 1px solid rgba(0, 229, 255, 0.5); border-radius: 4px; transform: rotate(45deg);"></div>
+              <div data-dc-tpl="1161" style="position: absolute; inset: 12px; background: rgb(0, 229, 255); border-radius: 50%; box-shadow: rgba(0, 229, 255, 0.8) 0px 0px 10px;"></div>
+            </div>
+            <div data-dc-tpl="1162" style="font-weight: 600; font-size: 1.05rem;">ТехнологИИ <span data-dc-tpl="1163" style="color: rgb(0, 229, 255);">права</span></div>
+          </div>
+          <p data-dc-tpl="1164" style="color: rgb(139, 146, 160); line-height: 1.55; max-width: 380px; margin: 0px 0px 1.5rem; font-size: 0.9rem;">Платформа про ИИ, цифровые технологии и масштабирование юридического бизнеса в сфере банкротства физических лиц.</p>
+          <div data-dc-tpl="1165" style="display: flex; gap: 0.5rem;">
+            <a data-dc-tpl="1166" href="https://t.me/kredit_advokat" target="_blank" rel="noopener" style="padding: 0.625rem 1rem; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); color: rgb(0, 229, 255); text-decoration: none; border-radius: 8px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.75rem; letter-spacing: 0.1em;">@kredit_advokat</a>
+            <a data-dc-tpl="1167" href="https://t.me/NeuroPravo_Bot" target="_blank" rel="noopener" style="padding: 0.625rem 1rem; background: rgba(255, 46, 154, 0.08); border: 1px solid rgba(255, 46, 154, 0.25); color: rgb(255, 46, 154); text-decoration: none; border-radius: 8px; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.75rem; letter-spacing: 0.1em;">@NeuroPravo_Bot</a>
+          </div>
+        </div>
+        <div data-dc-tpl="1168">
+          <div data-dc-tpl="1169" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: rgb(107, 114, 128); text-transform: uppercase; margin-bottom: 1.25rem;">Модули</div>
+          <div data-dc-tpl="1170" style="display: flex; flex-direction: column; gap: 0.625rem; font-size: 0.9rem;">
+            <a data-dc-tpl="1171" href="#" style="color: rgb(166, 173, 186); text-decoration: none;">Конференция</a>
+            <a data-dc-tpl="1172" href="#" style="color: rgb(166, 173, 186); text-decoration: none;">Академия</a>
+            <a data-dc-tpl="1173" href="#" style="color: rgb(166, 173, 186); text-decoration: none;">Книга</a>
+            <a data-dc-tpl="1174" href="#" style="color: rgb(166, 173, 186); text-decoration: none;">Обучение</a>
+          </div>
+        </div>
+        <div data-dc-tpl="1175">
+          <div data-dc-tpl="1176" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: rgb(107, 114, 128); text-transform: uppercase; margin-bottom: 1.25rem;">Ресурсы</div>
+          <div data-dc-tpl="1177" style="display: flex; flex-direction: column; gap: 0.625rem; font-size: 0.9rem;">
+            <a data-dc-tpl="1178" href="#" style="color: rgb(166, 173, 186); text-decoration: none;">Исследования</a>
+            <a data-dc-tpl="1179" href="#" style="color: rgb(166, 173, 186); text-decoration: none;">Чек-листы</a>
+            <a data-dc-tpl="1180" href="#" style="color: rgb(166, 173, 186); text-decoration: none;">Статьи</a>
+            <a data-dc-tpl="1181" href="#" style="color: rgb(166, 173, 186); text-decoration: none;">Продукты</a>
+          </div>
+        </div>
+        <div data-dc-tpl="1182">
+          <div data-dc-tpl="1183" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: rgb(107, 114, 128); text-transform: uppercase; margin-bottom: 1.25rem;">Контакты</div>
+          <div data-dc-tpl="1184" style="display: flex; flex-direction: column; gap: 0.625rem; font-size: 0.9rem;">
+            <a data-dc-tpl="1185" href="mailto:pravotechhub@mail.ru" style="color: rgb(166, 173, 186); text-decoration: none;">pravotechhub@mail.ru</a>
+            <a data-dc-tpl="1186" href="https://t.me/kredit_advokat" target="_blank" rel="noopener" style="color: rgb(166, 173, 186); text-decoration: none;">Telegram-канал</a>
+            <a data-dc-tpl="1187" href="https://t.me/NeuroPravo_Bot" target="_blank" rel="noopener" style="color: rgb(166, 173, 186); text-decoration: none;">Telegram-бот</a>
+            <div data-dc-tpl="1188" style="color: rgb(107, 114, 128); font-size: 0.8rem; margin-top: 0.5rem;">Москва · Садовая-Спасская 21/1</div>
+          </div>
+        </div>
+      </div>
+      <div data-dc-tpl="1189" style="display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.06); flex-wrap: wrap; gap: 1rem;">
+        <div data-dc-tpl="1190" style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase;">© 2026 ТехнологИИ права · Legal AI OS · v 26.09</div>
+        <div data-dc-tpl="1191" style="display: flex; gap: 1.5rem; font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 0.7rem; letter-spacing: 0.2em; color: rgb(107, 114, 128); text-transform: uppercase;">
+          <span data-dc-tpl="1192">Политика</span>
+          <span data-dc-tpl="1193">Оферта</span>
+          <span data-dc-tpl="1194" style="color: rgb(0, 229, 255);">● SYSTEM HEALTHY</span>
+        </div>
+      </div>
+    </div>
+  </footer></div></div></div>
+<script type="text/x-dc" data-dc-script="">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeTab: 'conference',
+      transitioning: false,
+      hoveredModule: null,
+      reducedMotion: false,
+      sceneStatus: 'ready',
+      countdown: { d: 0, h: 0, m: 0, s: 0 },
+      now: '',
+    };
+    this.heroCanvasRef = React.createRef();
+    this.tabKeys = ['conference','academy','book','training','research','checklists','articles','products'];
+    this.tabLabels = {
+      conference: 'Конференция',
+      academy: 'Академия',
+      book: 'Книга',
+      training: 'Обучение',
+      research: 'Исследования',
+      checklists: 'Чек-листы',
+      articles: 'Статьи',
+      products: 'Продукты'
+    };
+    this.tabNums = {
+      conference: '01', academy: '02', book: '03', training: '04',
+      research: '05', checklists: '06', articles: '07', products: '08'
+    };
+  }
+
+  componentDidMount() {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      this.mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if (this.mq.matches) this.setState({ reducedMotion: true });
+    }
+    this.startCountdown();
+    this.startClock();
+    requestAnimationFrame(() => {
+      this.initThree();
+      this.initRevealObserver();
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.activeTab !== this.state.activeTab) {
+      requestAnimationFrame(() => this.initRevealObserver());
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.cleanup3d) this.cleanup3d();
+    if (this.countdownInterval) clearInterval(this.countdownInterval);
+    if (this.clockInterval) clearInterval(this.clockInterval);
+    if (this.revealCleanup) this.revealCleanup();
+  }
+
+  startCountdown = () => {
+    const target = new Date('2026-09-25T10:00:00+03:00').getTime();
+    const update = () => {
+      const dist = Math.max(0, target - Date.now());
+      this.setState({
+        countdown: {
+          d: Math.floor(dist / 86400000),
+          h: Math.floor((dist % 86400000) / 3600000),
+          m: Math.floor((dist % 3600000) / 60000),
+          s: Math.floor((dist % 60000) / 1000)
+        }
+      });
+    };
+    update();
+    this.countdownInterval = setInterval(update, 1000);
+  };
+
+  startClock = () => {
+    const update = () => {
+      const d = new Date();
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      const ss = String(d.getSeconds()).padStart(2, '0');
+      this.setState({ now: hh + ':' + mm + ':' + ss });
+    };
+    update();
+    this.clockInterval = setInterval(update, 1000);
+  };
+
+  setTab = (key) => {
+    if (key === this.state.activeTab) return;
+    if (this.state.reducedMotion) {
+      this.setState({ activeTab: key });
+      this.scrollToTabContent();
+      return;
+    }
+    this.setState({ transitioning: true });
+    setTimeout(() => {
+      this.setState({ activeTab: key });
+      setTimeout(() => this.setState({ transitioning: false }), 200);
+    }, 320);
+    setTimeout(() => this.scrollToTabContent(), 60);
+  };
+
+  getScroller = () => {
+    if (document.body.scrollHeight > document.documentElement.scrollHeight + 10) return document.body;
+    return document.documentElement;
+  };
+
+  smoothScrollTo = (target) => {
+    const container = this.getScroller();
+    const start = container.scrollTop;
+    const dist = target - start;
+    const dur = Math.min(600, Math.max(220, Math.abs(dist) * 0.35));
+    const t0 = performance.now();
+    const ease = (x) => 1 - Math.pow(1 - x, 3);
+    const step = (now) => {
+      const t = Math.min(1, (now - t0) / dur);
+      container.scrollTop = start + dist * ease(t);
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  scrollToTabContent = () => {
+    const el = document.getElementById('tab-nav');
+    if (!el) return;
+    const container = this.getScroller();
+    const target = el.getBoundingClientRect().top + container.scrollTop;
+    this.smoothScrollTo(target);
+  };
+
+  scrollToTabs = () => {
+    const el = document.getElementById('tab-nav');
+    if (!el) return;
+    const container = this.getScroller();
+    const target = el.getBoundingClientRect().top + container.scrollTop;
+    this.smoothScrollTo(target);
+  };
+
+  scrollToProgram = () => {
+    const el = document.getElementById('conf-program');
+    if (!el) return;
+    const container = this.getScroller();
+    const target = el.getBoundingClientRect().top + container.scrollTop - 80;
+    this.smoothScrollTo(target);
+  };
+
+  initRevealObserver = () => {
+    // Stop any prior loop / listener
+    if (this.revealCleanup) this.revealCleanup();
+    if (this.state.reducedMotion) {
+      document.querySelectorAll('[data-reveal], [data-reveal-left], [data-reveal-scale]').forEach(el => {
+        el.setAttribute('data-revealed', 'true');
+      });
+      return;
+    }
+    const getScrollContainer = () => {
+      if (document.body.scrollHeight > document.documentElement.scrollHeight + 10) return document.body;
+      return document.documentElement;
+    };
+    const scrollEl = getScrollContainer();
+    let scheduled = false;
+    const tick = () => {
+      scheduled = false;
+      const els = document.querySelectorAll('[data-reveal]:not([data-revealed]), [data-reveal-left]:not([data-revealed]), [data-reveal-scale]:not([data-revealed])');
+      if (els.length === 0) return;
+      const vh = scrollEl.clientHeight || window.innerHeight;
+      const triggerLine = vh - 60;
+      els.forEach(el => {
+        const top = el.getBoundingClientRect().top;
+        if (top < triggerLine) el.setAttribute('data-revealed', 'true');
+      });
+    };
+    const onScroll = () => {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(tick);
+    };
+    scrollEl.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    // Initial pass after layout settles
+    setTimeout(tick, 50);
+    setTimeout(tick, 300);
+    this.revealCleanup = () => {
+      scrollEl.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  };
+
+  initThree = () => {
+    const canvas = this.heroCanvasRef.current;
+    if (!canvas) return;
+    if (!window.THREE) {
+      this.setState({ sceneStatus: 'fallback' });
+      return;
+    }
+    try {
+      const THREE = window.THREE;
+      const w = canvas.clientWidth || 600;
+      const h = canvas.clientHeight || 500;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+      camera.position.set(0, 0.4, 8);
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setSize(w, h, false);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      // Central wireframe icosahedron
+      const coreGeo = new THREE.IcosahedronGeometry(1.5, 1);
+      const coreMat = new THREE.MeshBasicMaterial({ color: 0x00E5FF, wireframe: true, transparent: true, opacity: 0.55 });
+      const core = new THREE.Mesh(coreGeo, coreMat);
+      scene.add(core);
+
+      // Inner solid sphere
+      const innerGeo = new THREE.IcosahedronGeometry(0.85, 1);
+      const innerMat = new THREE.MeshBasicMaterial({ color: 0x0d1a2c, transparent: true, opacity: 0.92 });
+      const inner = new THREE.Mesh(innerGeo, innerMat);
+      scene.add(inner);
+
+      // Inner core glow
+      const glowGeo = new THREE.SphereGeometry(0.55, 16, 16);
+      const glowMat = new THREE.MeshBasicMaterial({ color: 0x00E5FF, transparent: true, opacity: 0.35 });
+      const glow = new THREE.Mesh(glowGeo, glowMat);
+      scene.add(glow);
+
+      // Outer rings
+      const rings = [];
+      for (let r = 0; r < 3; r++) {
+        const ringGeo = new THREE.RingGeometry(2.4 + r * 0.55, 2.42 + r * 0.55, 96);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00E5FF, side: THREE.DoubleSide, transparent: true, opacity: 0.22 - r * 0.06 });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = Math.PI / 2 + (r * 0.18);
+        ring.rotation.z = r * 0.4;
+        scene.add(ring);
+        rings.push(ring);
+      }
+
+      // 8 orbital modules
+      const modules = [];
+      const moduleGroup = new THREE.Group();
+      scene.add(moduleGroup);
+      const radius = 3.2;
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const yOffset = Math.sin(i * 1.3) * 0.45;
+        const geo = new THREE.OctahedronGeometry(0.22, 0);
+        const isMagenta = i % 3 === 1;
+        const mat = new THREE.MeshBasicMaterial({ color: isMagenta ? 0xFF2E9A : 0x00E5FF, transparent: true, opacity: 0.95, wireframe: false });
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set(Math.cos(angle) * radius, yOffset, Math.sin(angle) * radius);
+        m.userData = {
+          key: this.tabKeys[i],
+          baseAngle: angle,
+          baseY: yOffset,
+          baseColor: isMagenta ? 0xFF2E9A : 0x00E5FF,
+          scale: 1
+        };
+        // Outline
+        const outlineGeo = new THREE.OctahedronGeometry(0.32, 0);
+        const outlineMat = new THREE.MeshBasicMaterial({ color: isMagenta ? 0xFF2E9A : 0x00E5FF, wireframe: true, transparent: true, opacity: 0.5 });
+        const outline = new THREE.Mesh(outlineGeo, outlineMat);
+        m.add(outline);
+
+        // Connector line core → module
+        const points = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(Math.cos(angle) * radius, yOffset, Math.sin(angle) * radius)];
+        const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+        const lineMat = new THREE.LineBasicMaterial({ color: isMagenta ? 0xFF2E9A : 0x00E5FF, transparent: true, opacity: 0.12 });
+        const line = new THREE.Line(lineGeo, lineMat);
+        scene.add(line);
+
+        moduleGroup.add(m);
+        modules.push({ mesh: m, outline, line, lineGeo });
+      }
+
+      // Particle dust
+      const dustCount = 360;
+      const dustGeo = new THREE.BufferGeometry();
+      const positions = new Float32Array(dustCount * 3);
+      for (let i = 0; i < dustCount; i++) {
+        const r = 4 + Math.random() * 6;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        positions[i*3] = r * Math.sin(phi) * Math.cos(theta);
+        positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+        positions[i*3+2] = r * Math.cos(phi);
+      }
+      dustGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const dustMat = new THREE.PointsMaterial({ color: 0x6BD7FF, size: 0.025, transparent: true, opacity: 0.6, sizeAttenuation: true });
+      const dust = new THREE.Points(dustGeo, dustMat);
+      scene.add(dust);
+
+      // Pointer + raycast
+      let mouseX = 0, mouseY = 0;
+      const targetMouse = { x: 0, y: 0 };
+      const raycaster = new THREE.Raycaster();
+      const ndc = new THREE.Vector2();
+
+      const onPointer = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0));
+        const y = (e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0));
+        targetMouse.x = ((x - rect.left) / rect.width - 0.5) * 2;
+        targetMouse.y = ((y - rect.top) / rect.height - 0.5) * 2;
+        ndc.x = ((x - rect.left) / rect.width) * 2 - 1;
+        ndc.y = -((y - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(ndc, camera);
+        const meshes = modules.map(mm => mm.mesh);
+        const hits = raycaster.intersectObjects(meshes, false);
+        if (hits.length > 0) {
+          const k = hits[0].object.userData.key;
+          if (this.state.hoveredModule !== k) this.setState({ hoveredModule: k });
+          canvas.style.cursor = 'pointer';
+        } else {
+          if (this.state.hoveredModule) this.setState({ hoveredModule: null });
+          canvas.style.cursor = 'grab';
+        }
+      };
+      const onClick = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX !== undefined ? e.clientX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0);
+        const y = e.clientY !== undefined ? e.clientY : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : 0);
+        ndc.x = ((x - rect.left) / rect.width) * 2 - 1;
+        ndc.y = -((y - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(ndc, camera);
+        const meshes = modules.map(mm => mm.mesh);
+        const hits = raycaster.intersectObjects(meshes, false);
+        if (hits.length > 0) this.setTab(hits[0].object.userData.key);
+      };
+      const onLeave = () => {
+        if (this.state.hoveredModule) this.setState({ hoveredModule: null });
+        targetMouse.x = 0; targetMouse.y = 0;
+      };
+      canvas.addEventListener('pointermove', onPointer);
+      canvas.addEventListener('click', onClick);
+      canvas.addEventListener('pointerleave', onLeave);
+
+      // Resize
+      const onResize = () => {
+        const ww = canvas.clientWidth || 600;
+        const hh = canvas.clientHeight || 500;
+        renderer.setSize(ww, hh, false);
+        camera.aspect = ww / hh;
+        camera.updateProjectionMatrix();
+      };
+      window.addEventListener('resize', onResize);
+
+      // Animate
+      let t = 0;
+      let raf = 0;
+      const animate = () => {
+        t += this.state.reducedMotion ? 0 : 0.01;
+        mouseX += (targetMouse.x - mouseX) * 0.06;
+        mouseY += (targetMouse.y - mouseY) * 0.06;
+
+        core.rotation.x = t * 0.25 + mouseY * 0.25;
+        core.rotation.y = t * 0.35 + mouseX * 0.35;
+        inner.rotation.x = -t * 0.4;
+        inner.rotation.y = -t * 0.55;
+        glow.scale.setScalar(1 + Math.sin(t * 2) * 0.08);
+        const ringColor = core.material.color;
+        ringColor.lerp(new THREE.Color(0x00E5FF), 0.02);
+
+        rings.forEach((r, i) => {
+          r.rotation.z = t * (0.05 + i * 0.03);
+        });
+
+        const activeIdx = this.tabKeys.indexOf(this.state.activeTab);
+        const hoveredIdx = this.state.hoveredModule ? this.tabKeys.indexOf(this.state.hoveredModule) : -1;
+
+        modules.forEach((mm, i) => {
+          const a = mm.mesh.userData.baseAngle + t * 0.12;
+          const r = radius;
+          const px = Math.cos(a) * r;
+          const pz = Math.sin(a) * r;
+          const py = mm.mesh.userData.baseY + Math.sin(t * 1.5 + i) * 0.15;
+          mm.mesh.position.set(px, py, pz);
+          mm.mesh.rotation.x = t * 0.6 + i;
+          mm.mesh.rotation.y = t * 0.8 + i;
+
+          const isActive = i === activeIdx;
+          const isHovered = i === hoveredIdx;
+          const targetScale = isActive ? 1.6 : (isHovered ? 1.4 : 1.0);
+          mm.mesh.userData.scale += (targetScale - mm.mesh.userData.scale) * 0.12;
+          mm.mesh.scale.setScalar(mm.mesh.userData.scale);
+
+          mm.mesh.material.opacity = isActive ? 1 : (isHovered ? 1 : 0.85);
+          mm.outline.material.opacity = isActive ? 0.9 : (isHovered ? 0.85 : 0.5);
+          mm.line.material.opacity = isActive ? 0.55 : (isHovered ? 0.4 : 0.12);
+
+          // Update line geometry endpoint to track module
+          const pts = mm.lineGeo.attributes.position.array;
+          pts[3] = px;
+          pts[4] = py;
+          pts[5] = pz;
+          mm.lineGeo.attributes.position.needsUpdate = true;
+        });
+
+        dust.rotation.y = t * 0.025;
+        dust.rotation.x = t * 0.015;
+
+        camera.position.x = mouseX * 0.4;
+        camera.position.y = -mouseY * 0.3 + 0.4;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+        raf = requestAnimationFrame(animate);
+      };
+      animate();
+      this.setState({ sceneStatus: 'active' });
+
+      this.cleanup3d = () => {
+        cancelAnimationFrame(raf);
+        canvas.removeEventListener('pointermove', onPointer);
+        canvas.removeEventListener('click', onClick);
+        canvas.removeEventListener('pointerleave', onLeave);
+        window.removeEventListener('resize', onResize);
+        renderer.dispose();
+        coreGeo.dispose(); coreMat.dispose();
+        innerGeo.dispose(); innerMat.dispose();
+        glowGeo.dispose(); glowMat.dispose();
+        rings.forEach(r => { r.geometry.dispose(); r.material.dispose(); });
+        modules.forEach(mm => { mm.mesh.geometry.dispose(); mm.mesh.material.dispose(); mm.outline.geometry.dispose(); mm.outline.material.dispose(); mm.lineGeo.dispose(); mm.line.material.dispose(); });
+        dustGeo.dispose(); dustMat.dispose();
+      };
+    } catch (err) {
+      console.warn('Three.js init failed:', err);
+      this.setState({ sceneStatus: 'fallback' });
+    }
+  };
+
+  renderVals() {
+    const { activeTab, hoveredModule, transitioning, countdown, sceneStatus, now } = this.state;
+    const pad = (n) => String(n).padStart(2, '0');
+
+    // Tab bar
+    const tabs = this.tabKeys.map((k) => {
+      const isActive = activeTab === k;
+      return {
+        key: k,
+        label: this.tabLabels[k],
+        num: this.tabNums[k],
+        isActive,
+        color: isActive ? '#FFFFFF' : '#8B92A0',
+        bgStyle: 'transparent',
+        numColor: isActive ? '#00E5FF' : '#6B7280',
+        numOpacity: isActive ? 1 : 0.6,
+        onClick: () => this.setTab(k)
+      };
+    });
+
+    // Status time label
+    const statusTimeLabel = now ? ('utc+3 · ' + now) : 'utc+3 · 00:00:00';
+    const sceneStatusLabel = sceneStatus === 'fallback' ? 'static · degraded' : (sceneStatus === 'active' ? 'orbital · stable' : 'init...');
+
+    // Hovered label
+    const hasHovered = !!hoveredModule;
+    const hoveredLabel = hoveredModule ? this.tabLabels[hoveredModule] : '';
+    const hoveredNum = hoveredModule ? this.tabNums[hoveredModule] : '';
+
+    // Conference: countdown cells
+    const countdownCells = [
+      { value: pad(countdown.d), label: 'дней' },
+      { value: pad(countdown.h), label: 'часов' },
+      { value: pad(countdown.m), label: 'минут' },
+      { value: pad(countdown.s), label: 'секунд' }
+    ];
+
+    // Conference: stats
+    const confStats = [
+      { label: '// потоки', value: '06', caption: 'параллельных программ', color: '#00E5FF' },
+      { label: '// спикеры', value: '80+', caption: 'практикующих экспертов', color: '#FFFFFF' },
+      { label: '// участники', value: '1500+', caption: 'юристов и АУ', color: '#FF2E9A' },
+      { label: '// дни', value: '02', caption: '25 и 26 сентября', color: '#FFFFFF' }
+    ];
+
+    // Tracks
+    const tracks = [
+      { id: 'TRACK · 01', name: 'AI в банкротстве', desc: 'Нейросети для юристов БФЛ: автоматизация анализа сделок, генерация документов, AI-ассистенты в практике.', sessions: '14', color: '#00E5FF' },
+      { id: 'TRACK · 02', name: 'Масштабирование практики', desc: 'Как вырастить юрбизнес в БФЛ: воронки клиентов, найм, юнит-экономика, упаковка услуг.', sessions: '12', color: '#FF2E9A' },
+      { id: 'TRACK · 03', name: 'Право и судебная практика', desc: 'Свежие разборы дел, ключевые изменения закона о банкротстве 2025–2026, прецеденты.', sessions: '16', color: '#00E5FF' },
+      { id: 'TRACK · 04', name: 'Продажи и маркетинг', desc: 'Скрипты, чек-листы первой консультации, контент-маркетинг и performance для юристов.', sessions: '11', color: '#FF2E9A' },
+      { id: 'TRACK · 05', name: 'Команда и управление', desc: 'Найм, мотивация, культура. Регулярный менеджмент юриста, KPI и метрики практики.', sessions: '10', color: '#00E5FF' },
+      { id: 'TRACK · 06', name: 'Арбитражное управление', desc: 'Практика АУ: судебные баталии, работа с реестром, инвентаризация, торги и оспаривание.', sessions: '13', color: '#FF2E9A' }
+    ].map((t, i) => Object.assign({}, t, { '--track-delay': (i * 60) + 'ms' }));
+
+    // Speakers
+    const speakers = [
+      { name: 'А. Кредитов', role: 'Управляющий партнёр', initials: 'АК', tag: 'AI · БФЛ', tint: 'rgba(0,229,255,0.15)' },
+      { name: 'И. Должникова', role: 'Арбитражный управляющий', initials: 'ИД', tag: 'АУ', tint: 'rgba(255,46,154,0.12)' },
+      { name: 'М. Управленцева', role: 'CEO юр. бюро', initials: 'МУ', tag: 'Масштаб', tint: 'rgba(0,229,255,0.15)' },
+      { name: 'Д. Юристов', role: 'Партнёр практики', initials: 'ДЮ', tag: 'Право', tint: 'rgba(255,46,154,0.12)' },
+      { name: 'К. Банкротова', role: 'Управляющий юрист', initials: 'КБ', tag: 'Продажи', tint: 'rgba(0,229,255,0.15)' },
+      { name: 'Е. Процессова', role: 'Глава судебного департамента', initials: 'ЕП', tag: 'Суды', tint: 'rgba(255,46,154,0.12)' },
+      { name: 'Р. Команднов', role: 'COO юр. компании', initials: 'РК', tag: 'Команда', tint: 'rgba(0,229,255,0.15)' },
+      { name: 'Н. Цифрова', role: 'Head of LegalTech', initials: 'НЦ', tag: 'AI', tint: 'rgba(255,46,154,0.12)' }
+    ].map((s, i) => Object.assign({}, s, { '--sp-delay': (i * 40) + 'ms' }));
+
+    // Schedule days
+    const scheduleDays = [
+      {
+        code: '// day 01',
+        title: '25 сентября',
+        range: '10:00 → 22:00',
+        items: [
+          { time: '10:00', title: 'Открытие. Манифест Legal AI', kind: 'plenary' },
+          { time: '11:30', title: 'Тренды БФЛ 2026. Дискуссия', kind: 'panel' },
+          { time: '13:00', title: 'Параллельные треки', kind: '6 · streams' },
+          { time: '17:00', title: 'Воркшоп AI-юриста', kind: 'workshop' },
+          { time: '19:30', title: 'Networking · welcome', kind: 'lounge' }
+        ]
+      },
+      {
+        code: '// day 02',
+        title: '26 сентября',
+        range: '09:00 → 20:00',
+        items: [
+          { time: '09:00', title: 'Утренние мастермайнды', kind: 'mastermind' },
+          { time: '11:00', title: 'Параллельные треки', kind: '6 · streams' },
+          { time: '15:00', title: 'Кейсы лидеров рынка', kind: 'showcase' },
+          { time: '17:00', title: 'Закрытие. AI-демо стенд', kind: 'demo' },
+          { time: '19:00', title: 'Закрытая VIP-сессия', kind: 'vip' }
+        ]
+      }
+    ];
+
+    // Tickets
+    const tickets = [
+      { tier: 'Standard', includes: '2 дня · 6 потоков · networking', price: '24 900 ₽', color: '#8B92A0' },
+      { tier: 'Pro', includes: '+ воркшопы · VIP-зона · материалы', price: '49 900 ₽', color: '#00E5FF' },
+      { tier: 'VIP', includes: '+ закрытая сессия · ужин · подарки', price: '89 900 ₽', color: '#FF2E9A' }
+    ];
+
+    // ACADEMY: courses
+    const courses = [
+      { level: 'LEVEL · 01 · JUNIOR', lvlColor: '#00E5FF', title: 'Старт практики БФЛ', desc: 'Базовые процедуры, документооборот, первая консультация. Для тех, кто только пришёл в банкротство физлиц.', duration: '14 дней', modules: '12', format: 'video + chat' },
+      { level: 'LEVEL · 02 · PRACTITIONER', lvlColor: '#00E5FF', title: 'Судебная защита должника', desc: 'Стратегия защиты, оспаривание сделок, исполнительский иммунитет. Все типы судебных баталий.', duration: '28 дней', modules: '20', format: 'live · group' },
+      { level: 'LEVEL · 02 · PRACTITIONER', lvlColor: '#00E5FF', title: 'AI в работе юриста', desc: 'Промпт-инжиниринг, генерация документов, AI-ассистенты, автоматизация рутины.', duration: '21 день', modules: '16', format: 'practice' },
+      { level: 'LEVEL · 03 · SENIOR', lvlColor: '#FF2E9A', title: 'Управление командой', desc: 'Найм, мотивация, KPI юристов. Регулярный менеджмент в юр. бюро. От 5 до 50 человек.', duration: '45 дней', modules: '24', format: 'mentorship' },
+      { level: 'LEVEL · 03 · SENIOR', lvlColor: '#FF2E9A', title: 'Продажи и упаковка БФЛ-услуги', desc: 'Воронки, скрипты, маркетинг. Как делать высокую конверсию первой консультации.', duration: '35 дней', modules: '18', format: 'workshop' },
+      { level: 'LEVEL · 04 · EXPERT', lvlColor: '#FF2E9A', title: 'Масштабирование юр. бюро', desc: 'Юнит-экономика, франшиза, выход в регионы. Программа для собственников и партнёров.', duration: '90 дней', modules: '32', format: 'mastermind' }
+    ].map((c, i) => Object.assign({}, c, { '--c-delay': (i * 60) + 'ms' }));
+
+    // BOOK: chapters
+    const chapters = [
+      { num: '01', title: 'Введение в банкротство физлиц', desc: 'Кому это нужно. Когда подавать. Базовые мифы и реалии процедуры.', pages: '12' },
+      { num: '02', title: 'Подготовка и подача заявления', desc: 'Документы, расчёт суммы, выбор СРО. Чек-листы и шаблоны заявлений.', pages: '14–28' },
+      { num: '03', title: 'Анализ сделок и оспаривание', desc: 'Подозрительные сделки, исковая давность, тактика управляющего и должника.', pages: '29–48' },
+      { num: '04', title: 'Защита единственного жилья', desc: 'Исполнительский иммунитет. Ипотека. Совместная собственность. Кейсы судов.', pages: '49–72' },
+      { num: '05', title: 'Взаимодействие с АУ и кредиторами', desc: 'Тактика общения, собрание кредиторов, реестр, торги имущества.', pages: '73–96' },
+      { num: '06', title: 'Завершение процедуры', desc: 'Освобождение от долгов. Когда суд может отказать. Последствия банкротства.', pages: '97–117' }
+    ].map((c, i) => Object.assign({}, c, { '--ch-delay': (i * 70) + 'ms' }));
+
+    // TRAINING: scenarios
+    const scenarios = [
+      { code: 'CONSULT · 01', color: '#00E5FF', title: 'Первая консультация', desc: 'Должник 1.4 млн ₽ долга, дети, ипотека. Возражения, эмпатия, продажа стратегии.', diff: 'easy · 12 мин', length: '8 реплик', attempts: '124k попыток' },
+      { code: 'CONSULT · 04', color: '#00E5FF', title: 'Сложный кейс с активами', desc: 'Должник с авто, дачей, долей в ООО. Управляющий начнёт оспаривать сделки.', diff: 'hard · 22 мин', length: '14 реплик', attempts: '38k попыток' },
+      { code: 'NEGO · 02', color: '#FF2E9A', title: 'Переговоры с кредитором', desc: 'Банк против мирового. Закрытие переговоров с минимальными уступками.', diff: 'medium · 18 мин', length: '12 реплик', attempts: '76k попыток' },
+      { code: 'COURT · 01', color: '#FF2E9A', title: 'Защита единственного жилья', desc: 'Судебное заседание. Возражения управляющего. Демонстрация исполнит. иммунитета.', diff: 'hard · 25 мин', length: '18 реплик', attempts: '52k попыток' },
+      { code: 'OBJECT · 03', color: '#00E5FF', title: 'Работа с возражениями клиента', desc: '«Сосед оформил, через месяц ему всё списали». Контр-аргументация, мягкий разворот.', diff: 'easy · 10 мин', length: '6 реплик', attempts: '198k попыток' },
+      { code: 'TEAM · 02', color: '#FF2E9A', title: 'Делегирование младшему юристу', desc: 'Постановка задачи, контрольные точки, обратная связь. Сценарий для управ.', diff: 'medium · 15 мин', length: '10 реплик', attempts: '42k попыток' }
+    ].map((s, i) => Object.assign({}, s, { '--s-delay': (i * 60) + 'ms' }));
+
+    // RESEARCH: reports
+    const research = [
+      { tag: 'AI', tagBg: 'rgba(0,229,255,0.08)', tagBd: 'rgba(0,229,255,0.25)', tagColor: '#00E5FF', date: '18.09.2026', title: 'Влияние ИИ на работу юриста БФЛ. 2026', desc: 'Опрос 412 практикующих юристов. Какие задачи делегируют AI, сколько времени экономят.', pages: '64', downloads: '2.1k' },
+      { tag: 'МАРКЕТ', tagBg: 'rgba(255,46,154,0.08)', tagBd: 'rgba(255,46,154,0.25)', tagColor: '#FF2E9A', date: '02.09.2026', title: 'Экономика юр. практики в банкротстве', desc: 'Юнит-экономика. Доходы, расходы, маржа. Срезы по типам бюро и регионам.', pages: '48', downloads: '3.8k' },
+      { tag: 'ПРАКТ.', tagBg: 'rgba(255,255,255,0.04)', tagBd: 'rgba(255,255,255,0.1)', tagColor: '#E8ECF2', date: '24.08.2026', title: 'Технологии лидеров рынка БФЛ', desc: 'Стек 17 крупнейших юр. бюро России. CRM, AI, документооборот, BI.', pages: '72', downloads: '1.4k' },
+      { tag: 'AI', tagBg: 'rgba(0,229,255,0.08)', tagBd: 'rgba(0,229,255,0.25)', tagColor: '#00E5FF', date: '10.08.2026', title: 'Автоматизация документов в БФЛ', desc: 'Какие шаблоны работают, какие — нет. Сравнение AI-генераторов на 1000 кейсов.', pages: '52', downloads: '2.7k' },
+      { tag: 'ПРОДАЖИ', tagBg: 'rgba(255,46,154,0.08)', tagBd: 'rgba(255,46,154,0.25)', tagColor: '#FF2E9A', date: '28.07.2026', title: 'AI для продаж юридических услуг', desc: 'Скрипты, скоринг лидов, авто-квалификация. Кейсы внедрения у трёх бюро.', pages: '36', downloads: '4.2k' },
+      { tag: 'СУДЫ', tagBg: 'rgba(255,255,255,0.04)', tagBd: 'rgba(255,255,255,0.1)', tagColor: '#E8ECF2', date: '14.07.2026', title: 'Судебная практика и тренды 2025–2026', desc: 'Топ-200 ключевых дел. Тренды, прецеденты, изменение позиций ВС РФ.', pages: '88', downloads: '1.9k' }
+    ].map((r, i) => Object.assign({}, r, { '--r-delay': (i * 60) + 'ms' }));
+
+    // CHECKLISTS
+    const checklists = [
+      { id: 'CL · 01', idColor: '#00E5FF', title: 'Подготовка заявления о банкротстве', desc: 'Все шаги — от сбора документов до подачи в арбитраж. Проверено на 5k+ дел.', items: '32', pct: '62%' },
+      { id: 'CL · 02', idColor: '#FF2E9A', title: 'Взаимодействие с арбитражным управляющим', desc: 'Что просить, что давать, на что не отвечать. Тактика переговоров.', items: '24', pct: '45%' },
+      { id: 'CL · 03', idColor: '#00E5FF', title: 'Внесудебное банкротство через МФЦ', desc: 'Когда и кому подходит. Документы, сроки, ограничения процедуры.', items: '18', pct: '78%' },
+      { id: 'CL · 04', idColor: '#FF2E9A', title: 'Анализ сделок должника', desc: 'Что искать, как доказывать недействительность, сроки исковой давности.', items: '38', pct: '32%' },
+      { id: 'CL · 05', idColor: '#00E5FF', title: 'Первая консультация · скрипт + чек-лист', desc: 'От встречи до закрытия сделки. С возражениями и контр-аргументами.', items: '28', pct: '88%' },
+      { id: 'CL · 06', idColor: '#FF2E9A', title: 'Защита единственного жилья', desc: 'Исполнительский иммунитет, тактика, прецеденты. Что говорить в суде.', items: '22', pct: '54%' },
+      { id: 'CL · 07', idColor: '#00E5FF', title: 'Запуск БФЛ-практики с нуля', desc: 'Юр. лицо, лицензии, реклама, найм. План на 90 дней до первого клиента.', items: '52', pct: '12%' }
+    ].map((c, i) => Object.assign({}, c, { '--ch-delay': (i * 60) + 'ms' }));
+
+    const checklistItems = [
+      { done: true, title: 'Собрать справки 2-НДФЛ за 3 года', meta: '01 · документы', bg: 'rgba(74,222,128,0.05)', border: 'rgba(74,222,128,0.2)', checkBorder: '#4ADE80', checkBg: '#4ADE80', titleColor: '#E8ECF2' },
+      { done: true, title: 'Запросить выписку из ЕГРН по всем объектам', meta: '02 · документы', bg: 'rgba(74,222,128,0.05)', border: 'rgba(74,222,128,0.2)', checkBorder: '#4ADE80', checkBg: '#4ADE80', titleColor: '#E8ECF2' },
+      { done: true, title: 'Получить выписку по счетам · за 3 года', meta: '03 · документы', bg: 'rgba(74,222,128,0.05)', border: 'rgba(74,222,128,0.2)', checkBorder: '#4ADE80', checkBg: '#4ADE80', titleColor: '#E8ECF2' },
+      { done: true, title: 'Описать сделки за 3 года (auto-генератор)', meta: '04 · анализ', bg: 'rgba(74,222,128,0.05)', border: 'rgba(74,222,128,0.2)', checkBorder: '#4ADE80', checkBg: '#4ADE80', titleColor: '#E8ECF2' },
+      { done: true, title: 'Выбрать СРО арбитражных управляющих', meta: '05 · выбор', bg: 'rgba(74,222,128,0.05)', border: 'rgba(74,222,128,0.2)', checkBorder: '#4ADE80', checkBg: '#4ADE80', titleColor: '#E8ECF2' },
+      { done: false, title: 'Подготовить опись имущества', meta: '06 · документы', bg: 'rgba(0,229,255,0.04)', border: 'rgba(0,229,255,0.18)', checkBorder: 'rgba(0,229,255,0.5)', checkBg: 'transparent', titleColor: '#E8ECF2' },
+      { done: false, title: 'Заполнить заявление по форме АС', meta: '07 · заявление', bg: 'rgba(0,229,255,0.04)', border: 'rgba(0,229,255,0.18)', checkBorder: 'rgba(0,229,255,0.5)', checkBg: 'transparent', titleColor: '#E8ECF2' },
+      { done: false, title: 'Оплатить госпошлину 300 ₽ + депозит', meta: '08 · подача', bg: 'rgba(255,255,255,0.02)', border: 'rgba(255,255,255,0.06)', checkBorder: 'rgba(255,255,255,0.2)', checkBg: 'transparent', titleColor: '#8B92A0' }
+    ];
+
+    // ARTICLES
+    const articles = [
+      { date: '24.09', title: 'ВС РФ изменил позицию по оспариванию сделок должника', desc: 'Определение от 22.09.2026 №305-ЭС26-12. Что теперь делать управляющим и юристам должника.', cat: 'СУДЫ', catBg: 'rgba(255,46,154,0.08)', catBd: 'rgba(255,46,154,0.25)', catColor: '#FF2E9A', read: '6 мин' },
+      { date: '23.09', title: 'Как мы автоматизировали 70% документов с AI · кейс', desc: 'Бюро «Поток-БФЛ» делится опытом внедрения AI-генератора заявлений и претензий за 4 месяца.', cat: 'AI', catBg: 'rgba(0,229,255,0.08)', catBd: 'rgba(0,229,255,0.25)', catColor: '#00E5FF', read: '9 мин' },
+      { date: '22.09', title: 'Поправки в ФЗ-127. Новый порог суммы долга', desc: 'Объясняем нормы простым языком. Что изменится для должников и для юристов в работе.', cat: 'ЗАКОН', catBg: 'rgba(0,229,255,0.08)', catBd: 'rgba(0,229,255,0.25)', catColor: '#00E5FF', read: '5 мин' },
+      { date: '21.09', title: 'Скрипт первой консультации с конверсией 38%', desc: '12 фраз, которые продают БФЛ-услугу. Разбор сильных и слабых мест классического скрипта.', cat: 'ПРОДАЖИ', catBg: 'rgba(255,46,154,0.08)', catBd: 'rgba(255,46,154,0.25)', catColor: '#FF2E9A', read: '7 мин' },
+      { date: '20.09', title: 'Защита единственного жилья. Свежая практика', desc: 'Топ-12 определений АС за лето 2026. На что суды стали обращать внимание чаще.', cat: 'КЕЙСЫ', catBg: 'rgba(255,255,255,0.04)', catBd: 'rgba(255,255,255,0.1)', catColor: '#E8ECF2', read: '11 мин' },
+      { date: '19.09', title: 'Найм юриста в БФЛ-бюро. Метрики и тесты', desc: 'Что мерять на собеседовании. Тестовое задание и поведенческие интервью.', cat: 'ПРАКТИКА', catBg: 'rgba(0,229,255,0.08)', catBd: 'rgba(0,229,255,0.25)', catColor: '#00E5FF', read: '8 мин' },
+      { date: '18.09', title: 'Внесудебное банкротство через МФЦ. Лайфхаки', desc: 'Когда оно действительно работает. Кейсы успешных и провальных подач.', cat: 'ПРАКТИКА', catBg: 'rgba(0,229,255,0.08)', catBd: 'rgba(0,229,255,0.25)', catColor: '#00E5FF', read: '6 мин' },
+      { date: '17.09', title: 'Реестр кредиторов. Тактика возражений', desc: 'Чек-лист защиты должника при включении требований. Сроки, доказательства, аргументация.', cat: 'СУДЫ', catBg: 'rgba(255,46,154,0.08)', catBd: 'rgba(255,46,154,0.25)', catColor: '#FF2E9A', read: '10 мин' }
+    ].map((a, i) => Object.assign({}, a, { '--a-delay': (i * 50) + 'ms' }));
+
+    // PRODUCTS
+    const products = [
+      { code: 'NP', name: 'NeuroPravo Bot', desc: 'AI-помощник в Telegram. Книга, чек-листы, исследования, консультант 24/7.', color: '#00E5FF', tint: 'rgba(0,229,255,0.12)', status: 'free', statusBg: 'rgba(74,222,128,0.08)', statusBd: 'rgba(74,222,128,0.25)', statusColor: '#4ADE80', access: '@NeuroPravo_Bot' },
+      { code: 'TP', name: 'Templates Pack', desc: '64 шаблона документов: заявления, претензии, ходатайства. Word + Google Docs.', color: '#FF2E9A', tint: 'rgba(255,46,154,0.1)', status: 'pro', statusBg: 'rgba(0,229,255,0.08)', statusBd: 'rgba(0,229,255,0.25)', statusColor: '#00E5FF', access: 'модуль · 04' },
+      { code: 'TR', name: 'AI Trainer Suite', desc: 'Тренажёры консультаций, переговоров, судебных кейсов. Аналитика команды.', color: '#00E5FF', tint: 'rgba(0,229,255,0.1)', status: 'pro', statusBg: 'rgba(0,229,255,0.08)', statusBd: 'rgba(0,229,255,0.25)', statusColor: '#00E5FF', access: 'модуль · 03' },
+      { code: 'CL', name: 'Checklists Bundle', desc: 'Все 7 чек-листов в одном пакете. PDF + редактируемые версии для команды.', color: '#FF2E9A', tint: 'rgba(255,46,154,0.1)', status: 'free', statusBg: 'rgba(74,222,128,0.08)', statusBd: 'rgba(74,222,128,0.25)', statusColor: '#4ADE80', access: '@NeuroPravo_Bot' },
+      { code: 'RS', name: 'Research Feed', desc: 'Подписка на свежие отчёты, датасеты, разборы рынка БФЛ. Раз в 2 недели.', color: '#00E5FF', tint: 'rgba(0,229,255,0.1)', status: 'sub', statusBg: 'rgba(255,46,154,0.08)', statusBd: 'rgba(255,46,154,0.25)', statusColor: '#FF2E9A', access: 'e-mail · feed' },
+      { code: 'AC', name: 'Academy Pass', desc: '28 курсов академии. От уровня Junior до Expert. Сертификация и наставник.', color: '#FF2E9A', tint: 'rgba(255,46,154,0.1)', status: 'sub', statusBg: 'rgba(255,46,154,0.08)', statusBd: 'rgba(255,46,154,0.25)', statusColor: '#FF2E9A', access: 'модуль · 02' }
+    ].map((p, i) => Object.assign({}, p, { '--p-delay': (i * 70) + 'ms' }));
+
+    return {
+      // Refs
+      heroCanvas: this.heroCanvasRef,
+      // Tab state
+      activeTab,
+      activeTabLabel: this.tabLabels[activeTab] || '',
+      isConference: activeTab === 'conference',
+      isAcademy: activeTab === 'academy',
+      isBook: activeTab === 'book',
+      isTraining: activeTab === 'training',
+      isResearch: activeTab === 'research',
+      isChecklists: activeTab === 'checklists',
+      isArticles: activeTab === 'articles',
+      isProducts: activeTab === 'products',
+      transitioning,
+      tabs,
+      // Hero
+      statusTimeLabel,
+      sceneStatusLabel,
+      showSceneFallback: sceneStatus === 'fallback',
+      hasHovered,
+      hoveredLabel,
+      hoveredNum,
+      // Conference
+      countdownCells, confStats, tracks, speakers, scheduleDays, tickets,
+      // Academy / Book / Training / Research / Checklists / Articles / Products
+      courses, chapters, scenarios, research, checklists, checklistItems, articles, products,
+      // Form handlers
+      onResearchSubmit: (e) => { e.preventDefault(); alert('Спасибо! Подписка активирована.'); },
+      // Handlers
+      onScrollToTabs: () => this.scrollToTabs(),
+      onScrollToProgram: () => this.scrollToProgram(),
+      onTickets: () => this.scrollToTabContent(),
+      onFooterTab1: (e) => { e.preventDefault(); this.setTab('conference'); },
+      onFooterTab2: (e) => { e.preventDefault(); this.setTab('academy'); },
+      onFooterTab3: (e) => { e.preventDefault(); this.setTab('book'); },
+      onFooterTab4: (e) => { e.preventDefault(); this.setTab('training'); },
+      onFooterTab5: (e) => { e.preventDefault(); this.setTab('research'); },
+      onFooterTab6: (e) => { e.preventDefault(); this.setTab('checklists'); },
+      onFooterTab7: (e) => { e.preventDefault(); this.setTab('articles'); },
+      onFooterTab8: (e) => { e.preventDefault(); this.setTab('products'); }
+    };
+  }
+}
+</script>
+
+
+<div id="pt-ck-banner" role="region" aria-label="Согласие на использование файлов cookie" style="display: block;"><h3>🍪 Мы используем файлы cookie</h3><p>Сайт использует cookie и обрабатывает данные для работы сервиса, аналитики и маркетинга. Необходимые cookie включены всегда, остальные — только с вашего согласия. Подробнее — в <a href="#" data-pt-doc="cookie">Политике в отношении файлов cookie</a> и <a href="#" data-pt-doc="privacy">Политике обработки персональных данных</a> (152-ФЗ).</p><div class="pt-ck-row"><button class="pt-ck-btn pri" id="pt-ck-accept">Принять все</button><button class="pt-ck-btn" id="pt-ck-reject">Только необходимые</button><button class="pt-ck-btn" id="pt-ck-custom">Настроить</button></div></div><div id="pt-ck-modal" role="dialog" aria-modal="true" aria-label="Настройки файлов cookie"><div id="pt-ck-scrim"></div><div class="pt-ck-dlg"><h3>Настройки файлов cookie</h3><p>Управляйте категориями. Изменить выбор можно в любой момент кнопкой «Cookie» внизу слева.</p><div class="pt-ck-cat"><div class="t"><b>Необходимые</b><span class="pt-ck-lock">всегда вкл.</span></div><p>Обеспечивают работу сайта: навигация, безопасность, сохранение вашего выбора. Без них сайт не работает.</p></div><div class="pt-ck-cat"><div class="t"><b>Аналитические</b><label class="pt-sw"><input type="checkbox" id="pt-ck-an"><span class="sl"></span></label></div><p>Помогают понять, как используется сайт, чтобы улучшать его. Данные обезличены.</p></div><div class="pt-ck-cat"><div class="t"><b>Маркетинговые</b><label class="pt-sw"><input type="checkbox" id="pt-ck-mk"><span class="sl"></span></label></div><p>Используются для релевантной рекламы и оценки её эффективности (ретаргетинг, пиксели).</p></div><div class="acts"><button class="pt-ck-btn pri" id="pt-ck-save">Сохранить выбор</button><button class="pt-ck-btn" id="pt-ck-accept2">Принять все</button></div></div></div><button id="pt-ck-reopen" aria-label="Настройки cookie">🍪 Cookie</button></body></html>

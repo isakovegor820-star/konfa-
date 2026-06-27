@@ -1,0 +1,217 @@
+<!DOCTYPE html><html lang='ru'><head><meta charset='utf-8'><style>
+:root{--bg:#07080B;--panel:#0C0E14;--panel2:#10131C;--line:#1C2230;--cy:#00E5FF;
+ --cy2:#1fb6c8;--tx:#E8ECF2;--mut:#8A93A6;--mut2:#5C6678;--gold:#E8B84B;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+@page{size:A4;margin:13mm 12mm;}
+body{background:var(--bg);color:var(--tx);font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:10pt;line-height:1.5;}
+.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;}
+h1,h2,h3,h4{font-family:"Space Grotesk","Inter",sans-serif;font-weight:700;letter-spacing:-.01em;}
+.cy{color:var(--cy);} .mut{color:var(--mut);} .gold{color:var(--gold);}
+/* cover */
+.cover{height:268mm;display:flex;flex-direction:column;justify-content:center;page-break-after:always;position:relative;padding:0 3mm;}
+.cover::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 42% at 50% 36%,rgba(0,229,255,.17),transparent 70%);}
+.badge{position:relative;align-self:flex-start;border:1px solid var(--cy);color:var(--cy);border-radius:6px;padding:5px 12px;font-size:8.5pt;letter-spacing:.16em;margin-bottom:26px;}
+.cover .kick{position:relative;font-size:9pt;letter-spacing:.3em;color:var(--cy);text-transform:uppercase;margin-bottom:16px;}
+.cover h1{position:relative;font-size:38pt;line-height:1.05;margin-bottom:16px;}
+.cover h1 .cy{display:block;}
+.cover .sub{position:relative;max-width:158mm;color:var(--mut);font-size:11.5pt;margin-bottom:30px;}
+.cover .meta{position:relative;display:flex;gap:26px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px;font-size:8.5pt;color:var(--mut);}
+.cover .meta b{display:block;font-size:17pt;color:var(--tx);font-family:"Space Grotesk",sans-serif;}
+/* sections */
+.sec{page-break-before:always;padding-top:1mm;}
+.sec-tag{font-size:8.5pt;letter-spacing:.2em;color:var(--cy);text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:6px;}
+.sec h2{font-size:22pt;margin:8px 0 3px;line-height:1.08;}
+.sec .lead{color:var(--mut);font-size:10.5pt;margin-bottom:14px;max-width:170mm;}
+.grp{margin:14px 0 6px;}
+.grp-h{font-size:8.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--cy2);display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.grp-h::after{content:"";flex:1;height:1px;background:var(--line);}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.card{background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--cy);border-radius:6px;padding:8px 11px;font-size:9.5pt;page-break-inside:avoid;}
+.card.full{grid-column:1/-1;}
+.cta{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 11px;font-size:9.5pt;page-break-inside:avoid;}
+.quote{background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--cy);border-radius:6px;padding:9px 12px;font-size:9.5pt;font-style:italic;color:var(--tx);page-break-inside:avoid;}
+.lab{font-size:7.5pt;letter-spacing:.1em;text-transform:uppercase;color:var(--mut2);margin-bottom:3px;}
+/* block list */
+.blk{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 13px;margin-bottom:7px;page-break-inside:avoid;}
+.blk .t{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:12pt;margin-bottom:2px;}
+.blk .tag{font-size:7.5pt;letter-spacing:.12em;text-transform:uppercase;color:var(--cy);margin-bottom:4px;}
+.blk .d{color:var(--mut);font-size:9.3pt;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+/* tickets / tariffs */
+.tk{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:11px 12px;page-break-inside:avoid;}
+.tk .n{font-size:8pt;letter-spacing:.14em;text-transform:uppercase;color:var(--cy);}
+.tk .price{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:15pt;margin:4px 0 1px;}
+.tk .old{color:var(--mut2);text-decoration:line-through;font-size:9pt;}
+.tk .f{color:var(--mut);font-size:8.6pt;margin-top:5px;}
+/* speakers */
+.sp{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 12px;page-break-inside:avoid;}
+.sp .nm{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:10.5pt;}
+.sp .ro{color:var(--cy);font-size:8.4pt;margin:2px 0;}
+.sp .tp{color:var(--mut);font-size:9pt;font-style:italic;}
+/* simple list / chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:9pt;color:var(--tx);}
+.steps{display:flex;flex-wrap:wrap;gap:6px;counter-reset:s;}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 11px;font-size:9pt;flex:1 1 30%;}
+.step b{color:var(--cy);margin-right:6px;}
+ul.li{list-style:none;margin:2px 0;} ul.li li{position:relative;padding-left:15px;color:var(--mut);font-size:9.3pt;margin:3px 0;}
+ul.li li::before{content:"▸";position:absolute;left:0;color:var(--cy);}
+.tbl{width:100%;border-collapse:collapse;}
+.tbl td{border:1px solid var(--line);padding:7px 10px;font-size:9.2pt;vertical-align:top;}
+.tbl td.p{color:var(--cy);white-space:nowrap;width:24mm;text-align:right;font-family:"Space Grotesk",sans-serif;}
+.tbl td.k{color:var(--cy);width:34mm;font-size:8.5pt;}
+.foot{margin-top:12px;border-top:1px solid var(--line);padding-top:9px;color:var(--mut2);font-size:8pt;display:flex;justify-content:space-between;}
+.subh{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:13pt;margin:16px 0 6px;color:var(--tx);}
+.subh .cy{font-weight:700;}
+</style></head><body>
+<section class="cover">
+<span class="badge mono">PRAVOTECH.PRO · LEGAL · AI · ECOSYSTEM</span>
+<div class="kick mono">ТехнологИИ права — сборник фраз сайта</div>
+<h1>Продающие фразы,<span class="cy">проект и конференция</span></h1>
+<div class="sub">Полная маркетинговая текстовка живого сайта pravotech.pro: позиционирование,
+продающие формулировки и призывы, экосистема продуктов (академия, книга, исследования,
+чек-листы, LegalHunter) и блок конференции 25–26 сентября 2026 — со спикерами, потоками и тарифами.</div>
+<div class="meta mono">
+<div><b>6</b>групп продающих фраз</div><div><b>7</b>продуктов экосистемы</div>
+<div><b>80+</b>спикеров</div><div><b>4</b>тарифа билетов</div><div><b>1500+</b>участников</div></div>
+</section>
+<section class="sec"><div class="sec-tag mono">// 01 · positioning</div><h2>Позиционирование</h2>
+<div class="lead">Как проект называет и подаёт себя — главные смысловые якоря.</div><div class="cards">
+<div class="card full"><div class="lab mono">бренд</div>ТехнологИИ права</div>
+<div class="card full"><div class="lab mono">тэглайн</div>ИИ, технологии и масштабирование юрбизнеса в банкротстве</div>
+<div class="card full"><div class="lab mono">три опоры</div>Аналитика · Обучение · Конференция</div>
+<div class="card full"><div class="lab mono">главное обещание (hero)</div>Увеличьте доход практики банкротства физлиц с помощью ИИ, аналитики и экспертного сообщества.</div>
+<div class="card full"><div class="lab mono">заголовок-крючок</div>Всё, чтобы ваша практика росла быстрее рынка.</div>
+<div class="card full"><div class="lab mono">суть экосистемы</div>ТехнологИИ права — единая экосистема для юристов и руководителей практик: обучение, аналитика рынка, ИИ-инструменты и сообщество лидеров в одном пространстве. Меньше рутины и догадок — больше дохода, скорости и уверенных решений.</div>
+<div class="card full"><div class="lab mono">почему нас выбирают</div>Нас выбирают не за отдельный курс или отчёт, а за цельную систему роста — от первого клиента до федерального масштаба.</div>
+</div></section>
+<section class="sec"><div class="sec-tag mono">// 02 · sales copy</div><h2>Продающие фразы</h2>
+<div class="lead">Формулировки, которые продают: обещания, боли, призывы, срочность, цифры и отзывы.</div>
+<div class="grp"><div class="grp-h mono">Ценностные обещания</div><div class="cards"><div class="card">Увеличьте доход практики банкротства физлиц с помощью ИИ, аналитики и экспертного сообщества.</div><div class="card">Всё, чтобы ваша практика росла быстрее рынка.</div><div class="card">Меньше рутины и догадок — больше дохода, скорости и уверенных решений.</div><div class="card">Цельная система роста — от первого клиента до федерального масштаба.</div><div class="card">Юристы, которые зарабатывают на банкротстве — учились здесь.</div><div class="card">Единственная образовательная платформа в России, где юристы осваивают БФЛ от первого дела до масштабирования практики на миллионы.</div><div class="card">Экспертиза, которой обычно делятся только за закрытыми дверями.</div><div class="card">Не теория из учебников, а выводы тех, кто ведёт банкротные дела каждый день.</div><div class="card">Те самые чек-листы, по которым работают опытные банкротные юристы.</div><div class="card">Ничего лишнего: только то, что действительно влияет на исход процедуры.</div><div class="card">Без воды и маркетинговых обещаний — только реальные кейсы и рабочие инструменты.</div><div class="card">LegalHunter — обучение, которое работает.</div><div class="card">Превращаем 24 обязательных часа из формальности в реальный рост квалификации.</div></div></div>
+<div class="grp"><div class="grp-h mono">Боли клиента (проблемы, которые закрываем)</div><div class="cards"><div class="card">Почему юристу в БФЛ опасно учиться на своих ошибках.</div><div class="card">Рынок банкротства не прощает некомпетентности.</div><div class="card">Одна ошибка в процедуре БФЛ — и клиент не освобождается от долгов. Репутация теряется мгновенно.</div><div class="card">За 2024–2026 приняли 12 ключевых поправок в закон о банкротстве. Вы уверены, что знаете все?</div><div class="card">Количество юристов в БФЛ выросло в 3 раза. Выигрывает тот, кто знает больше и работает точнее.</div><div class="card">Формальные лекции — мимо практики: между знанием закона и умением применить его — пропасть.</div><div class="card">Слабые места управляющего выявляет не аттестация, а арбитражный суд. Цена ошибки — отстранение, убытки, репутационный ущерб.</div></div></div>
+<div class="grp"><div class="grp-h mono">Призывы к действию (CTA)</div><div class="cards"><div class="cta">Академия →</div><div class="cta">Получить билет</div><div class="cta">от 15 500 ₽ · Получить билет</div><div class="cta">Забрать билет + бонус</div><div class="cta">Программа · 6 потоков</div><div class="cta">Скачать полную программу (PDF)</div><div class="cta">Подробнее</div><div class="cta">Смотреть курсы</div><div class="cta">Выбрать курс</div><div class="cta">Написать боту</div><div class="cta">Получить книгу</div><div class="cta">Все 22 отчёта</div><div class="cta">Читать отчёт</div><div class="cta">Открыть чек-лист</div><div class="cta">Получить консультацию</div><div class="cta">Начать бесплатно</div><div class="cta">Выбрать тариф</div><div class="cta">Оставить заявку</div><div class="cta">Скачать приложение</div><div class="cta">Подписаться</div><div class="cta">Открыть бот</div></div></div>
+<div class="grp"><div class="grp-h mono">Срочность · скидки · дефицит</div><div class="cards"><div class="card">Ранние цены — скидка до 70%.</div><div class="card">Количество мест ограничено.</div><div class="card">До старта: 91 дн · 10 ч · 59 мин.</div><div class="card">Купи билет до 30 июля и получи сертификат «AI для юристов» стоимостью 15 000 ₽ в подарок.</div><div class="card">Осталось 340 мест.</div><div class="card">Ранние цены действуют ограниченное время.</div><div class="card">Билеты: 52 000 ₽ → 15 500 ₽ · 68 000 → 24 600 · 136 000 → 40 800 · 231 000 → 69 000.</div><div class="card">Курс окупается ×10 с одного клиента.</div></div></div>
+<div class="grp"><div class="grp-h mono">Цифры и факты</div><div class="cards"><div class="card">Рынок БФЛ: более 500 000 новых процедур в год и рост на 30%+ ежегодно.</div><div class="card">Конференция: 1 500+ участников · 80+ спикеров · 6 потоков · 32 сессии и воркшопы.</div><div class="card">Академия: 94% клиентов выпускников освобождены от долгов · 500+ юристов обучено · 12 модулей.</div><div class="card">Книга: 117 страниц · 12 глав · редакция 2026 · бесплатно.</div><div class="card">Исследования: 22 отчёта (10 безоплатных + 12 экспертных) · данные Федресурса и ЕФРСБ.</div><div class="card">LegalHunter: 24 академических часа · сертификат с QR-верификацией по ФЗ-127.</div><div class="card">Книга экономит 10+ часов на каждом новом деле.</div></div></div>
+<div class="grp"><div class="grp-h mono">Отзывы и цитаты</div><div class="cards"><div class="quote">«Юрист без системы продаёт надежду. Юрист с системой — продаёт результат.» — Артин Василий, арбитражный управляющий, СРО «Дело»</div><div class="quote">«Идеально для старта — структурировано, без воды, с практическими шагами.» — Алексей К., арбитражный управляющий</div><div class="quote">«Раздала сотрудникам — теперь все на одной волне. Особенно полезны чек-листы внутри.» — Мария С., юрист по БФЛ</div><div class="quote">«117 страниц концентрированной пользы. Регулярно ссылаюсь на неё в работе.» — Дмитрий Л., руководитель практики</div></div></div>
+</section>
+<section class="sec"><div class="sec-tag mono">// 03 · the project</div><h2>О проекте — экосистема</h2>
+<div class="lead">Единая система роста практики БФЛ: обучение, аналитика, инструменты и сообщество.</div>
+<div class="grp"><div class="grp-h mono">Четыре направления</div><div class="row2">
+<div class="blk"><div class="t">Академия и курсы</div><div class="d">Системное обучение от старта до экспертного уровня с аттестацией и сертификатом.</div></div>
+<div class="blk"><div class="t">Исследования и аналитика</div><div class="d">Глубокие отчёты по рынку БФЛ, экономика практики, ИИ-инструменты и технологии лидеров.</div></div>
+<div class="blk"><div class="t">Инструменты юриста</div><div class="d">Чек-листы, тренажёры, шаблоны — всё для ускорения и масштабирования практики.</div></div>
+<div class="blk"><div class="t">Сообщество и нетворкинг</div><div class="d">Площадка для обмена опытом, партнёрства и роста вместе с лидерами юридического рынка.</div></div>
+</div></div>
+<div class="subh">Академия <span class="cy">— «Юристы, которые зарабатывают на банкротстве, учились здесь»</span></div>
+<div class="row2">
+<div class="blk"><div class="tag mono">Продвинутый</div><div class="t" style="font-size:11pt">Юридические аспекты БФЛ</div><div class="d">Полный курс по юридическим аспектам БФЛ. 13 видеоуроков с тестами и презентациями.</div></div>
+<div class="blk"><div class="tag mono">Экспертный · Флагман</div><div class="t" style="font-size:11pt">Неосвобождение от обязательств</div><div class="d">Когда долги не списывают: недобросовестность, сокрытие имущества, как защитить доверителя.</div></div>
+<div class="blk"><div class="tag mono">Рост</div><div class="t" style="font-size:11pt">Оспаривание сделок</div><div class="d">Подозрительные сделки и сделки с предпочтением: сроки, основания, защита.</div></div>
+<div class="blk"><div class="tag mono">Практика</div><div class="t" style="font-size:11pt">Эффективная команда</div><div class="d">Стандарты, документооборот и чек-листы для масштабирования качества работы.</div></div>
+<div class="blk"><div class="tag mono">Практика</div><div class="t" style="font-size:11pt">Продажи юридических услуг</div><div class="d">Работа с заявкой, квалификация, возражения и доведение клиента до договора.</div></div>
+<div class="blk"><div class="tag mono">Экспертный</div><div class="t" style="font-size:11pt">Эксперты рынка БФЛ</div><div class="d">Продвинутый курс для опытных: экспертные стратегии, сложные кейсы, масштабирование практики.</div></div>
+</div>
+</section>
+<section class="sec"><div class="sec-tag mono">// 03 · the project</div><h2>Книга и исследования</h2>
+<div class="subh">Книга «Банкротство физических лиц» <span class="cy">· 117 стр · бесплатно</span></div>
+<div class="quote full" style="margin-bottom:7px">Клиент спрашивает: «Заберут ли квартиру?», «А машину?», «Сколько это будет длиться?» — и ждёт чёткий ответ. Эта книга — чтобы он у вас был.</div>
+<ul class="li"><li>Экономит 10+ часов на каждом новом деле — алгоритмы и шаблоны уже готовы.</li><li>Отвечаете клиенту уверенно с первой консультации — без «надо уточнить».</li><li>Актуальное законодательство и судебная практика 2026, готовые формулировки.</li></ul>
+<div class="row2" style="margin-top:7px">
+<div class="blk"><div class="t" style="font-size:10.5pt">Часть 1 · Правовые основы</div><div class="d">Что такое банкротство, кто может подать, 127-ФЗ и позиции ВС РФ, признаки неплатёжеспособности.</div></div>
+<div class="blk"><div class="t" style="font-size:10.5pt">Часть 2 · Подготовка к процедуре</div><div class="d">Альтернативы банкротству, сбор документов, оспаривание сделок за 3 года.</div></div>
+<div class="blk"><div class="t" style="font-size:10.5pt">Часть 3 · Судебная процедура</div><div class="d">Реструктуризация, реализация имущества, завершение и списание долгов.</div></div>
+<div class="blk"><div class="t" style="font-size:10.5pt">Часть 4 · Новый старт</div><div class="d">Банкротство через МФЦ, последствия и ограничения, восстановление кредитной истории.</div></div>
+</div>
+<div class="subh">Исследования <span class="cy">· 22 отчёта · данные Федресурса и ЕФРСБ</span></div>
+<div class="lead" style="margin-bottom:8px">Экспертиза, которой обычно делятся только за закрытыми дверями. Не теория, а выводы тех, кто ведёт дела каждый день.</div>
+<div class="grp"><div class="grp-h mono">Безоплатные отчёты (10)</div><ul class="li">
+<li>Рынок БФЛ в России 2026 — объём, динамика, ключевые игроки и прогнозы.</li><li>Кто выигрывает рынок БФЛ — сравнение юрфирм, сетей и платформ.</li><li>Как ИИ меняет работу юриста по банкротству — AI-инструменты и кейсы автоматизации.</li><li>Цифровой путь клиента в БФЛ — как клиенты находят юриста и принимают решение.</li><li>Оспаривание сделок должника: судебная практика 2026.</li><li>Закредитованность как топливо рынка БФЛ — что разгоняет спрос.</li><li>Портрет банкрота-2026 — кто на самом деле списывает долги.</li><li>ИИ в арбитражных судах — от автоматизации к предсказаниям.</li><li>Банкротство глазами кредитора — списания, цессия, пассивность взыскателей.</li><li>Реструктуризация vs реализация — почему реабилитация не работает.</li>
+</ul></div>
+<div class="grp"><div class="grp-h mono">Экспертные отчёты (12) · 25–40 стр</div><table class="tbl">
+<tr><td>Экономика юридической практики в БФЛ</td><td class="p">2 490 ₽</td></tr>
+<tr><td>Какие технологии внедряют лидеры рынка</td><td class="p">1 990 ₽</td></tr>
+<tr><td>Тренды автоматизации документооборота</td><td class="p">1 990 ₽</td></tr>
+<tr><td>AI-инструменты для коммуникации и продаж</td><td class="p">2 490 ₽</td></tr>
+<tr><td>Судебная практика ВС РФ по БФЛ: позиции 2024–2026</td><td class="p">2 990 ₽</td></tr>
+<tr><td>Единственное жильё в банкротстве: защита и атака</td><td class="p">2 490 ₽</td></tr>
+<tr><td>Привлечение клиентов в БФЛ: каналы, конверсии, юнит-экономика</td><td class="p">2 990 ₽</td></tr>
+<tr><td>Субсидиарная ответственность при БФЛ</td><td class="p">2 490 ₽</td></tr>
+<tr><td>Финансовый управляющий: взаимодействие и стратегии</td><td class="p">1 990 ₽</td></tr>
+<tr><td>Региональная карта БФЛ: где растёт рынок</td><td class="p">2 990 ₽</td></tr>
+<tr><td>Внесудебное банкротство через МФЦ: практика</td><td class="p">1 990 ₽</td></tr>
+<tr><td>Построение юркомпании в БФЛ: от соло до 50+ дел/мес</td><td class="p">3 490 ₽</td></tr>
+</table></div></section>
+<section class="sec"><div class="sec-tag mono">// 03 · the project</div><h2>Инструменты и платформа</h2>
+<div class="subh">Чек-листы <span class="cy">· боевые инструменты практики</span></div>
+<div class="lead" style="margin-bottom:8px">Те самые чек-листы, по которым работают опытные банкротные юристы. Ничего лишнего — только то, что влияет на исход.</div>
+<div class="row2"><ul class="li"><li>Подготовка заявления о банкротстве гражданина</li><li>Взаимодействие с арбитражным управляющим</li><li>Внесудебное банкротство через МФЦ: проверка условий</li><li>Анализ сделок должника на риск оспаривания</li><li>Что НЕЛЬЗЯ делать перед банкротством: чек-лист рисков</li><li>Полный список документов для подачи на банкротство</li></ul>
+<ul class="li"><li>Действия после списания долгов: восстановление финансов</li><li>Первая консультация с юристом: чек-лист подготовки</li><li>Опись имущества при банкротстве: полная инвентаризация</li><li>Подготовка к банкротству за 1–3 года: превентивный чек-лист</li><li>Защита единственного жилья при банкротстве</li><li>Запуск БФЛ-практики: чек-лист первых 90 дней</li></ul></div>
+<div class="subh">LegalHunter <span class="cy">— обучение, которое работает</span></div>
+<div class="lead" style="margin-bottom:8px">LegalHunter — повышение квалификации по ФЗ-127. Тренировки с AI-должниками, интерактивные кейсы из арбитражной практики и модульная аттестация с сертификатом — всё, что нужно арбитражному управляющему для реального роста навыков.</div>
+<div class="row3">
+<div class="blk"><div class="t" style="font-size:10pt">AI-тренировки</div><div class="d" style="font-size:8.8pt">Реалистичные диалоги с должниками — текст и голос. ИИ моделирует уклонения, агрессию, манипуляции.</div></div>
+<div class="blk"><div class="t" style="font-size:10pt">Интерактивные кейсы</div><div class="d" style="font-size:8.8pt">Кейсы из арбитражной практики с ветвящимися сценариями — каждое решение влияет на исход.</div></div>
+<div class="blk"><div class="t" style="font-size:10pt">Модульная аттестация</div><div class="d" style="font-size:8.8pt">Тестирование по модулям с сертификатом. QR-код мгновенно проверяет подлинность.</div></div>
+<div class="blk"><div class="t" style="font-size:10pt">База знаний + AI-помощник</div><div class="d" style="font-size:8.8pt">База по ФЗ-127, подзаконным актам и практике. AI-помощник находит ответ за секунды.</div></div>
+<div class="blk"><div class="t" style="font-size:10pt">Мониторинг ВС РФ</div><div class="d" style="font-size:8.8pt">Отслеживание изменений законодательства и позиций Верховного Суда в реальном времени.</div></div>
+<div class="blk"><div class="t" style="font-size:10pt">Telegram-бот</div><div class="d" style="font-size:8.8pt">Доступ к тренировкам и базе знаний через Telegram — учитесь в дороге, между заседаниями.</div></div>
+</div><div class="row2" style="margin-top:7px">
+<div class="tk"><div class="n mono">Старт</div><div class="price">0 ₽ / мес</div><div class="f">Тесты, база знаний, AI-помощник «Маняша», курс «Сопровождение процедуры» бесплатно.</div></div>
+<div class="tk"><div class="n mono">Эксперт</div><div class="price">120 000 ₽ · разовый доступ</div><div class="f">Безлимит, AI-тренировки без лимита, оба полных курса, AI-помощник в базе.</div></div>
+</div>
+<div class="subh">Сопровождение банкротства под ключ</div>
+<div class="lead" style="margin-bottom:8px">Профессиональное арбитражное управление и сопровождение процедур БФЛ — от подготовки заявления до завершения дела и списания долгов.</div>
+<div class="steps"><div class="step"><b>1</b>Безоплатная консультация</div><div class="step"><b>2</b>Анализ ситуации и документов</div><div class="step"><b>3</b>Подача заявления в суд</div><div class="step"><b>4</b>Сопровождение процедуры</div><div class="step"><b>5</b>Списание долгов</div></div>
+</section>
+<section class="sec"><div class="sec-tag mono">// 04 · conference</div><h2>О конференции</h2>
+<div class="lead">«ТехнологИИ права» · 25–26 сентября 2026 · Москва · БЦ «Красные Ворота», Садовая-Спасская 21/1</div>
+<div class="cards"><div class="card full">Конференция «ТехнологИИ права» — флагманское событие 2026.</div><div class="card full">Главная индустриальная площадка о технологиях и ИИ в юридическом бизнесе. 6 потоков, 80+ спикеров, мастер-классы, выставка и нетворкинг.</div><div class="card full">Крупнейшая конференция и выставка, посвящённая технологиям в юриспруденции: банкротство физлиц, AI-инструменты, масштабирование практики.</div><div class="card full">Два дня погружения в Legal Tech, ИИ и практику банкротства. Без воды и маркетинговых обещаний — только реальные кейсы и рабочие инструменты.</div></div>
+<div class="chips" style="margin:10px 0"><span class="chip">1 500+ участников</span><span class="chip">80+ спикеров</span><span class="chip">6 потоков</span><span class="chip">32 сессии и воркшопы</span></div>
+<div class="quote full gold" style="border-left-color:var(--gold);font-style:normal">★ Купи билет до 30 июля — сертификат «AI для юристов» (15 000 ₽) в подарок. Осталось 340 мест.</div>
+<div class="subh">Шесть потоков</div><div class="row2">
+<div class="blk"><div class="tag mono">Ключевой поток</div><div class="t" style="font-size:10.5pt">Банкротство физических лиц</div><div class="d">Процедуры, судебная практика, автоматизация документов и масштабирование БФЛ-практики.</div></div>
+<div class="blk"><div class="tag mono">Стратегическое направление</div><div class="t" style="font-size:10.5pt">ИИ в юридическом бизнесе</div><div class="d">Нейросети и LLM-ассистенты, анализ документов, предиктивная аналитика решений.</div></div>
+<div class="blk"><div class="t" style="font-size:10.5pt">Автоматизация практики</div><div class="d">CRM, документооборот, workflow и интеграции в юридических процессах.</div></div>
+<div class="blk"><div class="t" style="font-size:10.5pt">Legal Tech и сервисы</div><div class="d">Цифровые инструменты, онлайн-платформы и стандарты юридической практики.</div></div>
+<div class="blk"><div class="t" style="font-size:10.5pt">Данные и безопасность</div><div class="d">Защита персональных данных, конфиденциальность и compliance в юрбизнесе.</div></div>
+<div class="blk"><div class="t" style="font-size:10.5pt">Рост и масштабирование</div><div class="d">Управление командой, продажи, операционка и рост практики.</div></div>
+</div></section>
+<section class="sec"><div class="sec-tag mono">// 04 · conference</div><h2>Спикеры · приложение · билеты</h2>
+<div class="subh">Спикеры и эксперты</div><div class="row2">
+<div class="sp"><div class="nm">Галкин Владислав Сергеевич</div><div class="ro mono">Управляющий партнёр · ЮК «Галкин и партнёры»</div><div class="tp">«Стратегии защиты должников в 2026 году»</div></div>
+<div class="sp"><div class="nm">Сизов Дмитрий Александрович</div><div class="ro mono">CEO · LegalTech Solutions</div><div class="tp">«ИИ-ассистент юриста: от теории к практике»</div></div>
+<div class="sp"><div class="nm">Артин Василий Алексеевич</div><div class="ro mono">Арбитражный управляющий · СРО «Дело»</div><div class="tp">«Цифровая трансформация работы АУ»</div></div>
+<div class="sp"><div class="nm">Путин Дмитрий Алексеевич</div><div class="ro mono">Руководитель направления · ПравоТех</div><div class="tp">«Как вырастить практику с 0 до 100 дел/мес»</div></div>
+<div class="sp"><div class="nm">Шабалин Егор Александрович</div><div class="ro mono">CTO · NeuroPravo</div><div class="tp">«NeuroPravo Bot: архитектура юридического AI-ассистента»</div></div>
+</div>
+<div class="subh">Участники — компании рынка</div>
+<div class="chips"><span class="chip">Сбербанк</span><span class="chip">Яндекс</span><span class="chip">Газпром</span><span class="chip">Росбанк</span><span class="chip">МегаФон</span><span class="chip">Ростелеком</span><span class="chip">и другие лидеры отрасли</span></div>
+<div class="subh">Конференция в кармане (приложение TechForum)</div><div class="row2">
+<div class="blk"><div class="t" style="font-size:10pt">Живое расписание</div><div class="d">32 сессии, 6 треков. Добавь доклад в календарь одним нажатием.</div></div>
+<div class="blk"><div class="t" style="font-size:10pt">AI-ассистент</div><div class="d">Спроси что угодно о программе — ИИ знает каждого спикера и каждый доклад.</div></div>
+<div class="blk"><div class="t" style="font-size:10pt">Электронный билет</div><div class="d">Покажи QR на входе — без бумажных талонов и очередей.</div></div>
+<div class="blk"><div class="t" style="font-size:10pt">Нетворкинг</div><div class="d">Общий чат, профили участников, обмен контактами прямо в приложении.</div></div>
+</div>
+<div class="subh">Билеты и тарифы <span class="cy">· ранние цены до −70%</span></div><div class="row2">
+<div class="tk"><div class="n mono">Стандарт</div><div class="price">15 500 ₽ <span class="old">52 000 ₽</span></div><div class="f">Все потоки, мастер-классы, AI-воркшопы, выставка, приложение, видеозаписи.</div></div>
+<div class="tk"><div class="n mono">Бизнес</div><div class="price">24 600 ₽ <span class="old">68 000 ₽</span></div><div class="f">Всё из «Стандарт» + круглые столы, тренинги для руководителей, бизнес-игра.</div></div>
+<div class="tk"><div class="n mono">Full Pass</div><div class="price">40 800 ₽ <span class="old">136 000 ₽</span></div><div class="f">Всё из «Бизнес» + групповой менторинг, стратсессия, мастермайнды, Спикерская.</div></div>
+<div class="tk"><div class="n mono">Корпоративный</div><div class="price">69 000 ₽ <span class="old">231 000 ₽</span></div><div class="f">5 билетов: Full Pass + Бизнес + 3 Стандарта. Для команды от руководства до специалистов.</div></div>
+</div></section>
+<section class="sec"><div class="sec-tag mono">// 04 · conference · B2B</div><h2>Экспозона и спонсорство</h2>
+<div class="lead">Экспозона — прямой выход к юридическому рынку: юрфирмам, арбитражным управляющим, ТОП-менеджменту и партнёрам. Стенды 4 / 9 / 16 / 25 м².</div>
+<div class="subh">Спонсорские пакеты</div><div class="row3">
+<div class="tk"><div class="n mono gold">Серебро</div><div class="price">от 300 000 ₽</div><div class="f">Логотип на сайте, 2 билета, упоминание в рассылке 5000+, сертификат партнёра.</div></div>
+<div class="tk"><div class="n mono gold">Золото</div><div class="price">от 700 000 ₽</div><div class="f">Всё из «Серебро» + стенд 3×3, 5+2 VIP билета, доклад 15 мин, страница спонсора.</div></div>
+<div class="tk"><div class="n mono gold">Платина</div><div class="price">от 1 500 000 ₽</div><div class="f">Всё из «Золото» + стенд 5×5, пленарный доклад 30 мин, статус «Генеральный партнёр».</div></div>
+</div>
+<div class="subh">Контакты и точки входа</div><table class="tbl">
+<tr><td class="k mono">Telegram-бот</td><td>@NeuroPravo_Bot — AI-помощник, книга, чек-листы, отчёты</td></tr>
+<tr><td class="k mono">Telegram-канал</td><td>@kredit_advokat / @ainovaci — разборы дел, изменения закона, кейсы</td></tr>
+<tr><td class="k mono">Конференция</td><td>25–26 сентября 2026 · Москва, БЦ «Красные Ворота», Садовая-Спасская 21/1</td></tr>
+<tr><td class="k mono">Приложение</td><td>TechForum — расписание, AI-ассистент, билет (RuStore)</td></tr>
+<tr><td class="k mono">Сайт</td><td>pravotech.pro · LegalHunter — legalhunter.pro</td></tr>
+</table>
+<div class="foot mono"><span>ТехнологИИ права · pravotech.pro</span><span>сборник продающих фраз · извлечено с живого сайта</span></div>
+</section></body></html>

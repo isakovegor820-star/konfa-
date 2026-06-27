@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang='ru'><head><meta charset='utf-8'><style>
+:root{--bg:#07080B;--panel:#0C0E14;--panel2:#10131C;--line:#1C2230;--cy:#00E5FF;--cy2:#1fb6c8;
+ --tx:#E8ECF2;--mut:#8A93A6;--mut2:#5C6678;--gold:#E8B84B;--red:#E26;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+@page{size:A4;margin:13mm 12mm;}
+body{background:var(--bg);color:var(--tx);font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:10pt;line-height:1.5;}
+.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;}
+h1,h2,h3{font-family:"Space Grotesk","Inter",sans-serif;font-weight:700;letter-spacing:-.01em;}
+.cy{color:var(--cy);} .mut{color:var(--mut);} .gold{color:var(--gold);}
+/* cover */
+.cover{height:268mm;display:flex;flex-direction:column;justify-content:center;page-break-after:always;position:relative;padding:0 3mm;}
+.cover::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 42% at 50% 36%,rgba(0,229,255,.17),transparent 70%);}
+.badge{position:relative;align-self:flex-start;border:1px solid var(--cy);color:var(--cy);border-radius:6px;padding:5px 12px;font-size:8.5pt;letter-spacing:.16em;margin-bottom:24px;}
+.cover .kick{position:relative;font-size:9pt;letter-spacing:.3em;color:var(--cy);text-transform:uppercase;margin-bottom:16px;}
+.cover h1{position:relative;font-size:37pt;line-height:1.05;margin-bottom:16px;}
+.cover h1 .cy{display:block;}
+.cover .sub{position:relative;max-width:160mm;color:var(--mut);font-size:11.5pt;margin-bottom:26px;}
+.three{position:relative;display:flex;gap:9px;}
+.three .b{flex:1;background:var(--panel);border:1px solid var(--line);border-top:2px solid var(--cy);border-radius:8px;padding:11px 13px;}
+.three .b .n{font-family:"Space Grotesk";font-weight:700;font-size:9pt;letter-spacing:.1em;color:var(--cy);text-transform:uppercase;}
+.three .b .t{font-family:"Space Grotesk";font-weight:700;font-size:13pt;margin:5px 0 3px;}
+.three .b .d{color:var(--mut);font-size:8.6pt;}
+/* principle */
+.sec{page-break-before:always;padding-top:1mm;}
+.sec-tag{font-size:8.5pt;letter-spacing:.2em;color:var(--cy);text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:6px;}
+.sec h2{font-size:22pt;margin:8px 0 3px;line-height:1.08;}
+.sec .lead{color:var(--mut);font-size:10.5pt;margin-bottom:14px;max-width:170mm;}
+.pr{background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--cy);border-radius:7px;padding:11px 13px;margin-bottom:8px;page-break-inside:avoid;}
+.pr .t{font-family:"Space Grotesk";font-weight:700;font-size:11.5pt;margin-bottom:2px;}
+.pr .d{color:var(--mut);font-size:9.6pt;}
+/* persona band */
+.band{position:relative;background:linear-gradient(135deg,rgba(0,229,255,.12),rgba(0,229,255,0));
+ border:1px solid var(--line);border-left:3px solid var(--cy);border-radius:10px;padding:11px 15px;margin-bottom:9px;page-break-inside:avoid;}
+.band .no{font-family:"Space Grotesk";font-weight:700;font-size:9pt;letter-spacing:.18em;color:var(--cy);}
+.band h2{font-size:21pt;margin:2px 0 5px;}
+.band .who{color:var(--tx);font-size:10pt;}
+.band .pain{color:var(--mut);font-size:9.2pt;margin-top:4px;}
+.band .tk{display:inline-block;margin-top:9px;background:var(--panel2);border:1px solid var(--cy);color:var(--cy);
+ border-radius:999px;padding:4px 13px;font-size:9pt;font-family:"Space Grotesk";font-weight:600;}
+.ignore{background:#160d0f;border:1px solid #3a1f22;border-left:2px solid var(--red);border-radius:7px;
+ padding:8px 12px;margin-bottom:8px;color:#d9a;font-size:9.2pt;font-style:italic;page-break-inside:avoid;}
+.grp{margin:8px 0 4px;}
+.grp-h{font-size:8.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--cy2);display:flex;align-items:center;gap:9px;margin-bottom:7px;}
+.grp-h::after{content:"";flex:1;height:1px;background:var(--line);}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.card{background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--cy);border-radius:6px;padding:7px 11px;font-size:9.5pt;page-break-inside:avoid;}
+.cta{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:9.3pt;page-break-inside:avoid;color:var(--tx);}
+.cta::before{content:"▸ ";color:var(--cy);}
+.punch{background:var(--panel);border:1px dashed var(--cy);border-radius:8px;padding:9px 13px;margin-top:7px;
+ font-size:10.5pt;font-family:"Space Grotesk";font-weight:600;color:var(--tx);page-break-inside:avoid;}
+.punch::before{content:"➜  ";color:var(--cy);}
+.math{background:#0a0d12;border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-top:7px;page-break-inside:avoid;}
+.math .mh{font-size:8pt;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
+.math table{width:100%;border-collapse:collapse;}
+.math td{padding:4px 0;font-size:10pt;}
+.math td.v{text-align:right;color:var(--cy);font-family:"Space Grotesk";font-weight:700;white-space:nowrap;}
+.math tr+tr td{border-top:1px solid var(--line);}
+.math tr:last-child td{color:var(--gold);font-weight:700;border-top:1px solid var(--gold);}
+/* map */
+.tbl{width:100%;border-collapse:collapse;margin-top:6px;}
+.tbl th{background:var(--panel2);color:var(--cy);font-size:8pt;letter-spacing:.12em;text-transform:uppercase;
+ text-align:left;padding:8px 11px;border:1px solid var(--line);font-weight:600;}
+.tbl td{border:1px solid var(--line);padding:9px 11px;font-size:9.5pt;vertical-align:top;}
+.tbl td.p{color:var(--cy);white-space:nowrap;font-family:"Space Grotesk";font-weight:700;}
+.tbl td.s{font-family:"Space Grotesk";font-weight:700;color:var(--tx);}
+.subh{font-family:"Space Grotesk";font-weight:700;font-size:13pt;margin:16px 0 7px;}
+.foot{margin-top:13px;border-top:1px solid var(--line);padding-top:9px;color:var(--mut2);font-size:8pt;display:flex;justify-content:space-between;}
+</style></head><body>
+<section class="cover">
+<span class="badge mono">КОНФЕРЕНЦИЯ «ТЕХНОЛОГИИ ПРАВА» · 25–26 СЕНТЯБРЯ 2026</span>
+<div class="kick mono">скрипт продаж билетов · pravotech.pro</div>
+<h1>Продающие фразы<span class="cy">для билетов на конференцию</span></h1>
+<div class="sub">Готовые формулировки под три типа покупателя — одиночки, команды и владельцы практик БФЛ.
+Для каждого: крючки, доказательства пользы, аргументы «будет круто», призывы и ROI.</div>
+<div class="three">
+<div class="b"><div class="n">персона 01</div><div class="t">Одиночки</div><div class="d">Соло-юрист. Билет «Стандарт» от 15 500 ₽.</div></div>
+<div class="b"><div class="n">персона 02</div><div class="t">Команды</div><div class="d">Юрфирма группой. Билет «Бизнес» от 24 600 ₽.</div></div>
+<div class="b"><div class="n">персона 03</div><div class="t">Владельцы</div><div class="d">Собственник практики. «Корпоративный» 69 000 ₽.</div></div>
+</div></section>
+<section class="sec"><div class="sec-tag mono">// принцип</div><h2>Главное перед фразами</h2>
+<div class="lead">Три правила, на которых держатся все формулировки ниже.</div>
+<div class="pr"><div class="t">Никто не покупает «билет»</div><div class="d">Покупают исход. Одиночка — больше дел и «не проиграть». Команда — навык и единый стандарт. Владелец — систему роста и ROI.</div></div>
+<div class="pr"><div class="t">Две задачи каждой фразы</div><div class="d">1) Доказать пользу — конкретной программой, а не словом «полезно». 2) Доказать, что будет круто — масштаб, связи, статус, дефицит.</div></div>
+<div class="pr"><div class="t">Сегмент = тариф</div><div class="d">Одиночка → «Стандарт». Команда → «Бизнес»/групповой. Владелец → «Корпоративный»/«Full Pass».</div></div>
+</section>
+<section class="sec"><div class="sec-tag mono">// персона 01</div>
+<div class="band"><div class="no mono">ПЕРСОНА · 01</div>
+      <h2>Для одиночек</h2><div class="who">Соло-юрист или ИП по БФЛ. Покупает билет себе.</div>
+      <div class="pain">Боль: Конкуренция выросла втрое, 12 поправок за 2024–2026, страх проиграть дело, рутина, дорогой лид.</div>
+      <span class="tk">Билет «Стандарт» · 15 500 ₽ (было 52 000)</span></div>
+<div class="grp"><div class="grp-h mono">Крючки — что зацепит</div><div class="cards"><div class="card">Два дня, которые окупит одно выигранное дело.</div><div class="card">Заберите свою долю рынка, пока конкуренты учатся на своих ошибках.</div><div class="card">Всё, что изменилось в БФЛ за 2024–2026 — за два дня, без чтения 12 поправок.</div><div class="card">Перестаньте гуглить по ночам — получите готовые алгоритмы из первых рук.</div></div></div>
+<div class="grp"><div class="grp-h mono">Чем доказать пользу</div><div class="cards"><div class="card">Поток «Банкротство физлиц»: оспаривание сделок, единственное жильё, неосвобождение — свежая судебная практика.</div><div class="card">Галкин — «Стратегии защиты должников 2026». Путин — «Практика с 0 до 100 дел/мес».</div><div class="card">AI-воркшопы: ИИ готовит документы за вас — попробуете руками.</div><div class="card">Уносите готовые шаблоны и чек-листы, а не конспекты.</div></div></div>
+<div class="grp"><div class="grp-h mono">Чем доказать, что будет круто</div><div class="cards"><div class="card">1500+ коллег и 80+ спикеров — весь рынок БФЛ в одном зале.</div><div class="card">Сертификат «AI для юристов» (15 000 ₽) в подарок при покупке до 30 июля.</div><div class="card">Партнёрства с арбитражными управляющими, которые приносят дела.</div></div></div>
+<div class="grp"><div class="grp-h mono">Призывы к действию</div><div class="cards"><div class="cta">Забронировать место — «Стандарт» от 15 500 ₽</div><div class="cta">Успеть по ранней цене</div><div class="cta">Подобрать билет в @NeuroPravo_Bot</div></div></div>
+<div class="punch">Один новый клиент с конференции окупает билет 5–10 раз.</div>
+</section>
+<section class="sec"><div class="sec-tag mono">// персона 02</div>
+<div class="band"><div class="no mono">ПЕРСОНА · 02</div>
+      <h2>Для команды</h2><div class="who">Юристы, ассистенты, продажники практики. Едут группой.</div>
+      <div class="pain">Боль: Команда работает вразнобой, навыки разного уровня, брак в делах → возвраты и злые отзывы.</div>
+      <span class="tk">Билет «Бизнес» · 24 600 ₽ (было 68 000) · или групповой</span></div>
+<div class="grp"><div class="grp-h mono">Крючки — что зацепит</div><div class="cards"><div class="card">Привезите команду — вернётесь с единым стандартом работы, а не с разными конспектами.</div><div class="card">Пусть вся команда заговорит на одном языке БФЛ.</div><div class="card">Сильная команда = меньше брака в делах и меньше возвратов.</div><div class="card">2 дня вне рутины: обучение и тимбилдинг одновременно.</div></div></div>
+<div class="grp"><div class="grp-h mono">Чем доказать пользу</div><div class="cards"><div class="card">Потоки «Рост и масштабирование» и «Автоматизация практики»: продажи, документооборот, CRM, регламенты.</div><div class="card">В тарифе «Бизнес» — тренинги для руководителей, круглые столы и бизнес-игра.</div><div class="card">Тренажёры с AI-должниками и модульная аттестация — навык, а не теория.</div><div class="card">Каждый сотрудник уносит сертификат участника.</div></div></div>
+<div class="grp"><div class="grp-h mono">Чем доказать, что будет круто</div><div class="cards"><div class="card">В зале — Сбербанк, Яндекс, Газпром: уровень, связи, выставка решений.</div><div class="card">Приложение конференции у каждого: AI-ассистент, расписание, нетворкинг.</div><div class="card">Общий опыт команды, который потом держит её вместе.</div></div></div>
+<div class="grp"><div class="grp-h mono">Призывы к действию</div><div class="cards"><div class="cta">Взять командой — «Бизнес» от 24 600 ₽</div><div class="cta">Запросить групповые условия</div><div class="cta">Обсудить участие команды</div></div></div>
+<div class="punch">Один не ушедший сотрудник и +5% к конверсии воронки окупают все билеты.</div>
+</section>
+<section class="sec"><div class="sec-tag mono">// персона 03</div>
+<div class="band"><div class="no mono">ПЕРСОНА · 03</div>
+      <h2>Для владельцев команды</h2><div class="who">Собственник практики / руководитель. ЛПР, мыслит P&amp;L и потоком дел.</div>
+      <div class="pain">Боль: Себестоимость дела, маржа, дел/мес, найм, текучка, дорогой лид, зависимость бизнеса от собственника.</div>
+      <span class="tk">Билет «Корпоративный» · 69 000 ₽ (было 231 000, 5 мест) · или «Full Pass» 40 800 ₽</span></div>
+<div class="ignore">⛌ Пролистываю не глядя: «что такое банкротство», «ИИ — будущее», мотивацию, спикеров-теоретиков и нетворкинг ради нетворкинга. Продайте мне прибыль, а не мероприятие.</div>
+<div class="grp"><div class="grp-h mono">Крючки — что зацепит</div><div class="cards"><div class="card">С 0 до 100 дел в месяц: оргструктура, найм, финмодель.</div><div class="card">Уберите рутину раньше конкурентов — на каких этапах ИИ снимает часы юриста.</div><div class="card">Обучите команду без себя: тренажёры, аттестация, регламенты.</div><div class="card">Один невозвращённый кейс окупает все 5 билетов.</div></div></div>
+<div class="grp"><div class="grp-h mono">Чем доказать пользу</div><div class="cards"><div class="card">Доклад Путина «с 0 до 100 дел/мес» + отчёт «Построение юркомпании от соло до 50+ дел/мес».</div><div class="card">Юнит-экономика привлечения: реальные CPL/CPA, рейтинг каналов, воронка.</div><div class="card">Закрытые форматы «Full Pass»: мастермайнды для ТОПов, стратегическая сессия, Спикерская.</div></div></div>
+<div class="grp"><div class="grp-h mono">Чем доказать, что будет круто</div><div class="cards"><div class="card">За закрытыми столами — владельцы практик, которые уже делают 100+ дел/мес.</div><div class="card">Партнёрства с АУ и регионалами — реферальный поток на годы.</div><div class="card">Участники уровня Сбер / Яндекс / Газпром — реальные B2B-связки.</div></div></div>
+<div class="grp"><div class="grp-h mono">Призывы к действию</div><div class="cards"><div class="cta">Привести команду — «Корпоративный» 69 000 ₽ (5 билетов)</div><div class="cta">Обсудить корпоративные условия</div><div class="cta">Забрать раннюю цену до 30 июля</div></div></div>
+<div class="math"><div class="mh mono">математика, которая закрывает сделку</div><table>
+<tr><td>Корпоративный билет (5 чел)</td><td class="v">69 000 ₽</td></tr>
+<tr><td>Средний чек одного дела</td><td class="v">~100 000 ₽</td></tr>
+<tr><td>Бонус-сертификаты 15 000 ₽ × 5</td><td class="v">75 000 ₽ ценности</td></tr>
+<tr><td>Окупаемость</td><td class="v">1 дело — остальное в плюс</td></tr>
+</table></div>
+<div class="punch">Билет — самый дешёвый способ купить чужие 5 лет ошибок.</div>
+</section>
+<section class="sec"><div class="sec-tag mono">// для всех</div><h2>Универсальные усилители</h2>
+<div class="lead">Работают для любой персоны — добавляйте в конец оффера.</div>
+<div class="grp"><div class="grp-h mono">Срочность и дефицит</div><div class="cards"><div class="card">Ранние цены — до −70%. После 30 июля дороже.</div><div class="card">Осталось 340 мест.</div><div class="card">Купи до 30 июля — сертификат «AI для юристов» (15 000 ₽) в подарок.</div><div class="card">До старта 91 день. Цена растёт не в день Х, а сейчас.</div></div></div>
+<div class="grp"><div class="grp-h mono">Снятие риска</div><div class="cards"><div class="card">Не сможете быть очно — все выступления в записи остаются с вами.</div><div class="card">Не выбрали тариф — бот подберёт под вас за 2 минуты (@NeuroPravo_Bot).</div></div></div>
+<div class="subh">Какой билет кому продавать</div>
+<table class="tbl"><tr><th>Персона</th><th>Тариф</th><th>Цена</th><th>За что платит</th></tr>
+<tr><td class="s">Одиночка</td><td>«Стандарт»</td><td class="p">15 500 ₽</td><td>Себе. Личный рост, больше дел, «не проиграть».</td></tr>
+<tr><td class="s">Команда</td><td>«Бизнес» / групповой</td><td class="p">24 600 ₽</td><td>Сотрудникам. Единый стандарт, навык, сертификаты.</td></tr>
+<tr><td class="s">Владелец</td><td>«Корпоративный» / «Full Pass»</td><td class="p">69 000 / 40 800 ₽</td><td>Систему роста, ROI, обучение команды без себя.</td></tr>
+</table>
+<div class="foot mono"><span>Конференция «ТехнологИИ права» · pravotech.pro</span><span>скрипт продаж билетов · 3 персоны</span></div>
+</section></body></html>

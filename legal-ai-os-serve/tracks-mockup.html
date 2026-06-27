@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Потоки — макет (bento / техно)</title>
+<style>
+:root{
+  --bg:#07080B; --panel:#0C0E14; --line:#1C2230; --tx:#EAF0F7; --mut:#AEB8C7;
+  --cy:#00E5FF; --mag:#FF2E9A;
+  --fz-h:"Space Grotesk","Inter",system-ui,sans-serif;
+  --fz-m:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --fz-b:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--tx);font-family:var(--fz-b);line-height:1.5;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:42px 42px;}
+.wrap{max-width:1160px;margin:0 auto;padding:64px 22px;}
+.hud{font-family:var(--fz-m);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--cy);}
+h1{font-family:var(--fz-h);font-weight:700;font-size:clamp(28px,5vw,46px);letter-spacing:-.02em;margin:12px 0 6px;line-height:1.05;}
+.sub{color:var(--mut);max-width:60ch;margin-bottom:30px;font-size:16px;}
+.hint{font-family:var(--fz-m);font-size:12px;color:#6B7686;margin-top:18px;}
+
+/* ===== BENTO ===== */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:165px;gap:14px;
+  grid-template-areas:"a a b b" "a a c d" "e e f f";}
+@media(max-width:900px){.bento{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px;
+  grid-template-areas:"a a" "a a" "b b" "c d" "e e" "f f";}}
+@media(max-width:560px){.bento{grid-template-columns:1fr;grid-template-areas:"a""a""b""c""d""e""f";}}
+
+.trk{position:relative;overflow:hidden;border-radius:16px;padding:20px;display:flex;flex-direction:column;
+  background:
+    radial-gradient(120% 120% at 0% 0%, color-mix(in srgb,var(--c1) 26%, transparent), transparent 55%),
+    linear-gradient(150deg, color-mix(in srgb,var(--c1) 14%, #0b0e15), color-mix(in srgb,var(--c2) 9%, #090b11));
+  border:1px solid color-mix(in srgb,var(--c1) 34%, var(--line));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+  transition:transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s, border-color .22s;}
+.trk::before{/* верхняя свет-полоса */content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--c1),var(--c2));opacity:.9;}
+.trk::after{/* угловые скобки HUD */content:"";position:absolute;inset:10px;border-radius:10px;pointer-events:none;
+  background:
+   linear-gradient(var(--c1),var(--c1)) left top/14px 1.5px no-repeat,
+   linear-gradient(var(--c1),var(--c1)) left top/1.5px 14px no-repeat,
+   linear-gradient(var(--c1),var(--c1)) right bottom/14px 1.5px no-repeat,
+   linear-gradient(var(--c1),var(--c1)) right bottom/1.5px 14px no-repeat;
+  opacity:.5;}
+.trk:hover{transform:translateY(-5px);
+  border-color:color-mix(in srgb,var(--c1) 70%, transparent);
+  box-shadow:0 16px 40px color-mix(in srgb,var(--c1) 22%, transparent),0 0 0 1px color-mix(in srgb,var(--c1) 40%,transparent);}
+.t-a{grid-area:a;} .t-b{grid-area:b;} .t-c{grid-area:c;} .t-d{grid-area:d;} .t-e{grid-area:e;} .t-f{grid-area:f;}
+
+.t-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.t-hud{font-family:var(--fz-m);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:color-mix(in srgb,var(--c1) 85%,#fff);}
+.t-num{font-family:var(--fz-h);font-weight:700;font-size:clamp(34px,7vw,64px);line-height:.85;
+  color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--c1) 70%, #888);opacity:.55;}
+.t-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb,var(--c1) 20%, #0c0f16);border:1px solid color-mix(in srgb,var(--c1) 45%, transparent);}
+.t-ico svg{width:19px;height:19px;stroke:color-mix(in srgb,var(--c1) 90%,#fff);fill:none;stroke-width:1.8;}
+.t-body{margin-top:auto;}
+.trk h3{font-family:var(--fz-h);font-weight:700;letter-spacing:-.01em;font-size:18px;margin:14px 0 6px;}
+.t-a h3{font-size:26px;}
+.trk p{color:var(--mut);font-size:13.5px;line-height:1.45;}
+.t-a p{font-size:15px;max-width:42ch;}
+.t-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;}
+.t-tags span{font-family:var(--fz-m);font-size:10.5px;color:color-mix(in srgb,var(--c1) 85%,#fff);
+  border:1px solid color-mix(in srgb,var(--c1) 35%,transparent);border-radius:999px;padding:3px 9px;
+  background:color-mix(in srgb,var(--c1) 8%,transparent);}
+.t-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;
+  font-family:var(--fz-m);font-size:11.5px;color:var(--mut);}
+.t-foot .arr{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:1px solid color-mix(in srgb,var(--c1) 45%,transparent);color:color-mix(in srgb,var(--c1) 90%,#fff);transition:.2s;}
+.trk:hover .t-foot .arr{background:var(--c1);color:#06222a;border-color:var(--c1);transform:translateX(2px);}
+.t-glow{position:absolute;width:180px;height:180px;border-radius:50%;right:-50px;bottom:-60px;pointer-events:none;
+  background:radial-gradient(circle,color-mix(in srgb,var(--c1) 30%,transparent),transparent 70%);filter:blur(8px);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="hud">// module · 01 · event command center</span>
+  <h1>Шесть параллельных потоков</h1>
+  <p class="sub">Каждый поток — собственный продюсер, собственная программа и плотная боевая повестка для практикующих юристов.</p>
+
+  <div class="bento">
+    <!-- 01 HERO -->
+    <article class="trk t-a" style="--c1:#00E5FF;--c2:#3B82F6">
+      <div class="t-top">
+        <span class="t-hud">// track · 01 · flagship</span>
+        <span class="t-ico"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></span>
+      </div>
+      <div class="t-num">01</div>
+      <div class="t-body">
+        <h3>AI в банкротстве</h3>
+        <p>Нейросети для юристов БФЛ: автоматизация анализа сделок, генерация документов, AI-ассистенты в практике.</p>
+        <div class="t-tags"><span>LLM</span><span>автоматизация</span><span>предиктив</span></div>
+        <div class="t-foot"><span>14 сессий</span><span class="arr">→</span></div>
+      </div>
+      <div class="t-glow"></div>
+    </article>
+
+    <!-- 02 wide -->
+    <article class="trk t-b" style="--c1:#FF2E9A;--c2:#A855F7">
+      <div class="t-top"><span class="t-hud">// track · 02</span>
+        <span class="t-ico"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 7-7"/><path d="M21 8v5h-5"/></svg></span></div>
+      <div class="t-body"><h3>Масштабирование практики</h3>
+        <p>Как вырастить юрбизнес в БФЛ: воронки клиентов, найм, юнит-экономика, упаковка услуг.</p>
+        <div class="t-foot"><span>12 сессий</span><span class="arr">→</span></div></div>
+      <div class="t-glow"></div>
+    </article>
+
+    <!-- 03 -->
+    <article class="trk t-c" style="--c1:#7BB8FF;--c2:#6366F1">
+      <div class="t-top"><span class="t-hud">// 03</span>
+        <span class="t-ico"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 7l7-4 7 4M5 7l3 7H2zM19 7l3 7h-6z"/></svg></span></div>
+      <div class="t-body"><h3>Право и судебная практика</h3>
+        <p>Разборы дел, изменения закона 2025–2026, прецеденты.</p>
+        <div class="t-foot"><span>16 сессий</span><span class="arr">→</span></div></div>
+      <div class="t-glow"></div>
+    </article>
+
+    <!-- 04 -->
+    <article class="trk t-d" style="--c1:#E8B84B;--c2:#F97316">
+      <div class="t-top"><span class="t-hud">// 04</span>
+        <span class="t-ico"><svg viewBox="0 0 24 24"><path d="M3 11l15-6v14L3 13zM3 11v2M8 12.5V19l3 1v-6"/></svg></span></div>
+      <div class="t-body"><h3>Продажи и маркетинг</h3>
+        <p>Скрипты, чек-листы, контент и performance.</p>
+        <div class="t-foot"><span>11 сессий</span><span class="arr">→</span></div></div>
+      <div class="t-glow"></div>
+    </article>
+
+    <!-- 05 wide -->
+    <article class="trk t-e" style="--c1:#4ADE80;--c2:#14B8A6">
+      <div class="t-top"><span class="t-hud">// track · 05</span>
+        <span class="t-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><circle cx="17" cy="8" r="2.3"/><path d="M16 15c3 0 5 2 5 5"/></svg></span></div>
+      <div class="t-body"><h3>Команда и управление</h3>
+        <p>Найм, мотивация, культура. Регулярный менеджмент юриста, KPI и метрики практики.</p>
+        <div class="t-foot"><span>10 сессий</span><span class="arr">→</span></div></div>
+      <div class="t-glow"></div>
+    </article>
+
+    <!-- 06 wide -->
+    <article class="trk t-f" style="--c1:#A78BFA;--c2:#7C3AED">
+      <div class="t-top"><span class="t-hud">// track · 06</span>
+        <span class="t-ico"><svg viewBox="0 0 24 24"><path d="M3 21h10M6 13l4-4M5 9l5 5M9 5l5 5M13 3l8 8-3 3-8-8z"/></svg></span></div>
+      <div class="t-body"><h3>Арбитражное управление</h3>
+        <p>Практика АУ: судебные баталии, работа с реестром, инвентаризация, торги и оспаривание.</p>
+        <div class="t-foot"><span>13 сессий</span><span class="arr">→</span></div></div>
+      <div class="t-glow"></div>
+    </article>
+  </div>
+
+  <p class="hint">↑ макет. наведи курсор на карточку — подъём + свечение + стрелка заливается цветом</p>
+</div>
+</body>
+</html>
