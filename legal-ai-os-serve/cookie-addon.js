@@ -36,7 +36,7 @@
 .pt-ck-cat .t{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px;}\
 .pt-ck-cat .t b{font-size:15px;}\
 .pt-ck-cat p{color:#9AA6B8;font-size:12.5px;line-height:1.5;margin:0;}\
-.pt-ck-lock{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6B7686;}\
+.pt-ck-lock{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#7d8492;}\
 .pt-sw{position:relative;width:44px;height:25px;flex:0 0 auto;display:inline-block;}\
 .pt-sw input{opacity:0;width:0;height:0;position:absolute;}\
 .pt-sw .sl{position:absolute;inset:0;background:#262d3d;border-radius:999px;transition:.2s;cursor:pointer;}\
