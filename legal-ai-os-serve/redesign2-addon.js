@@ -47,7 +47,7 @@
 `;
 
   function gcard(o) {
-    var badge = o.badge ? `<span class="rd-dia"><span>${o.badge}</span></span>` : `<span class="rd-kbd">${o.kbd}</span>`;
+    var badge = o.badge ? `<span class="rd-dia"><span>${o.badge}</span></span>` : o.kbd ? `<span class="rd-kbd">${o.kbd}</span>` : `<span class="rd-kbd"></span>`;
     var right = o.tag ? `<span class="rd-tag">${o.tag}</span>` : `<span class="rd-metric">${o.tr || ""}</span>`;
     var num = o.num ? `<div class="rd-num">${o.num}</div>` : "";
     var tags = o.tags ? `<div class="rd-tags">${o.tags.map(function (t) { return "<span>" + t + "</span>"; }).join("")}</div>` : "";
