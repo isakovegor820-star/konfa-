@@ -23,6 +23,7 @@
 .ptv-title h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.5rem;letter-spacing:-.01em;color:#fff;margin:0 0 4px;text-shadow:0 2px 14px rgba(0,0,0,.75);}
 .ptv-title p{color:#d3dbe6;font-size:.9rem;margin:0;text-shadow:0 1px 8px rgba(0,0,0,.75);}
 .ptv-foot{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:18px 20px;}
+@media(max-width:560px){.ptv-foot{grid-template-columns:1fr 1fr;gap:10px 16px;}}
 .ptv-foot .k{display:block;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:#7d8492;margin-bottom:4px;}
 .ptv-foot .v{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.9rem;color:#dfe5ee;}
 @keyframes ptvken{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.12) translate(-1%,-3%)}}

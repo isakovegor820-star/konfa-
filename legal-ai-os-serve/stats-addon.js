@@ -21,6 +21,7 @@
 .pt-st-val{margin-top:auto !important;}
 .pt-st-n{font-family:'Space Grotesk',system-ui,sans-serif !important;font-weight:700 !important;font-size:46px !important;line-height:1 !important;color:var(--a) !important;font-variant-numeric:tabular-nums !important;font-feature-settings:"tnum" 1 !important;letter-spacing:.01em !important;}
 .pt-st-l{font-size:13.5px !important;line-height:1.4 !important;color:#aeb8c7 !important;margin-top:9px !important;}
+@media(max-width:560px){.pt-st-n{font-size:40px !important;}}
 `;
 
   function injectCSS() { if (!document.getElementById("pt-stats-style") && document.head) { var s = document.createElement("style"); s.id = "pt-stats-style"; s.textContent = CSS; document.head.appendChild(s); } }
