@@ -27,7 +27,7 @@
 .pt-cd-card::before{content:"" !important;position:absolute !important;top:0;left:18px;right:18px;height:2px !important;
   background:linear-gradient(90deg,#00E5FF,#FF2E9A) !important;opacity:.6 !important;border-radius:2px;z-index:2;pointer-events:none;}
 .pt-cd-card:hover{transform:none !important;}
-.pt-cd-head{padding-left:18px !important;padding-top:3px !important;}
+.pt-cd-card>:first-child{padding:8px 24px 6px 30px !important;}
 .pt-cd-grid{gap:0 !important;}
 .pt-cd-seg{
   border:0 !important;border-radius:0 !important;background:none !important;background-image:none !important;
