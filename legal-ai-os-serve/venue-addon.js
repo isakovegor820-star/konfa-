@@ -19,8 +19,6 @@
 .ptv-hud .l{color:#eaf0f7;}.ptv-hud .g{color:#bfe9f5;}
 .ptv-cr{position:absolute;width:15px;height:15px;border:1.5px solid rgba(255,255,255,.4);z-index:3;}
 .ptv-cr.a{top:11px;left:11px;border-right:0;border-bottom:0;}.ptv-cr.b{top:11px;right:11px;border-left:0;border-bottom:0;}.ptv-cr.c{bottom:11px;left:11px;border-right:0;border-top:0;}.ptv-cr.d{bottom:11px;right:11px;border-left:0;border-top:0;}
-.ptv-pin{position:absolute;left:50%;top:32%;width:13px;height:13px;border-radius:50%;background:#FF2E9A;transform:translate(-50%,-50%);box-shadow:0 0 0 5px rgba(255,46,154,.25),0 4px 12px rgba(0,0,0,.55);z-index:4;}
-.ptv-pin::after{content:"";position:absolute;left:50%;top:50%;width:13px;height:13px;border:1.5px solid #FF2E9A;border-radius:50%;transform:translate(-50%,-50%);opacity:.45;}
 .ptv-title{position:absolute;left:18px;right:18px;bottom:16px;z-index:3;}
 .ptv-title h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.5rem;letter-spacing:-.01em;color:#fff;margin:0 0 4px;text-shadow:0 2px 14px rgba(0,0,0,.75);}
 .ptv-title p{color:#d3dbe6;font-size:.9rem;margin:0;text-shadow:0 1px 8px rgba(0,0,0,.75);}
@@ -36,7 +34,6 @@
  <div class="ptv-photo"></div><div class="ptv-scrim"></div><div class="ptv-vig"></div><div class="ptv-scan"></div>
  <span class="ptv-cr a"></span><span class="ptv-cr b"></span><span class="ptv-cr c"></span><span class="ptv-cr d"></span>
  <div class="ptv-hud"><span class="l">// красные ворота</span><span class="g">55.7720N / 37.6493E</span></div>
- <div class="ptv-pin"></div>
  <div class="ptv-title"><h3>БЦ «Красные Ворота»</h3><p>Москва · Садовая-Спасская, 21/1 · у сталинской высотки</p></div>
 </div>
 <div class="ptv-foot">

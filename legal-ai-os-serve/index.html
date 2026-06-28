@@ -698,9 +698,10 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
 <!-- ===== NO-BLINK ADD-ON ===== -->
 <script>
 /* ============================================================
-   NO-BLINK ADD-ON — убирает мигающие статус-точки по всему сайту.
-   Переопределяет кейфреймы в статику; держит свой <style> последним
-   в <head>, чтобы побеждать каскад и пережить пересборку бандла.
+   NO-BLINK / KILL-DOTS ADD-ON — полностью убирает мелкие
+   статус-точки по всему сайту (магента/циан/зелёные «огоньки»)
+   и гасит их анимации. Большой glow-шар героя (80px) не трогаем.
+   Переживает пересборку: держит стиль последним + наблюдатель.
    ============================================================ */
 (function () {
   if (window.__ptNoBlink) return;
@@ -710,23 +711,48 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     "@keyframes blink{0%,100%{opacity:1}}" +
     "@keyframes pulse-dot{0%,100%{opacity:1;transform:none}}" +
     "@keyframes pulse-soft{0%,100%{opacity:1;transform:none}}" +
-    "@keyframes pulse-ring{0%,100%{opacity:0}}";
+    "@keyframes pulse-ring{0%,100%{opacity:0}}" +
+    '[style*="background: rgb(255, 46, 154)"][style*="border-radius: 50%"],' +
+    '[style*="background:#FF2E9A"][style*="border-radius: 50%"],' +
+    '[style*="background: #FF2E9A"][style*="border-radius: 50%"]{display:none !important}';
 
-  function ensure() {
+  var ANIM = /blink|pulse-dot|pulse-soft|pulse-ring/;
+
+  function ensureStyle() {
     if (!document.head) return;
     var s = document.getElementById("pt-noblink");
     if (!s) { s = document.createElement("style"); s.id = "pt-noblink"; s.textContent = CSS; }
     if (document.head.lastElementChild !== s) document.head.appendChild(s);
   }
 
-  var n = 0, iv = setInterval(function () { n++; ensure(); if (n > 80) clearInterval(iv); }, 150);
-  ensure();
-  window.addEventListener("load", ensure);
-  window.addEventListener("DOMContentLoaded", ensure);
+  // мелкая статус-точка: лист, маленькая (<=16px), с одной из «мигающих» анимаций
+  function isStatusDot(el) {
+    if (el.children.length) return false;
+    var cs = getComputedStyle(el);
+    if (!ANIM.test(cs.animationName)) return false;
+    var w = parseFloat(cs.width), h = parseFloat(cs.height);
+    return w > 0 && h > 0 && w <= 16 && h <= 16;
+  }
+
+  function hideDots() {
+    var els = document.querySelectorAll("span,div,i,b");
+    for (var i = 0; i < els.length; i++) {
+      var e = els[i];
+      if (e.dataset.ptKd) continue;
+      if (isStatusDot(e)) { e.style.setProperty("display", "none", "important"); e.dataset.ptKd = "1"; }
+    }
+  }
+
+  function run() { ensureStyle(); hideDots(); }
+
+  var n = 0, iv = setInterval(function () { n++; run(); if (n > 120) clearInterval(iv); }, 150);
+  run();
+  window.addEventListener("load", run);
+  window.addEventListener("DOMContentLoaded", run);
   try {
-    var mo = new MutationObserver(ensure);
-    if (document.head) mo.observe(document.head, { childList: true });
-    setTimeout(function () { mo.disconnect(); }, 20000);
+    var mo = new MutationObserver(run);
+    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
+    setTimeout(function () { mo.disconnect(); }, 30000);
   } catch (e) {}
 })();
 
@@ -755,8 +781,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
 .ptv-hud .l{color:#eaf0f7;}.ptv-hud .g{color:#bfe9f5;}
 .ptv-cr{position:absolute;width:15px;height:15px;border:1.5px solid rgba(255,255,255,.4);z-index:3;}
 .ptv-cr.a{top:11px;left:11px;border-right:0;border-bottom:0;}.ptv-cr.b{top:11px;right:11px;border-left:0;border-bottom:0;}.ptv-cr.c{bottom:11px;left:11px;border-right:0;border-top:0;}.ptv-cr.d{bottom:11px;right:11px;border-left:0;border-top:0;}
-.ptv-pin{position:absolute;left:50%;top:32%;width:13px;height:13px;border-radius:50%;background:#FF2E9A;transform:translate(-50%,-50%);box-shadow:0 0 0 5px rgba(255,46,154,.25),0 4px 12px rgba(0,0,0,.55);z-index:4;}
-.ptv-pin::after{content:"";position:absolute;left:50%;top:50%;width:13px;height:13px;border:1.5px solid #FF2E9A;border-radius:50%;transform:translate(-50%,-50%);opacity:.45;}
 .ptv-title{position:absolute;left:18px;right:18px;bottom:16px;z-index:3;}
 .ptv-title h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.5rem;letter-spacing:-.01em;color:#fff;margin:0 0 4px;text-shadow:0 2px 14px rgba(0,0,0,.75);}
 .ptv-title p{color:#d3dbe6;font-size:.9rem;margin:0;text-shadow:0 1px 8px rgba(0,0,0,.75);}
@@ -772,7 +796,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
  <div class="ptv-photo"></div><div class="ptv-scrim"></div><div class="ptv-vig"></div><div class="ptv-scan"></div>
  <span class="ptv-cr a"></span><span class="ptv-cr b"></span><span class="ptv-cr c"></span><span class="ptv-cr d"></span>
  <div class="ptv-hud"><span class="l">// красные ворота</span><span class="g">55.7720N / 37.6493E</span></div>
- <div class="ptv-pin"></div>
  <div class="ptv-title"><h3>БЦ «Красные Ворота»</h3><p>Москва · Садовая-Спасская, 21/1 · у сталинской высотки</p></div>
 </div>
 <div class="ptv-foot">
