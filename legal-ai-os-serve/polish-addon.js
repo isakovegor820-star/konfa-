@@ -22,19 +22,17 @@
 /* варианты карточек */
 .scp3,.scp4{border-radius:16px!important;}
 
-/* === countdown: ячейки === */
+/* === countdown V1: единая панель, равные сегменты === */
+.pt-cd-panel{gap:0 !important;}
 .pt-cd-cell{
-  border-radius:14px!important;position:relative;overflow:hidden;
-  background-image:linear-gradient(160deg, rgba(0,229,255,.14), rgba(0,229,255,.02))!important;
-  border:1px solid rgba(0,229,255,.24)!important;
-  transition:transform .2s, border-color .2s, box-shadow .2s!important;
+  border:0 !important;border-radius:0 !important;overflow:visible !important;
+  background:none !important;background-image:none !important;box-shadow:none !important;
+  border-right:1px solid rgba(255,255,255,.07) !important;transition:none !important;
 }
-.pt-cd-cell:hover{transform:translateY(-3px);border-color:rgba(0,229,255,.55)!important;
-  box-shadow:0 10px 26px rgba(0,229,255,.16)!important;}
-.pt-cd-cell::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;
-  background:linear-gradient(90deg,#00E5FF,#FF2E9A);opacity:.7;}
-.pt-cd-cell::before{content:"";position:absolute;inset:0;pointer-events:none;
-  box-shadow:inset 0 -22px 30px -22px rgba(0,229,255,.5);}
+.pt-cd-cell:last-child{border-right:0 !important;}
+.pt-cd-cell::after,.pt-cd-cell::before{display:none !important;}
+.pt-cd-cell:hover{transform:none !important;box-shadow:none !important;}
+.pt-cd-cell,.pt-cd-cell *{font-variant-numeric:tabular-nums !important;font-feature-settings:"tnum" 1 !important;}
 `;
 
   function tagCountdown() {
@@ -45,7 +43,18 @@
       return /^(дн(ей|я)?|час(ов|а)?|мин(ут[аы]?)?|сек(унд[аы]?)?)$/.test(t);
     });
     if (labels.length < 3) return;
-    labels.forEach(function (l) { if (l.parentElement) l.parentElement.classList.add("pt-cd-cell"); });
+    labels.forEach(function (l) {
+      var cell = l.parentElement; if (!cell) return;
+      cell.classList.add("pt-cd-cell");
+      if (cell.parentElement) cell.parentElement.classList.add("pt-cd-panel");
+      var kids = cell.children, best = null, bestSize = 0;
+      for (var i = 0; i < kids.length; i++) {
+        if (kids[i] === l) continue;
+        var fs = parseFloat(getComputedStyle(kids[i]).fontSize) || 0;
+        if (fs > bestSize) { bestSize = fs; best = kids[i]; }
+      }
+      if (best) best.classList.add("pt-cd-num");
+    });
     window.__ptCdDone = true;
     console.log("[polish] countdown ячейки оформлены:", labels.length);
   }
