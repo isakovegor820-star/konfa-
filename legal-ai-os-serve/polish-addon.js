@@ -23,10 +23,11 @@
 .scp3,.scp4{border-radius:16px!important;}
 
 /* === countdown V1: единая панель, ровные сегменты === */
-.pt-cd-card{position:relative !important;overflow:hidden !important;}
-.pt-cd-card::before{content:"" !important;position:absolute !important;top:0;left:0;right:0;height:2px !important;
-  background:linear-gradient(90deg,#00E5FF,#FF2E9A) !important;opacity:.6 !important;z-index:2;}
+.pt-cd-card{position:relative !important;}
+.pt-cd-card::before{content:"" !important;position:absolute !important;top:0;left:18px;right:18px;height:2px !important;
+  background:linear-gradient(90deg,#00E5FF,#FF2E9A) !important;opacity:.6 !important;border-radius:2px;z-index:2;pointer-events:none;}
 .pt-cd-card:hover{transform:none !important;}
+.pt-cd-head{padding-left:18px !important;padding-top:3px !important;}
 .pt-cd-grid{gap:0 !important;}
 .pt-cd-seg{
   border:0 !important;border-radius:0 !important;background:none !important;background-image:none !important;
@@ -63,6 +64,11 @@
         if (grid.parentElement) grid.parentElement.classList.add("pt-cd-card"); // внешняя .glass-карточка
       }
     });
+    var cdCard = document.querySelector(".pt-cd-card");
+    if (cdCard) {
+      var hd = [].slice.call(cdCard.querySelectorAll("*")).filter(function (e) { return !e.children.length && /t-?minus/i.test(e.textContent || ""); })[0];
+      if (hd) hd.classList.add("pt-cd-head");
+    }
     window.__ptCdDone = true;
     console.log("[polish] countdown ячейки оформлены:", labels.length);
   }
