@@ -1585,5 +1585,503 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
 })();
 
 </script>
+
+<!-- ===== ACADEMY ADD-ON ===== -->
+<script>
+/* ============================================================
+   ACADEMY ADD-ON — карточка статов в табе Академия.
+   Просто и надёжно (без canvas): 4 стата вертикальным списком
+   на всю ширину карточки — крупное число слева, подпись справа,
+   неоновая левая акцент-линия. Не зажато. Анимация только на hover.
+   Находит карточку по тексту, переживает пересборку dc-runtime.
+   ============================================================ */
+(function () {
+  if (window.__ptAcad) return;
+  window.__ptAcad = true;
+
+  var IC = {
+    book:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+    layers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+    users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    award: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.21 13.4 7 22l5-3 5 3-1.21-8.6"/></svg>'
+  };
+  var STATS = [
+    { n: "28",    l: "курсов",      note: "практические интенсивы", a: "#00E5FF", ic: IC.book },
+    { n: "04",    l: "уровня",      note: "старт → эксперт",        a: "#FF2E9A", ic: IC.layers },
+    { n: "3200+", l: "выпускников", note: "сертифицированы",        a: "#F0B84B", ic: IC.users },
+    { n: "94%",   l: "сертификат",  note: "с первого раза",         a: "#00E5FF", ic: IC.award }
+  ];
+
+  var CSS = `
+/* убираем внешний «квадрат»: карточка-обёртка прозрачная, без рамки/тени */
+.glass.pt-ac-card{
+  border:0 !important;background:transparent !important;box-shadow:none !important;
+  padding:0 !important;display:flex !important;flex-direction:column;justify-content:center;
+}
+/* и на hover/focus тоже: иначе artefact .glass:hover возвращает рамку+тень+подъём */
+.glass.pt-ac-card:hover,.glass.pt-ac-card:focus,.glass.pt-ac-card:focus-within{
+  transform:none !important;border-color:transparent !important;
+  box-shadow:none !important;background:transparent !important;
+}
+.pt-ac-list{display:flex;flex-direction:column;gap:12px;width:100%;}
+.pt-ac-row{
+  display:grid;grid-template-columns:40px auto 1fr;align-items:center;gap:16px;
+  padding:14px 18px;border-radius:13px;
+  border:1px solid color-mix(in srgb,var(--a) 16%,#161d2e);
+  border-left:3px solid var(--a);
+  background:linear-gradient(100deg,color-mix(in srgb,var(--a) 8%,#0b0e16),#0a0c12 70%);
+  transition:transform .2s,border-color .2s,box-shadow .2s,background .2s;
+}
+.pt-ac-row:hover{
+  transform:translateX(4px);
+  border-color:color-mix(in srgb,var(--a) 45%,#161d2e);
+  box-shadow:0 10px 30px -8px color-mix(in srgb,var(--a) 22%,transparent);
+  background:linear-gradient(100deg,color-mix(in srgb,var(--a) 14%,#0b0e16),#0a0c12 70%);
+}
+.pt-ac-ic{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;
+  color:var(--a);border:1px solid color-mix(in srgb,var(--a) 30%,#1c2230);background:color-mix(in srgb,var(--a) 9%,transparent);}
+.pt-ac-ic svg{width:20px;height:20px;display:block;}
+.pt-ac-num{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:800;font-size:30px;line-height:1;color:#fff;
+  font-variant-numeric:tabular-nums;text-shadow:0 0 22px color-mix(in srgb,var(--a) 38%,transparent);min-width:74px;}
+.pt-ac-meta{display:flex;flex-direction:column;text-align:right;}
+.pt-ac-meta b{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:500;color:color-mix(in srgb,var(--a) 70%,#cfe9ff);}
+.pt-ac-meta i{font-style:normal;font-size:12px;color:#7d8492;margin-top:4px;}
+@media(prefers-reduced-motion:reduce){.pt-ac-row{transition:none !important;}}
+@media(max-width:560px){.pt-ac-num{font-size:26px;min-width:64px;}.pt-ac-meta i{display:none;}}
+`;
+
+  function injectCSS() {
+    if (!document.getElementById("pt-ac-style") && (document.head || document.documentElement)) {
+      var s = document.createElement("style"); s.id = "pt-ac-style"; s.textContent = CSS;
+      (document.head || document.documentElement).appendChild(s);
+    }
+  }
+  function esc(t) { return (t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  function findCard() {
+    var spans = [].slice.call(document.querySelectorAll("span"));
+    var mark = spans.filter(function (s) { return /academy\s*·\s*stats/i.test(s.textContent || ""); })[0];
+    if (!mark) return null;
+    var card = mark;
+    for (var i = 0; i < 8 && card; i++) {
+      card = card.parentElement;
+      if (card && card.classList && card.classList.contains("glass")) return card;
+    }
+    return null;
+  }
+
+  function render(card) {
+    if (card.dataset.ptAc === "1") return;
+    card.dataset.ptAc = "1";
+    card.classList.add("pt-ac-card");
+    var rows = STATS.map(function (s) {
+      return '<div class="pt-ac-row" style="--a:' + s.a + '">'
+           + '<span class="pt-ac-ic">' + s.ic + '</span>'
+           + '<span class="pt-ac-num">' + esc(s.n) + '</span>'
+           + '<span class="pt-ac-meta"><b>' + esc(s.l) + '</b><i>' + esc(s.note) + '</i></span>'
+           + '</div>';
+    }).join("");
+    card.innerHTML = '<div class="pt-ac-list">' + rows + '</div>';
+  }
+
+  function apply() {
+    injectCSS();
+    var card = findCard();
+    if (card) render(card);
+  }
+
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 200) clearInterval(iv); }, 200);
+  apply();
+  window.addEventListener("load", apply);
+  window.addEventListener("DOMContentLoaded", apply);
+  try {
+    var mo = new MutationObserver(function () {
+      var card = findCard();
+      if (card && card.dataset.ptAc !== "1") apply();
+    });
+    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
+    setTimeout(function () { mo.disconnect(); }, 45000);
+  } catch (e) {}
+})();
+
+</script>
+
+
+
+<!-- ===== COURSES ADD-ON ===== -->
+<script>
+/* ============================================================
+   COURSES ADD-ON — секция «Активные курсы» (таб Академия).
+   Дизайн «Чистая сетка» (Spacious Grid, вариант 1): просторная
+   сетка 3 колонки, карточки равной высоты, левая акцент-полоса
+   по уровню, hover-подъём + стрелка, reveal со stagger.
+   Находит сетку по названиям курсов, переживает пересборку dc-runtime.
+   ============================================================ */
+(function () {
+  if (window.__ptCourses) return;
+  window.__ptCourses = true;
+
+  var IC_LVL = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>';
+  var IC_CLK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  var IC_MOD = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>';
+  var IC_ARR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  var COURSES = [
+    { lv:1, n:"01", lvl:"JUNIOR",       d:"14", dw:"дней", t:"Старт практики БФЛ",            desc:"Базовые процедуры, документооборот, первая консультация. Для тех, кто только пришёл в банкротство физлиц.", m:"12", mw:"модулей", tag:"video + chat" },
+    { lv:2, n:"02", lvl:"PRACTITIONER", d:"28", dw:"дней", t:"Судебная защита должника",      desc:"Стратегия защиты, оспаривание сделок, исполнительский иммунитет. Все типы судебных баталий.",          m:"20", mw:"модулей", tag:"live · group" },
+    { lv:2, n:"02", lvl:"PRACTITIONER", d:"21", dw:"день", t:"AI в работе юриста",            desc:"Промпт-инжиниринг, генерация документов, AI-ассистенты, автоматизация рутины.",                       m:"16", mw:"модулей", tag:"practice" },
+    { lv:3, n:"03", lvl:"SENIOR",       d:"45", dw:"дней", t:"Управление командой",           desc:"Найм, мотивация, KPI юристов. Регулярный менеджмент в юр. бюро. От 5 до 50 человек.",                 m:"24", mw:"модуля",  tag:"mentorship" },
+    { lv:3, n:"03", lvl:"SENIOR",       d:"35", dw:"дней", t:"Продажи и упаковка БФЛ-услуги",  desc:"Воронки, скрипты, маркетинг. Как делать высокую конверсию первой консультации.",                    m:"18", mw:"модулей", tag:"workshop" },
+    { lv:4, n:"04", lvl:"EXPERT",       d:"90", dw:"дней", t:"Масштабирование юр. бюро",       desc:"Юнит-экономика, франшиза, выход в регионы. Программа для собственников и партнёров.",                m:"32", mw:"модуля",  tag:"mastermind" }
+  ];
+
+  var CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+.pt-courses-grid{
+  --c1:#22E0F5;--c2:#5CC4FA;--c3:#FF55AE;--c4:#F2C260;
+  --ctxt:#fff;--cdesc:#aeb6c4;--cmeta:#8a93a4;
+  display:grid !important;grid-template-columns:repeat(3,1fr) !important;
+  gap:24px !important;align-items:stretch !important;width:100%;
+}
+.pt-courses-grid *{box-sizing:border-box;}
+@media(max-width:1000px){ .pt-courses-grid{grid-template-columns:repeat(2,1fr) !important;} }
+@media(max-width:640px){ .pt-courses-grid{grid-template-columns:1fr !important;} }
+
+.pt-card{
+  --accent:var(--c1);--accent-rgb:34,224,245;
+  position:relative;display:flex;flex-direction:column;height:100%;
+  padding:32px 32px 30px 36px;border-radius:16px;
+  border:1px solid rgba(var(--accent-rgb),.16);
+  background:linear-gradient(160deg, rgba(var(--accent-rgb),.07) 0%, rgba(var(--accent-rgb),.02) 42%, rgba(8,10,18,.55) 100%);
+  text-decoration:none;color:inherit;cursor:pointer;overflow:hidden;
+  font-family:'Space Grotesk',system-ui,sans-serif;
+  opacity:0;transform:translateY(22px);
+  transition:transform .3s cubic-bezier(.2,.7,.3,1), box-shadow .3s ease-out, border-color .3s ease-out;
+  outline:none;
+}
+.pt-card::before{content:"";position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--accent);box-shadow:0 0 14px 0 rgba(var(--accent-rgb),.55);}
+.pt-card:hover,.pt-card:focus-visible{
+  transform:translateY(-6px);border-color:rgba(var(--accent-rgb),.42);
+  box-shadow:0 18px 44px -18px rgba(var(--accent-rgb),.55), 0 0 0 1px rgba(var(--accent-rgb),.18) inset;
+}
+.pt-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.pt-card.lv1{--accent:var(--c1);--accent-rgb:34,224,245;}
+.pt-card.lv2{--accent:var(--c2);--accent-rgb:92,196,250;}
+.pt-card.lv3{--accent:var(--c3);--accent-rgb:255,85,174;}
+.pt-card.lv4{--accent:var(--c4);--accent-rgb:242,194,96;}
+
+.pt-card__top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 16px;margin-bottom:24px;}
+.pt-card__pill{display:inline-flex;align-items:center;gap:8px;padding:7px 13px 7px 11px;border-radius:999px;
+  border:1px solid rgba(var(--accent-rgb),.32);background:rgba(var(--accent-rgb),.08);
+  font-family:'JetBrains Mono',monospace;font-weight:500;font-size:12px;line-height:1.5;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);white-space:nowrap;}
+.pt-card__pill svg{display:block;flex:none;}
+.pt-card__pill .num{font-feature-settings:"tnum" 1,"lnum" 1;}
+.pt-card__dur{display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-weight:400;font-size:12px;line-height:1.5;letter-spacing:.06em;color:var(--cmeta);white-space:nowrap;}
+.pt-card__dur svg{display:block;flex:none;opacity:.9;}
+.pt-card__dur .num{color:var(--cdesc);font-feature-settings:"tnum" 1,"lnum" 1;}
+
+.pt-card__title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:22px;line-height:1.28;letter-spacing:-.01em;color:var(--ctxt);margin:0 0 14px;}
+.pt-card__desc{font-family:'Space Grotesk',sans-serif;font-weight:400;font-size:15px;line-height:1.6;color:var(--cdesc);margin:0 0 28px;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:calc(15px * 1.6 * 3);}
+
+.pt-card__div{height:1px;width:100%;background:linear-gradient(90deg, rgba(var(--accent-rgb),.28), rgba(255,255,255,.04));margin-top:auto;}
+.pt-card__foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 16px;padding-top:20px;}
+.pt-card__mods{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-weight:400;font-size:12.5px;line-height:1.5;letter-spacing:.04em;color:var(--cmeta);}
+.pt-card__mods svg{display:block;flex:none;opacity:.9;}
+.pt-card__mods .num{color:var(--cdesc);font-feature-settings:"tnum" 1,"lnum" 1;}
+.pt-card__tag{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:lowercase;color:var(--accent);}
+.pt-card__arrow{display:inline-flex;align-items:center;margin-left:2px;opacity:0;transform:translateX(-6px);transition:opacity .25s ease-out, transform .25s ease-out;color:var(--accent);}
+.pt-card:hover .pt-card__arrow,.pt-card:focus-visible .pt-card__arrow{opacity:1;transform:translateX(0);}
+
+.pt-card.in{opacity:1;transform:translateY(0);}
+
+@media(prefers-reduced-motion:reduce){
+  .pt-card{opacity:1 !important;transform:none !important;transition:none !important;}
+  .pt-card:hover,.pt-card:focus-visible{transform:none !important;}
+  .pt-card__arrow{transition:none !important;opacity:1 !important;transform:none !important;}
+}
+`;
+
+  function injectCSS() {
+    if (!document.getElementById("pt-courses-style") && (document.head || document.documentElement)) {
+      var s = document.createElement("style"); s.id = "pt-courses-style"; s.textContent = CSS;
+      (document.head || document.documentElement).appendChild(s);
+    }
+  }
+  function esc(t) { return (t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  function card(c, i) {
+    return '<div class="pt-card lv' + c.lv + '" tabindex="0" style="--d:' + (i * 40) + 'ms">'
+      + '<div class="pt-card__top">'
+        + '<span class="pt-card__pill">' + IC_LVL + ' LVL <span class="num">' + c.n + '</span> · ' + c.lvl + '</span>'
+        + '<span class="pt-card__dur">' + IC_CLK + ' <span class="num">' + c.d + '</span> ' + c.dw + '</span>'
+      + '</div>'
+      + '<h3 class="pt-card__title">' + esc(c.t) + '</h3>'
+      + '<p class="pt-card__desc">' + esc(c.desc) + '</p>'
+      + '<div class="pt-card__div"></div>'
+      + '<div class="pt-card__foot">'
+        + '<span class="pt-card__mods">' + IC_MOD + ' <span class="num">' + c.m + '</span> ' + c.mw + '</span>'
+        + '<span class="pt-card__tag">' + c.tag + '<span class="pt-card__arrow">' + IC_ARR + '</span></span>'
+      + '</div>'
+      + '</div>';
+  }
+
+  var TITLES = ["Старт практики БФЛ", "Судебная защита должника", "AI в работе юриста", "Управление командой", "Продажи и упаковка", "Масштабирование юр"];
+
+  function findGrid() {
+    // ВАЖНО: ищем только в <body> и пропускаем script/style/template — иначе
+    // матчим <script type="__bundler/template"> (в нём экранированный HTML
+    // артефакта со всеми названиями курсов) и затираем блобы → ломаем сборку.
+    if (!document.body) return null;
+    var leaves = [].slice.call(document.body.querySelectorAll("*")).filter(function (e) {
+      var tg = e.tagName;
+      return e.children.length === 0
+        && tg !== "SCRIPT" && tg !== "STYLE" && tg !== "TEMPLATE" && tg !== "NOSCRIPT"
+        && (e.textContent || "").indexOf(TITLES[0]) >= 0;
+    });
+    var first = leaves[0];
+    if (!first) return null; // реальных карточек ещё нет (артефакт не собран) — ждём
+    var node = first;
+    for (var i = 0; i < 14 && node; i++) {
+      node = node.parentElement;
+      if (!node || node === document.body || node.tagName === "HTML") break;
+      if (node.querySelector('script[type^="__bundler"]')) return null; // страховка: не трогаем блобы
+      if (TITLES.every(function (t) { return (node.textContent || "").indexOf(t) >= 0; })) {
+        return node; // лоуэст-общий-предок всех 6 заголовков = сетка курсов
+      }
+    }
+    return null;
+  }
+
+  function reveal(grid) {
+    var cards = [].slice.call(grid.querySelectorAll(".pt-card"));
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || !("IntersectionObserver" in window)) { cards.forEach(function (c) { c.classList.add("in"); }); return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) {
+          var el = e.target, d = parseInt(el.style.getPropertyValue("--d")) || 0;
+          setTimeout(function () { el.classList.add("in"); }, d);
+          io.unobserve(el);
+        }
+      });
+    }, { threshold: 0.18 });
+    cards.forEach(function (c) { io.observe(c); });
+  }
+
+  function render(grid) {
+    if (!grid || grid.dataset.ptCourses === "1") return;
+    grid.dataset.ptCourses = "1";
+    grid.classList.add("pt-courses-grid");
+    grid.innerHTML = COURSES.map(card).join("");
+    reveal(grid);
+  }
+
+  function apply() {
+    injectCSS();
+    var g = findGrid();
+    if (g) render(g);
+  }
+
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  apply();
+  window.addEventListener("load", apply);
+  window.addEventListener("DOMContentLoaded", apply);
+  try {
+    var mo = new MutationObserver(function () {
+      var g = findGrid();
+      if (g && g.dataset.ptCourses !== "1") apply();
+    });
+    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
+    setTimeout(function () { mo.disconnect(); }, 60000);
+  } catch (e) {}
+})();
+</script>
+
+
+
+
+<!-- ===== CERTIFICATE ADD-ON ===== -->
+<script>
+/* ============================================================
+   CERTIFICATE ADD-ON — секция «Сертификат» (таб Академия).
+   Вариант «Витрина»: слева текст, справа фиолетовый сертификат
+   LegalHunter как парящая 3D-карточка (наклон + float + свечение,
+   выравнивание на hover). Заменяет содержимое 2-колоночной сетки.
+   Поиск только в <body>, по .glass с «PT-2026-», без блоб-узлов.
+   ============================================================ */
+(function () {
+  if (window.__ptCert) return;
+  window.__ptCert = true;
+
+  var CONTENT =
+    '<div class="ptc-intro">'
+    + '<p class="ptc-eyebrow ptc-reveal">// CERTIFICATION</p>'
+    + '<h3 class="ptc-title ptc-reveal d1">Сертификат уровня экспертизы</h3>'
+    + '<p class="ptc-desc ptc-reveal d1">Сертификация на каждом из четырёх уровней. Электронный документ с уникальным ID, подтверждение в реестре академии, экспортируемая запись в LinkedIn / hh.</p>'
+    + '<ul class="ptc-list ptc-reveal d2">'
+    + '<li><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Экзамен из 3 частей · теория, кейс, защита</li>'
+    + '<li><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Проходной балл 78%</li>'
+    + '<li><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Доступ к закрытому каналу выпускников</li>'
+    + '<li><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Скидка на конференцию «ТехнологИИ права»</li>'
+    + '</ul>'
+    + '</div>'
+    + '<div class="ptc-stage"><div class="ptc-float"><div class="ptc-tilt">'
+    + '<article class="ptc-cert" aria-label="Сертификат аттестации LegalHunter">'
+    + '<header class="ptc-head"><span class="ptc-brand">LEGALHUNTER</span>'
+    + '<span class="ptc-head-mid">Свидетельство об аттестации</span>'
+    + '<span class="ptc-head-right">Технологии права</span></header>'
+    + '<div class="ptc-rule"></div>'
+    + '<div class="ptc-supra"><span>Сертификат аттестации</span><b>RU·ATT</b></div>'
+    + '<h4 class="ptc-h1">Сертификат</h4>'
+    + '<p class="ptc-conf">Настоящим подтверждается, что</p>'
+    + '<p class="ptc-name">Иванов Иван Иванович</p>'
+    + '<div class="ptc-name-rule"></div>'
+    + '<p class="ptc-body">успешно прошёл курс по программе <em>«ФЗ-127 · 24 акад. часа»</em> и подтвердил освоение ключевых практических аспектов сопровождения процедур банкротства граждан.</p>'
+    + '<div class="ptc-divider"></div>'
+    + '<div class="ptc-facts">'
+    + '<div class="ptc-fact"><span class="lbl">01 Программа</span><span class="val">ФЗ-127 · 24 ч</span></div>'
+    + '<div class="ptc-fact"><span class="lbl">02 Формат</span><span class="val">Аттестация</span></div>'
+    + '<div class="ptc-fact"><span class="lbl">03 Дата</span><span class="val">27.05.2026</span></div>'
+    + '</div>'
+    + '<div class="ptc-divider2"></div>'
+    + '<footer class="ptc-foot">'
+    + '<div class="ptc-serial"><span class="lbl">Сертификат №</span><span class="num">LH-2026-00481</span></div>'
+    + '<div class="ptc-sign"><span class="scr">LegalHunter</span><div class="sline"></div><span class="lbl">Подпись комиссии</span></div>'
+    + '<div class="ptc-seal"><span class="ptc-seal-ring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="lbl">Проверено</span></div>'
+    + '</footer>'
+    + '</article></div></div></div>';
+
+  var CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+.ptc-host-grid{
+  --cyan:#00E5FF;--ink:#fff;--ink2:rgba(255,255,255,.66);
+  position:relative;font-family:'Space Grotesk',system-ui,sans-serif;
+  max-width:1080px;margin:0 auto !important;
+  display:grid !important;grid-template-columns:minmax(280px,1fr) minmax(360px,.92fr) !important;
+  gap:clamp(40px,5vw,80px) !important;align-items:center !important;
+}
+.ptc-host-grid *{box-sizing:border-box;}
+@media(max-width:880px){ .ptc-host-grid{grid-template-columns:1fr !important;gap:48px !important;} }
+
+.ptc-eyebrow{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);margin:0 0 22px;}
+.ptc-title{font-family:'Space Grotesk','Montserrat',sans-serif;font-weight:600;font-size:clamp(28px,3.4vw,40px);line-height:1.14;margin:0 0 22px;letter-spacing:-.01em;color:#fff;}
+.ptc-desc{font-size:16px;line-height:1.65;color:var(--ink2);margin:0 0 30px;max-width:46ch;}
+.ptc-list{list-style:none;margin:0;padding:0;display:grid;gap:16px;}
+.ptc-list li{position:relative;padding-left:30px;font-size:15px;line-height:1.55;color:rgba(255,255,255,.9);}
+.ptc-list li svg{position:absolute;left:0;top:3px;width:14px;height:14px;color:var(--cyan);}
+
+.ptc-stage{perspective:1300px;perspective-origin:55% 42%;display:flex;justify-content:center;align-items:center;padding:28px 6px;}
+.ptc-float{animation:ptc-float 6.5s ease-in-out infinite;transform-style:preserve-3d;}
+@keyframes ptc-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.ptc-tilt{position:relative;width:min(440px,82vw);transform-style:preserve-3d;transform:rotateY(-6deg) rotateX(3deg);transition:transform .42s cubic-bezier(.2,.7,.2,1);will-change:transform;}
+.ptc-tilt::after{content:"";position:absolute;left:8%;right:8%;bottom:-38px;height:58px;background:radial-gradient(60% 100% at 50% 0%, rgba(106,78,184,.5), rgba(106,78,184,0) 72%);filter:blur(13px);transform:translateZ(-60px);transition:opacity .42s ease,transform .42s ease;z-index:-1;}
+.ptc-stage:hover .ptc-float{animation-play-state:paused;}
+.ptc-stage:hover .ptc-tilt{transform:rotateY(0deg) rotateX(0deg) translateY(-6px) scale(1.01);}
+.ptc-stage:hover .ptc-tilt::after{opacity:.8;transform:translateZ(-60px) translateY(8px) scaleX(1.04);}
+
+.ptc-cert{font-family:'Montserrat',sans-serif;background:linear-gradient(150deg,#6248a9,#503a8f);border:1px solid rgba(255,255,255,.22);border-radius:18px;color:#fff;padding:28px 30px 26px;overflow:hidden;box-shadow:0 2px 0 rgba(255,255,255,.10) inset,0 32px 64px -26px rgba(0,0,0,.7),0 12px 32px -20px rgba(80,58,143,.85);--sec:rgba(255,255,255,.66);--line:rgba(255,255,255,.22);}
+.ptc-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 14px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+.ptc-brand{font-weight:800;letter-spacing:.18em;font-size:12px;min-width:0;}
+.ptc-head-right{font-weight:600;color:rgba(255,255,255,.82);text-align:right;min-width:0;}
+.ptc-head-mid{order:3;flex:0 0 100%;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;color:rgba(255,255,255,.86);letter-spacing:.2em;font-weight:600;font-size:9px;}
+.ptc-head-mid::before,.ptc-head-mid::after{content:"";height:1px;width:20px;background:rgba(255,255,255,.4);flex:none;}
+.ptc-rule{height:1px;background:var(--line);margin:16px 0 0;}
+.ptc-supra{margin:18px 0 10px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--sec);display:flex;gap:12px;align-items:baseline;}
+.ptc-supra b{color:rgba(255,255,255,.82);font-weight:700;}
+.ptc-h1{font-weight:800;font-size:clamp(30px,4.4vw,40px);line-height:1;letter-spacing:-.015em;margin:0 0 20px;}
+.ptc-conf{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--sec);margin:0 0 10px;}
+.ptc-name{font-weight:700;font-size:clamp(20px,2.6vw,24px);line-height:1.25;letter-spacing:.01em;margin:0;}
+.ptc-name-rule{height:1px;background:var(--line);margin:12px 0 18px;}
+.ptc-body{font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.88);margin:0 0 20px;}
+.ptc-body em{font-style:normal;font-weight:600;color:#fff;}
+.ptc-divider,.ptc-divider2{height:1px;background:var(--line);margin:0 0 20px;}
+.ptc-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:0 0 22px;}
+.ptc-fact{position:relative;padding-left:12px;}
+.ptc-fact::before{content:"";position:absolute;left:0;top:2px;width:2px;height:26px;background:rgba(255,255,255,.45);border-radius:2px;}
+.ptc-fact .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--sec);display:block;line-height:1.5;margin-bottom:7px;}
+.ptc-fact .val{font-size:13px;font-weight:700;line-height:1.5;color:#fff;}
+.ptc-foot{display:grid;grid-template-columns:1.1fr 1.2fr .8fr;gap:18px;align-items:end;}
+.ptc-foot .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--sec);display:block;line-height:1.5;}
+.ptc-serial .num{font-weight:700;font-size:14px;letter-spacing:.08em;display:block;margin-top:8px;}
+.ptc-sign{text-align:center;}
+.ptc-sign .scr{font-style:italic;font-weight:700;font-size:19px;line-height:1;}
+.ptc-sign .sline{height:1px;background:rgba(255,255,255,.55);margin:8px 0 9px;}
+.ptc-seal{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.ptc-seal-ring{width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);}
+.ptc-seal-ring svg{width:21px;height:21px;color:#fff;}
+.ptc-seal .lbl{text-align:center;}
+@media(max-width:520px){
+  .ptc-cert{padding:24px 20px 22px;}
+  .ptc-head-mid{display:none;}
+  .ptc-facts{grid-template-columns:1fr;gap:16px;}
+  .ptc-foot{grid-template-columns:1fr;gap:18px;text-align:left;}
+  .ptc-sign,.ptc-seal{align-items:flex-start;}
+  .ptc-sign{text-align:left;}
+}
+.ptc-reveal{opacity:0;transform:translateY(16px);animation:ptc-in .5s ease-out forwards;}
+.ptc-reveal.d1{animation-delay:.06s;}
+.ptc-reveal.d2{animation-delay:.14s;}
+@keyframes ptc-in{to{opacity:1;transform:translateY(0);}}
+@media (prefers-reduced-motion:reduce){
+  .ptc-float{animation:none !important;}
+  .ptc-tilt{transition:none !important;}
+  .ptc-reveal{animation:none !important;opacity:1;transform:none;}
+  .ptc-stage:hover .ptc-tilt{transform:rotateY(-6deg) rotateX(3deg);}
+}
+`;
+
+  function injectCSS() {
+    if (!document.getElementById("pt-cert-style") && (document.head || document.documentElement)) {
+      var s = document.createElement("style"); s.id = "pt-cert-style"; s.textContent = CSS;
+      (document.head || document.documentElement).appendChild(s);
+    }
+  }
+
+  function findCard() {
+    if (!document.body) return null;
+    var cards = [].slice.call(document.body.querySelectorAll(".glass"));
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      if (c.querySelector('script[type^="__bundler"]')) continue; // страховка: не трогаем блобы
+      var t = c.textContent || "";
+      if (t.indexOf("PT-2026-") >= 0 || /CERTIFICATE\s*ID/i.test(t)) return c;
+    }
+    return null;
+  }
+
+  function render(card) {
+    var grid = card && card.parentElement;
+    if (!grid || grid.dataset.ptCert === "1") return;
+    if (!grid.contains(card)) return;
+    grid.dataset.ptCert = "1";
+    grid.classList.add("ptc-host-grid");
+    grid.innerHTML = CONTENT;
+  }
+
+  function apply() {
+    injectCSS();
+    var c = findCard();
+    if (c) render(c);
+  }
+
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  apply();
+  window.addEventListener("load", apply);
+  window.addEventListener("DOMContentLoaded", apply);
+  try {
+    var mo = new MutationObserver(function () {
+      var c = findCard();
+      if (c && c.parentElement && c.parentElement.dataset.ptCert !== "1") apply();
+    });
+    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
+    setTimeout(function () { mo.disconnect(); }, 60000);
+  } catch (e) {}
+})();
+</script>
+
 </body>
 </html>
