@@ -85,7 +85,7 @@ claude-артефакт** (dc-runtime), пропатченный набором 
 Аддоны в index.html (ищи по маркеру, не по номеру строки — они дрейфуют):
 `cookie`, `tracks`, `polish`, `typo`, `no-blink`, `venue`, `stats`, `reveal`, `pricing`, `intro`,
 `starfield`, `speakers`, `schedule`, `remove-articles`, `academy`, `courses`, `certificate`,
-`book`, `toc`, `cta`, `scenarios`, `research`, `datachart`, `reports`, `checklists`, `products`, `plans`, `bot`.
+`book`, `toc`, `cta`, `scenarios`, `research`, `datachart`, `reports`, `checklists`, `products`, `plans`, `bot`, `pack`, `subscribe`, `prodhero`.
 
 ---
 
