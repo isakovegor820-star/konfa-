@@ -1,7 +1,7 @@
 # Pravotech — лендинг конференции «ТехнологИИ права»
 
 Продакшен-файл: [`legal-ai-os-serve/index.html`](legal-ai-os-serve/index.html). Это **сериализованный
-claude-артефакт** (dc-runtime), пропатченный набором inline-аддонов. Сервится статикой:
+Codex-артефакт** (dc-runtime), пропатченный набором inline-аддонов. Сервится статикой:
 `python3 -m http.server 4322 --directory legal-ai-os-serve` (см. `.claude/launch.json`, конфиг `serve`).
 
 ---
