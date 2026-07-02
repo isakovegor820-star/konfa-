@@ -85,13 +85,13 @@
   // .glass-стили применяются сами; интервал нужен только чтобы поймать countdown
   // (и countdown в ленивых модулях при скролле)
   var n = 0;
-  var iv = setInterval(function () { n++; init(); if (window.__ptCdDone || n > 150) clearInterval(iv); }, 150);
+  var iv = setInterval(function () { n++; init(); if (n===15||n===50) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (window.__ptCdDone || n > 150) { clearInterval(iv); setInterval(init, 1200); } }, 150);
   window.addEventListener("load", init);
   window.addEventListener("DOMContentLoaded", init);
   // на случай ленивой подгрузки секций со своими countdown — лёгкий наблюдатель
   try {
     var mo = new MutationObserver(function () { if (!window.__ptCdDone) tagCountdown(); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 25000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

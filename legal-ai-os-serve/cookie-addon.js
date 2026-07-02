@@ -71,10 +71,9 @@
   function elFrom(html){var d=document.createElement("div");d.innerHTML=html;return d.firstElementChild;}
 
   function build(){
-    if(document.getElementById("pt-ck-style")) return true;
     if(!document.body) return false;
-
-    var st=document.createElement("style");st.id="pt-ck-style";st.textContent=CSS;document.head.appendChild(st);
+    if(!document.getElementById("pt-ck-style")){var st=document.createElement("style");st.id="pt-ck-style";st.textContent=CSS;document.head.appendChild(st);}
+    if(document.getElementById("pt-ck-banner")) return true; // гард по КОНТЕНТУ, не по стилю
 
     banner=elFrom('<div id="pt-ck-banner" role="region" aria-label="Согласие на использование файлов cookie">\
 <h3>🍪 Мы используем файлы cookie</h3>\
@@ -142,7 +141,7 @@
 
   // Бандл пересобирает DOM асинхронно — пытаемся встроиться, пока не получится
   var tries=0;
-  var iv=setInterval(function(){tries++;if(build()||tries>240)clearInterval(iv);},120);
+  var iv=setInterval(function(){tries++;if(build()||tries>240){clearInterval(iv);setInterval(build,1500);}},120);
   if(document.readyState!=="loading") build();
   window.addEventListener("load",build);
   window.addEventListener("DOMContentLoaded",build);

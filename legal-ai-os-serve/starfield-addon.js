@@ -69,15 +69,16 @@
     tscroll = Math.max(v, w);
   }, true);
 
-  var running = !reduce;
-  var t0 = performance.now();
-  function drawFrame(now) {
-    if (!ctx) return;
-    var t = (now - t0) / 1000;
-    mx += (tmx - mx) * 0.04; my += (tmy - my) * 0.04; scroll += (tscroll - scroll) * 0.08;
-    ctx.clearRect(0, 0, W, H);
-    // мягкая туманность
-    ctx.globalCompositeOperation = "lighter";
+  window.addEventListener("resize", function () { size(); nebT = -1; }, { passive: true });
+  var neb = null, nebT = -1;
+  function renderNeb(t, now) {
+    if (!c) return;
+    if (!neb) neb = document.createElement("canvas");
+    if (neb.width !== c.width || neb.height !== c.height) { neb.width = c.width; neb.height = c.height; }
+    var g2 = neb.getContext("2d");
+    g2.setTransform(DPR, 0, 0, DPR, 0, 0);
+    g2.clearRect(0, 0, W, H);
+    g2.globalCompositeOperation = "lighter";
     for (var i = 0; i < blobs.length; i++) {
       var bl = blobs[i];
       var br = 0.5 + 0.5 * Math.sin(t * 0.12 + bl.ph);
@@ -85,12 +86,24 @@
       var by = (bl.y + Math.cos(t * 0.045 + bl.ph) * 0.04) * H + my * 0.03 * H - scroll * 0.02;
       var rr = bl.r * Math.max(W, H) * (0.8 + 0.25 * br);
       var a = 0.055 * (0.6 + 0.4 * br);
-      var g = ctx.createRadialGradient(bx, by, 0, bx, by, rr);
+      var g = g2.createRadialGradient(bx, by, 0, bx, by, rr);
       g.addColorStop(0, "rgba(" + bl.col[0] + "," + bl.col[1] + "," + bl.col[2] + "," + a + ")");
       g.addColorStop(1, "rgba(" + bl.col[0] + "," + bl.col[1] + "," + bl.col[2] + ",0)");
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by, rr, 0, 7); ctx.fill();
+      g2.fillStyle = g; g2.beginPath(); g2.arc(bx, by, rr, 0, 7); g2.fill();
     }
-    ctx.globalCompositeOperation = "source-over";
+    g2.globalCompositeOperation = "source-over";
+    nebT = now;
+  }
+  var running = !reduce;
+  var t0 = performance.now();
+  function drawFrame(now) {
+    if (!ctx) return;
+    var t = (now - t0) / 1000;
+    mx += (tmx - mx) * 0.04; my += (tmy - my) * 0.04; scroll += (tscroll - scroll) * 0.08;
+    ctx.clearRect(0, 0, W, H);
+    // туманность из кэша (offscreen, перерисовка раз в 400мс — 3 полноэкранных градиента больше не жгут каждый кадр)
+    if (now - nebT > 400) renderNeb(t, now);
+    if (neb) ctx.drawImage(neb, 0, 0, neb.width, neb.height, 0, 0, W, H);
     // звёзды
     for (var i = 0; i < stars.length; i++) {
       var s = stars[i]; s.x += s.vx; if (s.x > 1) s.x -= 1; if (s.x < 0) s.x += 1;
@@ -100,7 +113,7 @@
       ctx.fillStyle = "rgba(220,236,255," + a + ")"; ctx.beginPath(); ctx.arc(px, py, r, 0, 7); ctx.fill();
     }
   }
-  function loop(now) { drawFrame(now); if (running) requestAnimationFrame(loop); }
+  function loop(now) { if (!c || !c.isConnected) { c = null; ensureCanvas(); } drawFrame(now); if (running) requestAnimationFrame(loop); }
 
   mountStyle(); ensureCanvas();
   requestAnimationFrame(loop); // reduced-motion → running=false → один кадр

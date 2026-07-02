@@ -53,6 +53,7 @@
   function leaves(el) { return [].slice.call(el.querySelectorAll("*")).filter(function (e) { return !e.children.length && (e.textContent || "").trim(); }).map(function (e) { return e.textContent.trim(); }); }
   function cardOf(el) { var n = el; for (var i = 0; i < 9 && n.parentElement; i++) { n = n.parentElement; if (n.classList && n.classList.contains("glass")) return n; } return null; }
   function findDayCards() {
+    if (document.querySelector(".pt-sch-host")) return []; /* уже собрано — тяжёлый скан не нужен */
     var marks = [].slice.call(document.querySelectorAll("*")).filter(function (e) { return !e.children.length && /day\s*0[12]/i.test(e.textContent || "") && (e.textContent || "").length < 16; });
     var cards = [];
     marks.forEach(function (m) { var c = cardOf(m); if (c && cards.indexOf(c) < 0) cards.push(c); });
@@ -79,8 +80,17 @@
     host.classList.add("pt-sch-host");
     host.removeAttribute("style");
     host.innerHTML = tabs(day) + meta(DATA[day]) + cards(DATA[day]);
-    [].slice.call(host.querySelectorAll(".pt-sch-dtab")).forEach(function (b) {
-      b.addEventListener("click", function () { window.__ptSchDay = +b.getAttribute("data-d"); renderInto(host); });
+  }
+
+  // делегация на document: кнопки дней переживают гидрацию dc-runtime
+  if (!window.__ptSchClick) {
+    window.__ptSchClick = true;
+    document.addEventListener("click", function (e) {
+      var b = e.target && e.target.closest && e.target.closest(".pt-sch-dtab");
+      if (!b) return;
+      window.__ptSchDay = +b.getAttribute("data-d");
+      var host = b.closest(".pt-sch-host") || document.querySelector(".pt-sch-host");
+      if (host) renderInto(host);
     });
   }
 
@@ -96,13 +106,13 @@
     console.log("[schedule] карточки сессий, дней:", DATA.length);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 200) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 200) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(apply);
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 40000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

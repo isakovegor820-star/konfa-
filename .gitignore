@@ -6,6 +6,8 @@ legal-ai-os-serve/live_shots/
 legal-ai-os-serve/live_pages/
 legal-ai-os-serve/phrases_live/
 legal-ai-os-serve/extracted/
+legal-ai-os-serve/intro_frames/
+legal-ai-os-serve/mockups/
 
 # intro preview scratch (committed versions: intro.mp4 / intro-door.jpg / intro-addon.js)
 legal-ai-os-serve/_intro.html

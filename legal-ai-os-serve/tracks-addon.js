@@ -144,12 +144,11 @@
   }
 
   function build() {
-    if (document.getElementById("pt-tracks-style")) return true;
     if (!document.body) return false;
+    if (!document.getElementById("pt-tracks-style")) { var st = document.createElement("style"); st.id = "pt-tracks-style"; st.textContent = CSS; document.head.appendChild(st); }
+    if (document.querySelector(".pt-bento")) return true; // гард по КОНТЕНТУ, не по стилю
     var box = findBox();
     if (!box) return false;
-    var st = document.createElement("style"); st.id = "pt-tracks-style"; st.textContent = CSS;
-    document.head.appendChild(st);
     box.className = "pt-bento";
     box.removeAttribute("style");
     box.style.opacity = "1"; box.style.transform = "none";
@@ -159,7 +158,8 @@
   }
 
   var tries = 0;
-  var iv = setInterval(function () { tries++; if (build() || tries > 240) clearInterval(iv); }, 120);
+  try { var mo = new MutationObserver(function () { build(); }); mo.observe(document, { childList: true, subtree: true }); } catch (e) {}
+  var iv = setInterval(function () { tries++; build(); if (tries===25||tries===80||tries===200) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (tries > 240) { clearInterval(iv); setInterval(build, 1500); } }, 120);
   if (document.readyState !== "loading") build();
   window.addEventListener("load", build);
   window.addEventListener("DOMContentLoaded", build);
