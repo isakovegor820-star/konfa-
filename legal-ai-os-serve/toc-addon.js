@@ -39,7 +39,6 @@
   }
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 .ptoc-host{
   --ptoc-cyan:#00E5FF;--ptoc-h:#fff;--ptoc-desc:#aab2c2;--ptoc-meta:#828b9d;
@@ -102,6 +101,7 @@
   var TITLES = ["Введение в банкротство", "Подготовка и подача", "Анализ сделок", "Защита единственного", "Взаимодействие с АУ", "Завершение процедуры"];
 
   function findList() {
+    if (document.querySelector(".ptoc-host")) return null; /* уже собрано — тяжёлый скан не нужен */
     if (!document.body) return null;
     var leaves = [].slice.call(document.body.querySelectorAll("*")).filter(function (e) {
       var tg = e.tagName;
@@ -156,7 +156,7 @@
     if (l) render(l);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -165,7 +165,7 @@
       var l = findList();
       if (l && (l.dataset.ptToc !== "1" || !l.querySelector(".ptoc-grid"))) apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

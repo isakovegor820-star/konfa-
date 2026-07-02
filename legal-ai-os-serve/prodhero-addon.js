@@ -37,7 +37,6 @@
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 .pt-phero{max-width:1240px;margin:0 auto;font-family:'Space Grotesk',system-ui,sans-serif;--cyan:#00E5FF;--grn:#4ADE80;--amber:#F0B84B;--vio:#A78BFA;--desc:#aeb4c0;--meta:#8891a3;--dim:#7d8492;--line:rgba(255,255,255,.08);}
 .pt-phero *{box-sizing:border-box;}
 .pt-phero .ph-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,56px);align-items:center;}
@@ -101,13 +100,13 @@
 
   function apply() { injectCSS(); var c = findContainer(); if (c) buildHero(c); }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(function () { var c = findContainer(); if (c) buildHero(c); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

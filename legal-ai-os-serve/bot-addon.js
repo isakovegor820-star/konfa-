@@ -42,7 +42,6 @@
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-bot{font-family:'Space Grotesk',system-ui,sans-serif;--cyan:#00E5FF;--mag:#FF2E9A;--desc:#A6ADBA;--meta:#6b7385;--line:rgba(255,255,255,.08);position:relative;}
 .pt-bot *{box-sizing:border-box;}
 .glass.pt-bot-host:hover{transform:none !important;}
@@ -162,18 +161,18 @@
       var card = btn.closest(".pt-bot"), idx = +btn.getAttribute("data-idx");
       if (card && idx >= 0) renderPanel(card, idx);
     });
-    window.addEventListener("resize", function () { var c = findCard(); if (c && c.dataset.ptBot === "1") moveInk(c, +c.dataset.ptIdx || 0); });
+    window.addEventListener("resize", function () { clearTimeout(window.__ptBotRz); window.__ptBotRz = setTimeout(function () { var c = findCard(); if (c && c.dataset.ptBot === "1") moveInk(c, +c.dataset.ptIdx || 0); }, 150); });
   }
 
   function apply() { injectCSS(); var c = findCard(); if (c) buildBot(c); }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(function () { var c = findCard(); if (c && (c.dataset.ptBot !== "1" || !c.querySelector(".fb-tab"))) buildBot(c); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

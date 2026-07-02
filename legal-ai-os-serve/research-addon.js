@@ -21,7 +21,6 @@
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-rbn{--rc:#00E5FF;--rm:#FF2E9A;--ra:#F0B84B;--rg:#28e0a0;--rd:#9aa3b4;--rt:#5f6878;--rl:rgba(255,255,255,.08);font-family:'Space Grotesk',system-ui,sans-serif;color:#fff;}
 .pt-rbn *{box-sizing:border-box;}
 .pt-rbn-top{display:flex;justify-content:space-between;align-items:center;gap:18px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;margin-bottom:clamp(22px,3vw,38px);}
@@ -126,7 +125,7 @@
     if (w) render(w);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -135,7 +134,7 @@
       var w = findWrap();
       if (w && w.dataset.ptResearch !== "1") apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

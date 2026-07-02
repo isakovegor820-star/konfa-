@@ -48,7 +48,6 @@
     + '</article></div></div></div>';
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 .ptc-host-grid{
   --cyan:#00E5FF;--ink:#fff;--ink2:rgba(255,255,255,.66);
@@ -161,7 +160,7 @@
     if (c) render(c);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -170,7 +169,7 @@
       var c = findCard();
       if (c && c.parentElement && c.parentElement.dataset.ptCert !== "1") apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

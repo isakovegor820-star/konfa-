@@ -24,7 +24,6 @@
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 .pt-courses-grid{
   --c1:#22E0F5;--c2:#5CC4FA;--c3:#FF55AE;--c4:#F2C260;
@@ -118,6 +117,7 @@
   var TITLES = ["Старт практики БФЛ", "Судебная защита должника", "AI в работе юриста", "Управление командой", "Продажи и упаковка", "Масштабирование юр"];
 
   function findGrid() {
+    if (document.querySelector(".pt-courses-grid")) return null; /* уже собрано — тяжёлый скан не нужен */
     // ВАЖНО: ищем только в <body> и пропускаем script/style/template — иначе
     // матчим <script type="__bundler/template"> (в нём экранированный HTML
     // артефакта со всеми названиями курсов) и затираем блобы → ломаем сборку.
@@ -172,7 +172,7 @@
     if (g) render(g);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -181,7 +181,7 @@
       var g = findGrid();
       if (g && g.dataset.ptCourses !== "1") apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

@@ -53,7 +53,6 @@
     + '</div>';
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 .pt-book-col{--cyan:#00E5FF;--mag:#FF2E9A;font-family:'Space Grotesk',system-ui,sans-serif;}
 .pt-book-col *{box-sizing:border-box;}
@@ -118,6 +117,7 @@
   }
 
   function findBookCol() {
+    if (document.querySelector(".bk-scene")) return null; /* уже собрано — тяжёлый скан не нужен */
     if (!document.body) return null;
     var anchor = [].slice.call(document.body.querySelectorAll("*")).filter(function (e) {
       var tg = e.tagName;
@@ -149,7 +149,7 @@
     if (c) render(c);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -158,7 +158,7 @@
       var c = findBookCol();
       if (c && (c.dataset.ptBook !== "1" || !c.querySelector(".bk"))) apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

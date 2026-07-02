@@ -13,6 +13,7 @@
   window.__ptReveal = true;
 
   var SEL = "[data-reveal],[data-reveal-left],[data-reveal-scale]";
+  var pending = true; // false = всё проявлено, скролл-тик мгновенно выходит
   var CSS = "[data-reveal],[data-reveal-left],[data-reveal-scale]{transition:none !important;}";
 
   function injectCSS() {
@@ -27,23 +28,25 @@
   }
   function tick() {
     injectCSS();
-    var els = document.querySelectorAll(SEL);
+    if (!pending) return; // всё проявлено — не сканируем
+    var els = document.querySelectorAll(SEL), left = 0;
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (el.getAttribute("data-revealed") === "true" && parseFloat(getComputedStyle(el).opacity) > 0.95) continue;
+      if (el.getAttribute("data-revealed") === "true") continue; // transition:none → залипания невозможны
       var r = el.getBoundingClientRect();
-      if (r.top < vh() * 0.95) show(el); // в зоне видимости или выше → проявить
+      if (r.top < vh() * 0.95) show(el); else left++;
     }
+    pending = left > 0;
   }
 
   injectCSS(); tick();
   window.addEventListener("load", tick);
   window.addEventListener("scroll", tick, { passive: true, capture: true });
   window.addEventListener("resize", tick, { passive: true });
-  var n = 0, iv = setInterval(function () { n++; tick(); if (n > 320) clearInterval(iv); }, 250);
+  var n = 0, iv = setInterval(function () { n++; tick(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 320) { clearInterval(iv); setInterval(tick, 1200); } }, 250); /* прогрев → вечный пульс */
   try {
-    var mo = new MutationObserver(tick);
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 30000);
+    var mo = new MutationObserver(function () { pending = true; tick(); });
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

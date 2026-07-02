@@ -35,7 +35,6 @@
   var KEYS = ["cases","growth","revenue"];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-gdash{font-family:'Space Grotesk',system-ui,sans-serif;}
 .pt-gdash *{box-sizing:border-box;}
 .pt-gdash .ut{position:relative;display:flex;gap:2px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:26px;}
@@ -218,18 +217,18 @@
       var card = btn.closest(".pt-gdash"), key = btn.getAttribute("data-key");
       if (card && key) drawMetric(card, key, {animate:true});
     });
-    window.addEventListener("resize", function () { var c = findCard(); if (c && c.dataset.ptKey) drawMetric(c, c.dataset.ptKey, {animate:false}); });
+    window.addEventListener("resize", function () { clearTimeout(window.__ptGdRz); window.__ptGdRz = setTimeout(function () { var c = findCard(); if (c && c.dataset.ptKey) drawMetric(c, c.dataset.ptKey, {animate:false}); }, 150); });
   }
 
   function apply() { injectCSS(); var c = findCard(); if (c) buildCard(c); }
 
-  var n=0, iv=setInterval(function(){n++;apply();if(n>250)clearInterval(iv);},200);
+  var n=0, iv=setInterval(function(){n++;apply();if(n===15||n===50||n===150){try{mo.disconnect();mo.observe(document,{childList:true,subtree:true});}catch(e){}}if(n>250){clearInterval(iv);setInterval(apply,1200);}},200);
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo=new MutationObserver(function(){var c=findCard();if(c&&(c.dataset.ptGd!=="1"||!c.querySelector(".ut-btn")))buildCard(c);});
-    if (document.body) mo.observe(document.body,{childList:true,subtree:true});
-    setTimeout(function(){mo.disconnect();},60000);
+    if (document.body) mo.observe(document,{childList:true,subtree:true});
+    /* observer живёт вечно */
   } catch(e) {}
 })();

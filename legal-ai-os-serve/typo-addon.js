@@ -48,15 +48,23 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     }
   }
 
-  function run() { injectCSS(); fixBigNumbers(); }
+  function ensureFonts() { // п.5: ЕДИНСТВЕННОЕ подключение шрифтов (вместо 16 @import по аддонам)
+    if (document.getElementById("pt-fonts") || !document.head) return;
+    var p1 = document.createElement("link"); p1.rel = "preconnect"; p1.href = "https://fonts.googleapis.com";
+    var p2 = document.createElement("link"); p2.rel = "preconnect"; p2.href = "https://fonts.gstatic.com"; p2.crossOrigin = "";
+    var l = document.createElement("link"); l.id = "pt-fonts"; l.rel = "stylesheet";
+    l.href = "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;500;600&family=Montserrat:wght@400;600;700&display=swap";
+    document.head.appendChild(p1); document.head.appendChild(p2); document.head.appendChild(l);
+  }
+  function run() { ensureFonts(); injectCSS(); fixBigNumbers(); }
 
   var n = 0;
-  var iv = setInterval(function () { n++; run(); if (n > 160) clearInterval(iv); }, 150);
+  var iv = setInterval(function () { n++; run(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 160) { clearInterval(iv); setInterval(run, 1200); } }, 150);
   window.addEventListener("load", run);
   window.addEventListener("DOMContentLoaded", run);
   try {
     var mo = new MutationObserver(function () { run(); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 25000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

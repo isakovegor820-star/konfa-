@@ -61,7 +61,6 @@
 </div>`;
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .ntg-host{--ntg-cyan:#00E5FF;--ntg-magenta:#FF2E9A;--ntg-white:#f4f7fb;--ntg-desc:#9aa3b4;--ntg-meta:#5f6878;--ntg-glass:rgba(255,255,255,.04);--ntg-glass-line:rgba(255,255,255,.09);font-family:'Space Grotesk',system-ui,sans-serif;display:block !important;width:100%;}
 .ntg-host *,.ntg-host *::before,.ntg-host *::after{box-sizing:border-box;}
 .ntg-host .ntg-grid{display:grid !important;grid-template-columns:1.05fr .95fr !important;gap:clamp(32px,5vw,64px) !important;align-items:center;width:100%;}
@@ -156,6 +155,7 @@
   }
 
   function findGrid() {
+    if (document.querySelector(".ntg-host")) return null; /* уже собрано */
     if (!document.body) return null;
     var anchor = [].slice.call(document.body.querySelectorAll("*")).filter(function (e) {
       var tg = e.tagName;
@@ -189,7 +189,7 @@
     if (g) render(g);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -198,7 +198,7 @@
       var g = findGrid();
       if (g && (g.dataset.ptCta !== "1" || !g.querySelector(".ntg-grid"))) apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();

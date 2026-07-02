@@ -45,7 +45,7 @@
     });
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 120) clearInterval(iv); }, 150);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 120) { clearInterval(iv); setInterval(apply, 1200); } }, 150); /* прогрев → вечный пульс */
   apply(); window.addEventListener("load", apply); window.addEventListener("DOMContentLoaded", apply);
-  try { var mo = new MutationObserver(apply); if (document.body) mo.observe(document.body, { childList: true, subtree: true }); setTimeout(function () { mo.disconnect(); }, 30000); } catch (e) {}
+  try { var mo = new MutationObserver(apply); mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */ /* observer живёт вечно */ } catch (e) {}
 })();

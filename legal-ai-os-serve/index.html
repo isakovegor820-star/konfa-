@@ -299,10 +299,9 @@ document.addEventListener('DOMContentLoaded', async function() {
   function elFrom(html){var d=document.createElement("div");d.innerHTML=html;return d.firstElementChild;}
 
   function build(){
-    if(document.getElementById("pt-ck-style")) return true;
     if(!document.body) return false;
-
-    var st=document.createElement("style");st.id="pt-ck-style";st.textContent=CSS;document.head.appendChild(st);
+    if(!document.getElementById("pt-ck-style")){var st=document.createElement("style");st.id="pt-ck-style";st.textContent=CSS;document.head.appendChild(st);}
+    if(document.getElementById("pt-ck-banner")) return true; // гард по КОНТЕНТУ, не по стилю
 
     banner=elFrom('<div id="pt-ck-banner" role="region" aria-label="Согласие на использование файлов cookie">\
 <h3>🍪 Мы используем файлы cookie</h3>\
@@ -370,12 +369,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Бандл пересобирает DOM асинхронно — пытаемся встроиться, пока не получится
   var tries=0;
-  var iv=setInterval(function(){tries++;if(build()||tries>240)clearInterval(iv);},120);
+  var iv=setInterval(function(){tries++;if(build()||tries>240){clearInterval(iv);setInterval(build,1500);}},120);
   if(document.readyState!=="loading") build();
   window.addEventListener("load",build);
   window.addEventListener("DOMContentLoaded",build);
 })();
-
 </script>
 
 <!-- ===== TRACKS BENTO ADD-ON (замена секции «Шесть потоков») ===== -->
@@ -526,12 +524,11 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   function build() {
-    if (document.getElementById("pt-tracks-style")) return true;
     if (!document.body) return false;
+    if (!document.getElementById("pt-tracks-style")) { var st = document.createElement("style"); st.id = "pt-tracks-style"; st.textContent = CSS; document.head.appendChild(st); }
+    if (document.querySelector(".pt-bento")) return true; // гард по КОНТЕНТУ, не по стилю
     var box = findBox();
     if (!box) return false;
-    var st = document.createElement("style"); st.id = "pt-tracks-style"; st.textContent = CSS;
-    document.head.appendChild(st);
     box.className = "pt-bento";
     box.removeAttribute("style");
     box.style.opacity = "1"; box.style.transform = "none";
@@ -541,12 +538,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   var tries = 0;
-  var iv = setInterval(function () { tries++; if (build() || tries > 240) clearInterval(iv); }, 120);
+  try { var mo = new MutationObserver(function () { build(); }); mo.observe(document, { childList: true, subtree: true }); } catch (e) {}
+  var iv = setInterval(function () { tries++; build(); if (tries===25||tries===80||tries===200) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (tries > 240) { clearInterval(iv); setInterval(build, 1500); } }, 120);
   if (document.readyState !== "loading") build();
   window.addEventListener("load", build);
   window.addEventListener("DOMContentLoaded", build);
 })();
-
 </script>
 
 <!-- ===== POLISH ADD-ON (де-квадратит .glass + countdown) ===== -->
@@ -638,17 +635,16 @@ document.addEventListener('DOMContentLoaded', async function() {
   // .glass-стили применяются сами; интервал нужен только чтобы поймать countdown
   // (и countdown в ленивых модулях при скролле)
   var n = 0;
-  var iv = setInterval(function () { n++; init(); if (window.__ptCdDone || n > 150) clearInterval(iv); }, 150);
+  var iv = setInterval(function () { n++; init(); if (n===15||n===50) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (window.__ptCdDone || n > 150) { clearInterval(iv); setInterval(init, 1200); } }, 150);
   window.addEventListener("load", init);
   window.addEventListener("DOMContentLoaded", init);
   // на случай ленивой подгрузки секций со своими countdown — лёгкий наблюдатель
   try {
     var mo = new MutationObserver(function () { if (!window.__ptCdDone) tagCountdown(); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 25000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
-
 </script>
 
 <!-- ===== TYPOGRAPHY FIX ADD-ON ===== -->
@@ -703,19 +699,26 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     }
   }
 
-  function run() { injectCSS(); fixBigNumbers(); }
+  function ensureFonts() { // п.5: ЕДИНСТВЕННОЕ подключение шрифтов (вместо 16 @import по аддонам)
+    if (document.getElementById("pt-fonts") || !document.head) return;
+    var p1 = document.createElement("link"); p1.rel = "preconnect"; p1.href = "https://fonts.googleapis.com";
+    var p2 = document.createElement("link"); p2.rel = "preconnect"; p2.href = "https://fonts.gstatic.com"; p2.crossOrigin = "";
+    var l = document.createElement("link"); l.id = "pt-fonts"; l.rel = "stylesheet";
+    l.href = "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;500;600&family=Montserrat:wght@400;600;700&display=swap";
+    document.head.appendChild(p1); document.head.appendChild(p2); document.head.appendChild(l);
+  }
+  function run() { ensureFonts(); injectCSS(); fixBigNumbers(); }
 
   var n = 0;
-  var iv = setInterval(function () { n++; run(); if (n > 160) clearInterval(iv); }, 150);
+  var iv = setInterval(function () { n++; run(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 160) { clearInterval(iv); setInterval(run, 1200); } }, 150);
   window.addEventListener("load", run);
   window.addEventListener("DOMContentLoaded", run);
   try {
     var mo = new MutationObserver(function () { run(); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 25000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
-
 </script>
 
 <!-- ===== NO-BLINK ADD-ON ===== -->
@@ -768,17 +771,16 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
 
   function run() { ensureStyle(); hideDots(); }
 
-  var n = 0, iv = setInterval(function () { n++; run(); if (n > 120) clearInterval(iv); }, 150);
+  var n = 0, iv = setInterval(function () { n++; run(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 120) { clearInterval(iv); setInterval(run, 1200); } }, 150); /* прогрев → вечный пульс */
   run();
   window.addEventListener("load", run);
   window.addEventListener("DOMContentLoaded", run);
   try {
     var mo = new MutationObserver(run);
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 30000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
-
 </script>
 
 <!-- ===== VENUE ADD-ON ===== -->
@@ -848,11 +850,10 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     card.innerHTML=HTML;
     console.log('[venue] карточка заменена на живое фото');
   }
-  var n=0, iv=setInterval(function(){ n++; apply(); if(n>120) clearInterval(iv); },150);
+  var n=0, iv=setInterval(function(){ n++; apply(); if(n===15||n===50||n===150){try{mo.disconnect();mo.observe(document,{childList:true,subtree:true});}catch(e){}} if(n>120){ clearInterval(iv); setInterval(apply,1200);} },150);
   apply(); window.addEventListener('load',apply); window.addEventListener('DOMContentLoaded',apply);
-  try{ var mo=new MutationObserver(apply); if(document.body) mo.observe(document.body,{childList:true,subtree:true}); setTimeout(function(){mo.disconnect();},30000); }catch(e){}
+  try{ var mo=new MutationObserver(apply); if(document.body) mo.observe(document,{childList:true,subtree:true}); /* observer живёт вечно */ }catch(e){}
 })();
-
 </script>
 
 <!-- ===== STATS ADD-ON ===== -->
@@ -904,11 +905,10 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     });
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 120) clearInterval(iv); }, 150);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 120) { clearInterval(iv); setInterval(apply, 1200); } }, 150); /* прогрев → вечный пульс */
   apply(); window.addEventListener("load", apply); window.addEventListener("DOMContentLoaded", apply);
-  try { var mo = new MutationObserver(apply); if (document.body) mo.observe(document.body, { childList: true, subtree: true }); setTimeout(function () { mo.disconnect(); }, 30000); } catch (e) {}
+  try { var mo = new MutationObserver(apply); mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */ /* observer живёт вечно */ } catch (e) {}
 })();
-
 </script>
 
 <!-- ===== REVEAL SAFETY ADD-ON ===== -->
@@ -928,6 +928,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   window.__ptReveal = true;
 
   var SEL = "[data-reveal],[data-reveal-left],[data-reveal-scale]";
+  var pending = true; // false = всё проявлено, скролл-тик мгновенно выходит
   var CSS = "[data-reveal],[data-reveal-left],[data-reveal-scale]{transition:none !important;}";
 
   function injectCSS() {
@@ -942,27 +943,28 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   }
   function tick() {
     injectCSS();
-    var els = document.querySelectorAll(SEL);
+    if (!pending) return; // всё проявлено — не сканируем
+    var els = document.querySelectorAll(SEL), left = 0;
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (el.getAttribute("data-revealed") === "true" && parseFloat(getComputedStyle(el).opacity) > 0.95) continue;
+      if (el.getAttribute("data-revealed") === "true") continue; // transition:none → залипания невозможны
       var r = el.getBoundingClientRect();
-      if (r.top < vh() * 0.95) show(el); // в зоне видимости или выше → проявить
+      if (r.top < vh() * 0.95) show(el); else left++;
     }
+    pending = left > 0;
   }
 
   injectCSS(); tick();
   window.addEventListener("load", tick);
   window.addEventListener("scroll", tick, { passive: true, capture: true });
   window.addEventListener("resize", tick, { passive: true });
-  var n = 0, iv = setInterval(function () { n++; tick(); if (n > 320) clearInterval(iv); }, 250);
+  var n = 0, iv = setInterval(function () { n++; tick(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 320) { clearInterval(iv); setInterval(tick, 1200); } }, 250); /* прогрев → вечный пульс */
   try {
-    var mo = new MutationObserver(tick);
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 30000);
+    var mo = new MutationObserver(function () { pending = true; tick(); });
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
-
 </script>
 
 <!-- ===== PRICING ADD-ON ===== -->
@@ -1056,11 +1058,10 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     console.log("[pricing] секция тарифов → 3 колонки");
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 200) clearInterval(iv); }, 160);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 200) { clearInterval(iv); setInterval(apply, 1200); } }, 160); /* прогрев → вечный пульс */
   apply(); window.addEventListener("load", apply); window.addEventListener("DOMContentLoaded", apply);
-  try { var mo = new MutationObserver(apply); if (document.body) mo.observe(document.body, { childList: true, subtree: true }); setTimeout(function () { mo.disconnect(); }, 40000); } catch (e) {}
+  try { var mo = new MutationObserver(apply); mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */ /* observer живёт вечно */ } catch (e) {}
 })();
-
 </script>
 
 <!-- ===== INTRO ADD-ON ===== -->
@@ -1235,15 +1236,16 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     tscroll = Math.max(v, w);
   }, true);
 
-  var running = !reduce;
-  var t0 = performance.now();
-  function drawFrame(now) {
-    if (!ctx) return;
-    var t = (now - t0) / 1000;
-    mx += (tmx - mx) * 0.04; my += (tmy - my) * 0.04; scroll += (tscroll - scroll) * 0.08;
-    ctx.clearRect(0, 0, W, H);
-    // мягкая туманность
-    ctx.globalCompositeOperation = "lighter";
+  window.addEventListener("resize", function () { size(); nebT = -1; }, { passive: true });
+  var neb = null, nebT = -1;
+  function renderNeb(t, now) {
+    if (!c) return;
+    if (!neb) neb = document.createElement("canvas");
+    if (neb.width !== c.width || neb.height !== c.height) { neb.width = c.width; neb.height = c.height; }
+    var g2 = neb.getContext("2d");
+    g2.setTransform(DPR, 0, 0, DPR, 0, 0);
+    g2.clearRect(0, 0, W, H);
+    g2.globalCompositeOperation = "lighter";
     for (var i = 0; i < blobs.length; i++) {
       var bl = blobs[i];
       var br = 0.5 + 0.5 * Math.sin(t * 0.12 + bl.ph);
@@ -1251,12 +1253,24 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var by = (bl.y + Math.cos(t * 0.045 + bl.ph) * 0.04) * H + my * 0.03 * H - scroll * 0.02;
       var rr = bl.r * Math.max(W, H) * (0.8 + 0.25 * br);
       var a = 0.055 * (0.6 + 0.4 * br);
-      var g = ctx.createRadialGradient(bx, by, 0, bx, by, rr);
+      var g = g2.createRadialGradient(bx, by, 0, bx, by, rr);
       g.addColorStop(0, "rgba(" + bl.col[0] + "," + bl.col[1] + "," + bl.col[2] + "," + a + ")");
       g.addColorStop(1, "rgba(" + bl.col[0] + "," + bl.col[1] + "," + bl.col[2] + ",0)");
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by, rr, 0, 7); ctx.fill();
+      g2.fillStyle = g; g2.beginPath(); g2.arc(bx, by, rr, 0, 7); g2.fill();
     }
-    ctx.globalCompositeOperation = "source-over";
+    g2.globalCompositeOperation = "source-over";
+    nebT = now;
+  }
+  var running = !reduce;
+  var t0 = performance.now();
+  function drawFrame(now) {
+    if (!ctx) return;
+    var t = (now - t0) / 1000;
+    mx += (tmx - mx) * 0.04; my += (tmy - my) * 0.04; scroll += (tscroll - scroll) * 0.08;
+    ctx.clearRect(0, 0, W, H);
+    // туманность из кэша (offscreen, перерисовка раз в 400мс — 3 полноэкранных градиента больше не жгут каждый кадр)
+    if (now - nebT > 400) renderNeb(t, now);
+    if (neb) ctx.drawImage(neb, 0, 0, neb.width, neb.height, 0, 0, W, H);
     // звёзды
     for (var i = 0; i < stars.length; i++) {
       var s = stars[i]; s.x += s.vx; if (s.x > 1) s.x -= 1; if (s.x < 0) s.x += 1;
@@ -1266,13 +1280,12 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       ctx.fillStyle = "rgba(220,236,255," + a + ")"; ctx.beginPath(); ctx.arc(px, py, r, 0, 7); ctx.fill();
     }
   }
-  function loop(now) { drawFrame(now); if (running) requestAnimationFrame(loop); }
+  function loop(now) { if (!c || !c.isConnected) { c = null; ensureCanvas(); } drawFrame(now); if (running) requestAnimationFrame(loop); }
 
   mountStyle(); ensureCanvas();
   requestAnimationFrame(loop); // reduced-motion → running=false → один кадр
   var n = 0, iv = setInterval(function () { n++; mountStyle(); ensureCanvas(); if (n > 30) clearInterval(iv); }, 300);
 })();
-
 </script>
 
 
@@ -1413,17 +1426,16 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     console.log("[speakers] фото-вариант", window.__ptSpkVariant, "·", window.__ptSpkData.length);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 200) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 200) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(apply);
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 40000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
-
 </script>
 
 <!-- ===== SCHEDULE ADD-ON ===== -->
@@ -1483,6 +1495,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   function leaves(el) { return [].slice.call(el.querySelectorAll("*")).filter(function (e) { return !e.children.length && (e.textContent || "").trim(); }).map(function (e) { return e.textContent.trim(); }); }
   function cardOf(el) { var n = el; for (var i = 0; i < 9 && n.parentElement; i++) { n = n.parentElement; if (n.classList && n.classList.contains("glass")) return n; } return null; }
   function findDayCards() {
+    if (document.querySelector(".pt-sch-host")) return []; /* уже собрано — тяжёлый скан не нужен */
     var marks = [].slice.call(document.querySelectorAll("*")).filter(function (e) { return !e.children.length && /day\s*0[12]/i.test(e.textContent || "") && (e.textContent || "").length < 16; });
     var cards = [];
     marks.forEach(function (m) { var c = cardOf(m); if (c && cards.indexOf(c) < 0) cards.push(c); });
@@ -1509,8 +1522,17 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     host.classList.add("pt-sch-host");
     host.removeAttribute("style");
     host.innerHTML = tabs(day) + meta(DATA[day]) + cards(DATA[day]);
-    [].slice.call(host.querySelectorAll(".pt-sch-dtab")).forEach(function (b) {
-      b.addEventListener("click", function () { window.__ptSchDay = +b.getAttribute("data-d"); renderInto(host); });
+  }
+
+  // делегация на document: кнопки дней переживают гидрацию dc-runtime
+  if (!window.__ptSchClick) {
+    window.__ptSchClick = true;
+    document.addEventListener("click", function (e) {
+      var b = e.target && e.target.closest && e.target.closest(".pt-sch-dtab");
+      if (!b) return;
+      window.__ptSchDay = +b.getAttribute("data-d");
+      var host = b.closest(".pt-sch-host") || document.querySelector(".pt-sch-host");
+      if (host) renderInto(host);
     });
   }
 
@@ -1526,17 +1548,16 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     console.log("[schedule] карточки сессий, дней:", DATA.length);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 200) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 200) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(apply);
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 40000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
-
 </script>
 
 <!-- ===== REMOVE-ARTICLES ADD-ON ===== -->
@@ -1573,17 +1594,16 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     });
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(apply);
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 45000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
-
 </script>
 
 <!-- ===== ACADEMY ADD-ON ===== -->
@@ -1691,7 +1711,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     if (card) render(card);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 200) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 200) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -1700,11 +1720,10 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var card = findCard();
       if (card && card.dataset.ptAc !== "1") apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 45000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
-
 </script>
 
 
@@ -1737,7 +1756,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 .pt-courses-grid{
   --c1:#22E0F5;--c2:#5CC4FA;--c3:#FF55AE;--c4:#F2C260;
@@ -1831,6 +1849,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   var TITLES = ["Старт практики БФЛ", "Судебная защита должника", "AI в работе юриста", "Управление командой", "Продажи и упаковка", "Масштабирование юр"];
 
   function findGrid() {
+    if (document.querySelector(".pt-courses-grid")) return null; /* уже собрано — тяжёлый скан не нужен */
     // ВАЖНО: ищем только в <body> и пропускаем script/style/template — иначе
     // матчим <script type="__bundler/template"> (в нём экранированный HTML
     // артефакта со всеми названиями курсов) и затираем блобы → ломаем сборку.
@@ -1885,7 +1904,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     if (g) render(g);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -1894,8 +1913,8 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var g = findGrid();
       if (g && g.dataset.ptCourses !== "1") apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -1955,7 +1974,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     + '</article></div></div></div>';
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 .ptc-host-grid{
   --cyan:#00E5FF;--ink:#fff;--ink2:rgba(255,255,255,.66);
@@ -2068,7 +2086,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     if (c) render(c);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -2077,8 +2095,8 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var c = findCard();
       if (c && c.parentElement && c.parentElement.dataset.ptCert !== "1") apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -2142,7 +2160,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     + '</div>';
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 .pt-book-col{--cyan:#00E5FF;--mag:#FF2E9A;font-family:'Space Grotesk',system-ui,sans-serif;}
 .pt-book-col *{box-sizing:border-box;}
@@ -2207,6 +2224,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   }
 
   function findBookCol() {
+    if (document.querySelector(".bk-scene")) return null; /* уже собрано — тяжёлый скан не нужен */
     if (!document.body) return null;
     var anchor = [].slice.call(document.body.querySelectorAll("*")).filter(function (e) {
       var tg = e.tagName;
@@ -2238,7 +2256,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     if (c) render(c);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -2247,8 +2265,8 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var c = findBookCol();
       if (c && (c.dataset.ptBook !== "1" || !c.querySelector(".bk"))) apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -2298,7 +2316,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   }
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 .ptoc-host{
   --ptoc-cyan:#00E5FF;--ptoc-h:#fff;--ptoc-desc:#aab2c2;--ptoc-meta:#828b9d;
@@ -2361,6 +2378,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   var TITLES = ["Введение в банкротство", "Подготовка и подача", "Анализ сделок", "Защита единственного", "Взаимодействие с АУ", "Завершение процедуры"];
 
   function findList() {
+    if (document.querySelector(".ptoc-host")) return null; /* уже собрано — тяжёлый скан не нужен */
     if (!document.body) return null;
     var leaves = [].slice.call(document.body.querySelectorAll("*")).filter(function (e) {
       var tg = e.tagName;
@@ -2415,7 +2433,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     if (l) render(l);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -2424,8 +2442,8 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var l = findList();
       if (l && (l.dataset.ptToc !== "1" || !l.querySelector(".ptoc-grid"))) apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -2497,7 +2515,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
 </div>`;
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .ntg-host{--ntg-cyan:#00E5FF;--ntg-magenta:#FF2E9A;--ntg-white:#f4f7fb;--ntg-desc:#9aa3b4;--ntg-meta:#5f6878;--ntg-glass:rgba(255,255,255,.04);--ntg-glass-line:rgba(255,255,255,.09);font-family:'Space Grotesk',system-ui,sans-serif;display:block !important;width:100%;}
 .ntg-host *,.ntg-host *::before,.ntg-host *::after{box-sizing:border-box;}
 .ntg-host .ntg-grid{display:grid !important;grid-template-columns:1.05fr .95fr !important;gap:clamp(32px,5vw,64px) !important;align-items:center;width:100%;}
@@ -2592,6 +2609,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   }
 
   function findGrid() {
+    if (document.querySelector(".ntg-host")) return null; /* уже собрано */
     if (!document.body) return null;
     var anchor = [].slice.call(document.body.querySelectorAll("*")).filter(function (e) {
       var tg = e.tagName;
@@ -2625,7 +2643,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     if (g) render(g);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -2634,8 +2652,8 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var g = findGrid();
       if (g && (g.dataset.ptCta !== "1" || !g.querySelector(".ntg-grid"))) apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -2675,7 +2693,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 .pt-scn-tabs{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 26px;font-family:'JetBrains Mono',monospace;}
 .pt-scn-tabs *{box-sizing:border-box;}
@@ -2764,6 +2781,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   var TITLES = SCN.map(function (s) { return s.t; });
 
   function findGrid() {
+    if (document.querySelector(".pt-scn-grid")) return null; /* уже собрано — тяжёлый скан не нужен */
     // ВАЖНО: ищем только в <body>, пропускаем script/style/template — иначе
     // матчим <script type="__bundler/template"> (в нём весь HTML артефакта как
     // текст, со всеми заголовками сценариев) и при innerHTML-замене затрём
@@ -2836,7 +2854,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     if (g) render(g);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -2845,8 +2863,8 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var g = findGrid();
       if (g && g.dataset.ptScn !== "1") apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -2875,7 +2893,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-rbn{--rc:#00E5FF;--rm:#FF2E9A;--ra:#F0B84B;--rg:#28e0a0;--rd:#9aa3b4;--rt:#5f6878;--rl:rgba(255,255,255,.08);font-family:'Space Grotesk',system-ui,sans-serif;color:#fff;}
 .pt-rbn *{box-sizing:border-box;}
 .pt-rbn-top{display:flex;justify-content:space-between;align-items:center;gap:18px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;margin-bottom:clamp(22px,3vw,38px);}
@@ -2980,7 +2997,7 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     if (w) render(w);
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
@@ -2989,8 +3006,8 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var w = findWrap();
       if (w && w.dataset.ptResearch !== "1") apply();
     });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -3033,7 +3050,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   var KEYS = ["cases","growth","revenue"];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-gdash{font-family:'Space Grotesk',system-ui,sans-serif;}
 .pt-gdash *{box-sizing:border-box;}
 .pt-gdash .ut{position:relative;display:flex;gap:2px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:26px;}
@@ -3216,19 +3232,19 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var card = btn.closest(".pt-gdash"), key = btn.getAttribute("data-key");
       if (card && key) drawMetric(card, key, {animate:true});
     });
-    window.addEventListener("resize", function () { var c = findCard(); if (c && c.dataset.ptKey) drawMetric(c, c.dataset.ptKey, {animate:false}); });
+    window.addEventListener("resize", function () { clearTimeout(window.__ptGdRz); window.__ptGdRz = setTimeout(function () { var c = findCard(); if (c && c.dataset.ptKey) drawMetric(c, c.dataset.ptKey, {animate:false}); }, 150); });
   }
 
   function apply() { injectCSS(); var c = findCard(); if (c) buildCard(c); }
 
-  var n=0, iv=setInterval(function(){n++;apply();if(n>250)clearInterval(iv);},200);
+  var n=0, iv=setInterval(function(){n++;apply();if(n===15||n===50||n===150){try{mo.disconnect();mo.observe(document,{childList:true,subtree:true});}catch(e){}}if(n>250){clearInterval(iv);setInterval(apply,1200);}},200);
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo=new MutationObserver(function(){var c=findCard();if(c&&(c.dataset.ptGd!=="1"||!c.querySelector(".ut-btn")))buildCard(c);});
-    if (document.body) mo.observe(document.body,{childList:true,subtree:true});
-    setTimeout(function(){mo.disconnect();},60000);
+    if (document.body) mo.observe(document,{childList:true,subtree:true});
+    /* observer живёт вечно */
   } catch(e) {}
 })();
 </script>
@@ -3267,7 +3283,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-rep{font-family:'Space Grotesk',system-ui,sans-serif;--cyan:#00E5FF;--mag:#FF2E9A;--amber:#F0B84B;--grn:#4ADE80;--vio:#A78BFA;--desc:#9aa3b4;--meta:#6b7385;--line:rgba(255,255,255,.08);}
 .pt-rep *{box-sizing:border-box;}
 .pt-rep-head{margin-bottom:22px;}
@@ -3397,19 +3412,19 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       if (!c || !f) return;
       c.dataset.ptF = f; setActive(c, f); moveInk(c, btn); renderInto(c, f);
     });
-    window.addEventListener("resize", function () { var c = findReports(); if (c) { var a = c.querySelector(".ut-btn.act"); if (a) moveInk(c, a); } });
+    window.addEventListener("resize", function () { clearTimeout(window.__ptRepRz); window.__ptRepRz = setTimeout(function () { var c = findReports(); if (c) { var a = c.querySelector(".ut-btn.act"); if (a) moveInk(c, a); } }, 150); });
   }
 
   function apply() { injectCSS(); var c = findReports(); if (c) buildReports(c); }
 
-  var n=0, iv=setInterval(function(){n++;apply();if(n>250)clearInterval(iv);},200);
+  var n=0, iv=setInterval(function(){n++;apply();if(n===15||n===50||n===150){try{mo.disconnect();mo.observe(document,{childList:true,subtree:true});}catch(e){}}if(n>250){clearInterval(iv);setInterval(apply,1200);}},200);
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo=new MutationObserver(function(){var c=findReports();if(c&&(c.dataset.ptReports!=="1"||!c.querySelector(".ut-btn")))buildReports(c);});
-    if (document.body) mo.observe(document.body,{childList:true,subtree:true});
-    setTimeout(function(){mo.disconnect();},60000);
+    if (document.body) mo.observe(document,{childList:true,subtree:true});
+    /* observer живёт вечно */
   } catch(e) {}
 })();
 </script>
@@ -3455,7 +3470,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-cl{font-family:'Space Grotesk',system-ui,sans-serif;--desc:#9aa3b4;--meta:#6b7385;--line:rgba(255,255,255,.08);}
 .pt-cl *{box-sizing:border-box;}
 .pt-cl .cl-eyebrow{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:#00E5FF;margin-bottom:22px;}
@@ -3587,14 +3601,14 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
 
   function apply() { injectCSS(); var c = findContainer(); if (c) buildChecklists(c); hideScanner(); }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(function () { var c = findContainer(); if (c && (c.dataset.ptCl !== "1" || !c.querySelector(".cl-tab"))) buildChecklists(c); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -3644,7 +3658,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-prod{font-family:'Space Grotesk',system-ui,sans-serif;--desc:#9aa3b4;--meta:#6b7385;--line:rgba(255,255,255,.08);}
 .pt-prod *{box-sizing:border-box;}
 .pt-prod .pr-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:#00E5FF;margin-bottom:.75rem;}
@@ -3756,14 +3769,14 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
 
   function apply() { injectCSS(); var c = findContainer(); if (c) buildProducts(c); }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(function () { var c = findContainer(); if (c && (c.dataset.ptProd !== "1" || !c.querySelector(".pr-tab"))) buildProducts(c); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -3805,7 +3818,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-plan{font-family:'Space Grotesk',system-ui,sans-serif;--desc:#9aa3b4;--meta:#6b7385;--line:rgba(255,255,255,.08);}
 .pt-plan *{box-sizing:border-box;}
 .pt-plan-head{text-align:center;margin-bottom:44px;}
@@ -3890,14 +3902,14 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
 
   function apply() { injectCSS(); var c = findContainer(); if (c) buildPlans(c); }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(function () { var c = findContainer(); if (c && (c.dataset.ptPlan !== "1" || !c.querySelector(".pl-card"))) buildPlans(c); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -3947,7 +3959,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-bot{font-family:'Space Grotesk',system-ui,sans-serif;--cyan:#00E5FF;--mag:#FF2E9A;--desc:#A6ADBA;--meta:#6b7385;--line:rgba(255,255,255,.08);position:relative;}
 .pt-bot *{box-sizing:border-box;}
 .glass.pt-bot-host:hover{transform:none !important;}
@@ -4067,19 +4078,19 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
       var card = btn.closest(".pt-bot"), idx = +btn.getAttribute("data-idx");
       if (card && idx >= 0) renderPanel(card, idx);
     });
-    window.addEventListener("resize", function () { var c = findCard(); if (c && c.dataset.ptBot === "1") moveInk(c, +c.dataset.ptIdx || 0); });
+    window.addEventListener("resize", function () { clearTimeout(window.__ptBotRz); window.__ptBotRz = setTimeout(function () { var c = findCard(); if (c && c.dataset.ptBot === "1") moveInk(c, +c.dataset.ptIdx || 0); }, 150); });
   }
 
   function apply() { injectCSS(); var c = findCard(); if (c) buildBot(c); }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(function () { var c = findCard(); if (c && (c.dataset.ptBot !== "1" || !c.querySelector(".fb-tab"))) buildBot(c); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -4126,7 +4137,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-pack{max-width:760px;margin:0 auto;text-align:center;font-family:'Space Grotesk',system-ui,sans-serif;--cyan:#00E5FF;--grn:#4ADE80;--desc:#9aa3b4;--meta:#6b7385;}
 .pt-pack *{box-sizing:border-box;}
 .pt-pack .pk-rule{width:52px;height:2px;margin:0 auto 22px;border-radius:2px;background:linear-gradient(90deg,var(--grn),var(--cyan));opacity:0;animation:ptPkR .5s ease forwards;}
@@ -4186,14 +4196,14 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
     }
   }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(apply);
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -4218,7 +4228,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   window.__ptSub = true;
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 .pt-sub{max-width:620px;margin:0 auto;text-align:center;font-family:'Space Grotesk',system-ui,sans-serif;--cyan:#00E5FF;--grn:#4ADE80;--desc:#9aa3b4;--meta:#6b7385;--line:rgba(255,255,255,.14);}
 .pt-sub *{box-sizing:border-box;}
 .pt-sub .sb-rule{width:52px;height:2px;margin:0 auto 22px;border-radius:2px;background:linear-gradient(90deg,var(--grn),var(--cyan));opacity:0;animation:ptSbR .5s ease forwards;}
@@ -4277,14 +4286,14 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
 
   function apply() { injectCSS(); var c = findContainer(); if (c) buildSub(c); }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(function () { var c = findContainer(); if (c) buildSub(c); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
@@ -4329,7 +4338,6 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
   ];
 
   var CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 .pt-phero{max-width:1240px;margin:0 auto;font-family:'Space Grotesk',system-ui,sans-serif;--cyan:#00E5FF;--grn:#4ADE80;--amber:#F0B84B;--vio:#A78BFA;--desc:#aeb4c0;--meta:#8891a3;--dim:#7d8492;--line:rgba(255,255,255,.08);}
 .pt-phero *{box-sizing:border-box;}
 .pt-phero .ph-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,56px);align-items:center;}
@@ -4393,14 +4401,14 @@ h1,h2,h3,h4{line-height:1.15 !important;overflow-wrap:anywhere;word-break:normal
 
   function apply() { injectCSS(); var c = findContainer(); if (c) buildHero(c); }
 
-  var n = 0, iv = setInterval(function () { n++; apply(); if (n > 250) clearInterval(iv); }, 200);
+  var n = 0, iv = setInterval(function () { n++; apply(); if (n===15||n===50||n===150) { try { mo.disconnect(); mo.observe(document, { childList: true, subtree: true }); } catch (e) {} } if (n > 250) { clearInterval(iv); setInterval(apply, 1200); } }, 200); /* прогрев → вечный пульс */
   apply();
   window.addEventListener("load", apply);
   window.addEventListener("DOMContentLoaded", apply);
   try {
     var mo = new MutationObserver(function () { var c = findContainer(); if (c) buildHero(c); });
-    if (document.body) mo.observe(document.body, { childList: true, subtree: true });
-    setTimeout(function () { mo.disconnect(); }, 60000);
+    mo.observe(document, { childList: true, subtree: true }); /* document переживает пересоздание при boot */
+    /* observer живёт вечно */
   } catch (e) {}
 })();
 </script>
